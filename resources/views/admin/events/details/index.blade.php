@@ -18,6 +18,10 @@
 					<a class="nav-link"
 					   href="{{route('events.tickets.index', $event)}}">Tickets</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link"
+					   href="{{route('events.transactions.index', $event)}}">Transactions</a>
+				</li>
 			</ul>
 	    </div>
 	    <div class="col">

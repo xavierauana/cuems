@@ -25,7 +25,7 @@
 		                  <tr>
 			                  <td>{{$delegate->name}}</td>
 			                  <td>{{$delegate->email}}</td>
-			                  <td>{{$delegate->instituation}}</td>
+			                  <td>{{$delegate->institution}}</td>
 			                  <td>{{$delegate->roles->implode('label',', ')}}</td>
 			                  <td>
 				                  <div class="btn-toolbar" role="toolbar"
@@ -33,8 +33,6 @@
 					                   <div class="btn-group  btn-group-sm mr-2"
 					                        role="group"
 					                        aria-label="First group">
-						                   <a href="{{route('events.details', $event)}}"
-						                      class="btn btn-primary">Details</a>
 						                   <a class="btn btn-info text-light">Edit</a>
 									  </div>
 					                   <div class="btn-group btn-group-sm mr-2"

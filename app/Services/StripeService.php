@@ -9,6 +9,7 @@ namespace App\Services;
 
 
 use App\Contracts\PaymentServiceInterface;
+use App\Entities\ChargeResponse;
 use Stripe\Charge;
 use Stripe\Stripe;
 
@@ -31,12 +32,16 @@ class StripeService implements PaymentServiceInterface
     /**
      * @param string $token
      */
-    public function charge(string $token, int $amount) {
+    public function charge(string $token, int $amount): ChargeResponse {
         Stripe::setApiKey(env("STRIPE_SECRET_KEY"));
+
         $charge = Charge::create([
-            'amount'   => $amount,
+            'amount'   => $amount * 100,
             'currency' => $this->currency,
             'source'   => $token
         ]);
+
+        return new ChargeResponse($charge->id, $charge->source->brand,
+            $charge->source->last4);
     }
 }

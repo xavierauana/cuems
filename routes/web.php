@@ -135,15 +135,15 @@
 //}
 //dd("done");
 
-use App\Contracts\PaymentServiceInterface;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DelegateRolesController;
 use App\Http\Controllers\DelegatesController;
 use App\Http\Controllers\EventsController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\TalksController;
 use App\Http\Controllers\TicketsController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -156,10 +156,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Auth::routes(['verify' => true]);
 });
 
-Route::post('delegates',
-    function (Request $request, PaymentServiceInterface $service) {
-        $service->charge($request->get('token'), 10000);
-    });
+Route::post('delegates', PaymentController::class . "@pay");
 
 Route::group(['middleware' => 'auth'], function () {
 
@@ -174,9 +171,12 @@ Route::group(['middleware' => 'auth'], function () {
         TicketsController::class . "@postImport");
     Route::resource("events.tickets", TicketsController::class);
     Route::resource("events.sessions", SessionsController::class);
+
     Route::resource("events.sessions.talks", TalksController::class);
     Route::get("events/{event}/details", EventsController::class . "@details")
          ->name('events.details');
+
+    Route::resource("events.transactions", TransactionController::class);
 
     Route::resource('roles', DelegateRolesController::class);
 

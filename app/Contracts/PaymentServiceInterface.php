@@ -8,7 +8,14 @@
 namespace App\Contracts;
 
 
+use App\Entities\ChargeResponse;
+
 interface PaymentServiceInterface
 {
-    public function charge(string $token, int $amount);
+    /**
+     * @param string $token
+     * @param int    $amount
+     * @return \App\Entities\ChargeResponse
+     */
+    public function charge(string $token, int $amount): ChargeResponse;
 }

@@ -15,8 +15,8 @@ class CreateDelegatesTable extends Migration
         Schema::create('delegates', function (Blueprint $table) {
             $table->increments('id');
             $table->string('prefix');
-            $table->string('surname');
-            $table->string('given_name');
+            $table->string('first_name');
+            $table->string('last_name');
             $table->boolean('is_male');
             $table->string('position');
             $table->string('department');
