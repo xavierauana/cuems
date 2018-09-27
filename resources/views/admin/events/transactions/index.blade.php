@@ -13,6 +13,9 @@
                     <thead>
                         <th>Delegate Name</th>
                         <th>Ticket</th>
+                        <th>Card</th>
+                        <th>Last 4</th>
+                        <th>Date</th>
                         <th>Status</th>
                     </thead>
 	                  <tbody>
@@ -20,6 +23,9 @@
 		                  <tr>
 			                  <td>{{$transaction->payee->name}}</td>
 			                  <td>{{$transaction->ticket->name}}</td>
+			                  <td>{{$transaction->card_brand}}</td>
+			                  <td>{{$transaction->last_4}}</td>
+			                  <td>{{$transaction->created_at->toDateTimeString()}}</td>
 			                  <td>{{$transaction->status}}</td>
 		                  </tr>
 	                  @endforeach
