@@ -1,14 +1,6 @@
-@extends('layouts.app')
-
-@push('styles')
-	<link rel="stylesheet"
-	      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-@endpush
-
-@section('content')
-	<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
+@component('_components.eventContainer', ['event'=>$event])
+	<div class="row justify-content-center">
+        <div class="col">
              @include("admin._partials.alert")
 	        <div class="card">
                 <div class="card-header">Create New Ticket for Event: {{$event->title}}</div>
@@ -76,16 +68,5 @@
             </div>
         </div>
     </div>
-</div>
-@endsection
+@endcomponent
 
-@push('scripts')
-	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-	
-	<script>
-		_.forEach(document.querySelectorAll("input.date"), el => flatpickr(el, {
-          enableTime: true,
-          dateFormat: "d M Y H:i",
-        }))
-	</script>
-@endpush

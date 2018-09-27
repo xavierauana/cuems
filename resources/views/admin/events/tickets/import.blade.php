@@ -1,9 +1,6 @@
-@extends('layouts.app')
-
-@section('content')
-	<div class="container">
+@component('_components.eventContainer', ['event'=>$event])
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col">
              @include("admin._partials.alert")
 	        <div class="card">
                 <div class="card-header">Import CSV to create tickets for: {{$event->title}}</div>
@@ -34,5 +31,4 @@
             </div>
         </div>
     </div>
-</div>
-@endsection
+@endcomponent
