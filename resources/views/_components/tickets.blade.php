@@ -1,6 +1,8 @@
 <div class="form-group">
-    <label style="margin-right: 15px">
-        <input type="radio" name="ticket" value="{{$ticket->id}}"
-               required /> {{$ticket->name}} {{"HK$".number_format($ticket->price,1)}}
-    </label>
+     <div class="form-check form-check-inline">
+        <label style="margin-right: 15px">
+            {{Form::radio('ticket', $ticket->id, null, ['class'=>'form-check-input','required'])}}
+	        {{$ticket->name}} {{"HK$".number_format($ticket->price,1)}}
+        </label>
+     </div>
 </div>

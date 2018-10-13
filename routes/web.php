@@ -139,6 +139,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DelegateRolesController;
 use App\Http\Controllers\DelegatesController;
 use App\Http\Controllers\EventsController;
+use App\Http\Controllers\InstitutionsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\TalksController;
@@ -179,5 +180,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource("events.transactions", TransactionController::class);
 
     Route::resource('roles', DelegateRolesController::class);
+    Route::get('institutions/search', InstitutionsController::class . "@search")
+         ->name('institutions.search');
+    Route::resource('institutions', InstitutionsController::class);
 
 });

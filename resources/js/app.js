@@ -1,4 +1,3 @@
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -8,6 +7,7 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+window.swal = require('sweetalert2');
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -16,7 +16,10 @@ window.Vue = require('vue');
  */
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('delete-button', require('./components/basic/BasicDeleteButton'));
+Vue.component('b-table', require('./components/basic/BasicTable'));
+Vue.component('p-table', require('./components/PaginatedTable'));
 
 const app = new Vue({
-    el: '#app'
-});
+                      el: '#app'
+                    });

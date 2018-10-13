@@ -1,4 +1,4 @@
-@component('_components.eventContainer', ['event'=>$event])
+@component('admin._components.eventContainer', ['event'=>$event])
 	<div class="card">
 	    <div class="card-body">
 		    <div class="row">

@@ -28,11 +28,9 @@
 				</li>
 			</ul>
 	    </div>
-	    
 	    <div class="col">
 		    {{$slot}}
 	    </div>
-	    
     </div>
 </div>
 @endsection

@@ -21,7 +21,7 @@
                     </thead>
 	                  <tbody>
 	                  @foreach($events as $event)
-		                  <tr>
+		                  <tr data-id="{{$event->id}}">
 			                  <td>{{$event->title}}</td>
 			                  <td>{{$event->start_at->format("d M Y")}}</td>
 			                  <td>{{$event->end_at->format("d M Y")}}</td>
@@ -38,11 +38,12 @@
 					                   <div class="btn-group btn-group-sm mr-2"
 					                        role="group"
 					                        aria-label="Second group">
-						                  <button class="btn btn-danger text-light">Delete</button>
+						                   <delete-button
+								                   url="{{route('events.destroy', $event)}}"
+								                   id="{{$event->id}}"
+								                   class="btn btn-danger text-light">Delete</delete-button>
 									  </div>
 				                  </div>
-				                  
-				                  
 			                  </td>
 		                  </tr>
 	                  @endforeach

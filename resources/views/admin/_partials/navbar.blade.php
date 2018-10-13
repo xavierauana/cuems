@@ -28,6 +28,8 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item" href="{{route('roles.index')}}">Delegate Roles</a>
+                      <a class="dropdown-item"
+                         href="{{route('institutions.index')}}">Institutions</a>
                     </div>
                   </li>
             </ul>

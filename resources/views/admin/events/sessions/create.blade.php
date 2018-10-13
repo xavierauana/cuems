@@ -1,4 +1,4 @@
-@component('_components.eventContainer', ['event'=>$event])
+@component('admin._components.eventContainer', ['event'=>$event])
 	<div class="row justify-content-center">
         <div class="col-md-10">
              @include("admin._partials.alert")
