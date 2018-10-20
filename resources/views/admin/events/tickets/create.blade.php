@@ -8,59 +8,8 @@
                 <div class="card-body">
 	                
 	                {!! Form::open(['url' => route("events.tickets.store", $event), 'method'=>"POST", 'class'=>"needs-validation", "novalidate"]) !!}
-	                <div class="form-group">
-		                {!!  Form::label('name', 'Ticket Name'); !!}
-		                {!!  Form::text('name',null,['class'=>'form-control']); !!}
-		                @if ($errors->has('name'))
-			                <span class="invalid-feedback" role="alert">
-				                <strong>{{ $errors->first('name') }}</strong>
-			                </span>
-		                @endif
-	                </div>
-	                <div class="form-group">
-		                {!!  Form::label('price', 'Price'); !!}
-		                {!!  Form::number('price',null,['class'=>'form-control', 'step'=>"0.1"]); !!}
-		                @if ($errors->has('price'))
-			                <span class="invalid-feedback" role="alert">
-				                <strong>{{ $errors->first('price') }}</strong>
-			                </span>
-		                @endif
-	                </div>
-	                <div class="form-group">
-		                {!!  Form::label('vacancy', 'Number of seats'); !!}
-		                <small>Leave it blank if unlimited</small>
-		                {!!  Form::number('vacancy',null,['class'=>'form-control', 'step'=>"0.1"]); !!}
-		                @if ($errors->has('vacancy'))
-			                <span class="invalid-feedback" role="alert">
-				                <strong>{{ $errors->first('vacancy') }}</strong>
-			                </span>
-		                @endif
-	                </div>
-	                <div class="form-group">
-		                {!!  Form::label('start_at', 'Start At'); !!}
-		                {!!  Form::text('start_at',null,['class'=>'form-control date']); !!}
-		                @if ($errors->has('start_at'))
-			                <span class="invalid-feedback" role="alert">
-				                <strong>{{ $errors->first('start_at') }}</strong>
-			                </span>
-		                @endif
-	                </div>
-	                <div class="form-group">
-		                {!!  Form::label('end_at', 'End At'); !!}
-		                {!!  Form::text('end_at',null,['class'=>'form-control date']); !!}
-		                @if ($errors->has('end_at'))
-			                <span class="invalid-feedback" role="alert">
-				                <strong>{{ $errors->first('end_at') }}</strong>
-			                </span>
-		                @endif
-	                </div>
-	                <div class="form-group">
-		                <input class="btn btn-success"
-		                       type="submit"
-		                       value="Create" />
-		                <a href="{{route('events.index')}}"
-		                   class="btn btn-info text-light">Back</a>
-	                </div>
+	
+	                @include("admin.events.tickets._partials.form", ['buttonText'=>"Create"])
 	
 	                {!! Form::close() !!}
 	                
@@ -68,5 +17,21 @@
             </div>
         </div>
     </div>
+	
+	@push('styles')
+		<link rel="stylesheet"
+		      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	@endpush
+	
+	@push('scripts')
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+		
+		<script>
+		_.forEach(document.querySelectorAll("input.date"), el => flatpickr(el, {
+          enableTime: true,
+          dateFormat: "d M Y H:i",
+        }))
+	</script>
+	@endpush
+	
 @endcomponent
-

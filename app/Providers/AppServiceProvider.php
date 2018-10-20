@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Contracts\PaymentServiceInterface;
+use App\Observers\TransactionObserver;
+use App\Transaction;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
 
         app()->bind(PaymentServiceInterface::class,
             config('app.payment_service'));
+
+        Transaction::observe(TransactionObserver::class);
     }
 
     /**

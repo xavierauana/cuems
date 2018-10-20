@@ -1,3 +1,6 @@
+<?php
+$status = array_flip((new \ReflectionClass(\App\Enums\TransactionStatus::class))->getConstants());
+?>
 @component('admin._components.eventContainer', ['event'=>$event])
 	<div class="row justify-content-center">
         <div class="col">
@@ -20,10 +23,10 @@
 		                  <tr>
 			                  <td>{{$transaction->payee->name}}</td>
 			                  <td>{{$transaction->ticket->name}}</td>
-			                  <td>{{$transaction->card_brand}}</td>
-			                  <td>{{$transaction->last_4}}</td>
+			                  <td>{{$transaction->card_brand ?? "NA"}}</td>
+			                  <td>{{$transaction->last_4 ?? "NA"}}</td>
 			                  <td>{{$transaction->created_at->toDateTimeString()}}</td>
-			                  <td>{{$transaction->status}}</td>
+			                  <td>{{$status[$transaction->status]}}</td>
 		                  </tr>
 	                  @endforeach
 	                  </tbody>

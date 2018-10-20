@@ -63,10 +63,7 @@
 
 @push('scripts')
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-	
 	<script>
-		
-		
 		_.forEach(document.querySelectorAll("input.date"), el => flatpickr(el, {}))
 	</script>
 @endpush

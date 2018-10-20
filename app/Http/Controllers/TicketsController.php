@@ -55,6 +55,8 @@ class TicketsController extends Controller
         $validatedData = $this->validate($request, Ticket::StoreRules,
             Ticket::ErrorMessages);
 
+        $validatedData['is_public'] = isset($validatedData['is_public']);
+
         $event->tickets()->create($validatedData);
 
         return redirect()->route('events.tickets.index', $event)
@@ -78,29 +80,43 @@ class TicketsController extends Controller
      * @param  \App\Ticket $ticket
      * @return \Illuminate\Http\Response
      */
-    public function edit(Ticket $ticket) {
-        //
+    public function edit(Event $event, Ticket $ticket) {
+
+        return view("admin.events.tickets.edit", compact('ticket', 'event'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
+     * @param \App\Event                $event
      * @param  \App\Ticket              $ticket
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function update(Request $request, Ticket $ticket) {
-        //
+    public function update(Request $request, Event $event, Ticket $ticket) {
+        $validatedData = $this->validate($request, Ticket::StoreRules,
+            Ticket::ErrorMessages);
+
+        $validatedData['is_public'] = isset($validatedData['is_public']);
+
+        $ticket->update($validatedData);
+
+        return redirect()->route("events.tickets.index", $event)
+                         ->withStatus("Ticket: {$ticket->name} is updated!");
     }
 
     /**
      * Remove the specified resource from storage.
      *
+     * @param \App\Event   $event
      * @param  \App\Ticket $ticket
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function destroy(Ticket $ticket) {
-        //
+    public function destroy(Event $event, Ticket $ticket) {
+        $event->tickets()->whereId($ticket->id)->delete();
+
+        return redirect()->back()
+                         ->withStatus("Ticket {$ticket->name} is deleted!");
     }
 
     public function getImport(Event $event) {
@@ -110,7 +126,6 @@ class TicketsController extends Controller
     public function postImport(Event $event, Request $request) {
 
         $this->validate($request, [
-            //            'file' => 'required|file|min:0|mimes:csv'
             'file' => 'required|file|min:0'
         ]);
 

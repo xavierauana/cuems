@@ -44,4 +44,12 @@ class Event extends Model
         return $this->hasMany(Ticket::class);
     }
 
+    public function notifications(): Relation {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function templates(): Relation {
+        return $this->hasMany(Template::class);
+    }
+
 }

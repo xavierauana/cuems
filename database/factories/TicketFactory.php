@@ -10,9 +10,9 @@ $factory->define(App\Ticket::class, function (Faker $faker) {
 
     return [
         'price'    => random_int(100, 10000),
+        'name'     => $faker->word,
         'start_at' => $startAt,
         'end_at'   => $endAt,
-        'vacancy'  => random_int(1, 100),
         'event_id' => factory(\App\Event::class)->create()->id
     ];
 });

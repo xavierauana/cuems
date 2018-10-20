@@ -14,12 +14,13 @@ class CreateTransactionsTable extends Migration
     public function up() {
         Schema::create('transactions', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('charge_id')->unique();
-            $table->string('card_brand');
-            $table->string('last_4');
+            $table->string('charge_id')->unique()->nullable();
+            $table->string('card_brand')->nullable();
+            $table->string('last_4')->nullable();
             $table->unsignedInteger('ticket_id');
             $table->morphs('payee');
-            $table->string('status');
+            $table->unsignedInteger('status');
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

@@ -9,7 +9,7 @@
         <li class="page-item" v-for="n in totalPages"
             :class="{'active': currentPage === n }">
             <a v-if="currentPage !== n"
-               :href="#"
+               href="#"
                class="page-link"
                @click.prevent="$emit('go', n)"
             >{{n}}</a>

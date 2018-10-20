@@ -1,8 +1,4 @@
-{{Form::open(['url' => url('delegates'),'method'=>"POST", 'id'=>"payment-form"])}}
-
-	<input type="hidden" name="token" id="token" />
- 
-	<fieldset class="basic">
+<fieldset class="basic">
         <legend>Basic Information</legend>
         
         <div class="form-group row">
@@ -85,32 +81,8 @@
                         </span>
 	            @endif
             </div>
-            
         </div>
-        <div class="form-group row">
-            <label class="department col-sm-2 col-form-label">Department</label>
-            <div class="col-sm-10">
-            
-             {{Form::text('department', null, ['class'=>'form-control', 'required'])}}
-	            @if ($errors->has('department'))
-		            <span class="invalid-feedback" role="alert">
-                        <strong>{{ $errors->first('department') }}</strong>
-                    </span>
-	            @endif
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="institution col-sm-2 col-form-label">Institution</label>
-            <div class="col-sm-10">
-                {{Form::text('institution', null, ['class'=>'form-control', 'required'])}}
-	            @if ($errors->has('institution'))
-		            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('institution') }}</strong>
-                        </span>
-	            @endif
-            </div>
-            
-        </div>
+    
         <div class="form-group row">
             <label class="address col-sm-2 col-form-label">Address</label>
             <div class="col-sm-10">
@@ -156,95 +128,7 @@
                         </span>
 	            @endif
             </div>
-            
         </div>
       
      </fieldset>
-    
-    <fieldset class="ticket">
-        <legend>Tickets:</legend>
-         <div class="form-group row">
-             <div class="col-sm-12">
-                  @foreach(\App\Ticket::whereEventId(1)->available()->get() as $ticket)
-		             @include("_components.tickets", compact('ticket'))
-	             @endforeach
-             </div>
-         </div>
-	
-	    @if ($errors->has('ticket'))
-		    <span class="invalid-feedback" role="alert">
-                <strong>{{ $errors->first('ticket') }}</strong>
-            </span>
-	    @endif
-    </fieldset>
-    
-    <fieldset class="trainee">
-        <legend>For Trainee</legend>
-        <div class="form-group row">
-            <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Training/Para-medical Organisation:</label>
-            <div class="col-sm-6 col-md-8  col-lg-9">
-                <input class="form-control"
-                       name="training_organisation" />
-	            @if ($errors->has('training_organisation'))
-		            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('training_organisation') }}</strong>
-                        </span>
-	            @endif
-            </div>
-            
-        </div>
-        <div class="form-group row">
-            <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Address</label>
-            <div class="col-sm-6 col-md-8  col-lg-9">
-                <input class="form-control"
-                       name="training_organisation_address" />
-	            @if ($errors->has('training_organisation_address'))
-		            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('training_organisation_address') }}</strong>
-                        </span>
-	            @endif
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Name of supervisor:</label>
-            <div class="col-sm-6 col-md-8  col-lg-9">
-                <input class="form-control"
-                       name="supervisor" />
-	            @if ($errors->has('supervisor'))
-		            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('supervisor') }}</strong>
-                        </span>
-	            @endif
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Position:</label>
-            <div class="col-sm-6 col-md-8  col-lg-9">
-                <input class="form-control"
-                       name="supervisor_position" />
-	            @if ($errors->has('supervisor_postion'))
-		            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('supervisor_postion') }}</strong>
-                        </span>
-	            @endif
-            </div>
-        </div>
-    </fieldset>
-	
-	<fieldset>
-                    <legend>Payment</legend>
-                    
-                    <div class="form-group row">
-                        <label class="fax col-sm-2 col-form-label">Credit or debit card</label>
-                        <div class="col-sm-10">
-                       <div id="card-element">
-      <!-- A Stripe Element will be inserted here. -->
-    </div>
-                            <div id="card-errors" role="alert"></div>
-                        </div>
-                    </div>
-                </fieldset>
-                
-     <button class="btn btn-primary">Submit</button>
 
-{{Form::close()}}

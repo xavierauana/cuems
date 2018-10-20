@@ -10,8 +10,6 @@
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600"
               rel="stylesheet" type="text/css" />
         
-        <script src="https://js.stripe.com/v3/"></script>
-        
         <link href="{{asset("css/app.css")}}" rel="stylesheet"
               type="text/css" />
         
@@ -20,85 +18,48 @@
 	            display: block;
             }
         </style>
+	
+	    @stack('styles')
 
     </head>
     <body>
-        <div class="container">
+        <div class="container" id="registration">
             
             @include("_partials.alert")
-            
-	        @include("_components.public_registration_form",['delegate'])
+	
+	        {{Form::open(['url' => url('delegates'),'method'=>"POST", 'id'=>"payment-form"])}}
+	
+	        <input type="hidden" id="token" name="token" />
+	        @include("_components.registration_form_basic_section")
+	        @include("_components.registration_form_institution_section")
+	        <tickets :tickets="{{json_encode(\App\Ticket::whereEventId(1)->public()->available()->get())}}"
+            @select="update">
+                @if ($errors->has('ticket'))
+			        <template slot="errorMessage">
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $errors->first('ticket') }}</strong>
+                        </span>
+                    </template>
+		        @endif
+            </tickets>
+	        @include("_components.registration_trainee_section")
+	        @include("_components.paymentForm")
+	
+	        <button class="btn btn-primary">Submit</button>
+	
+	        {{Form::close()}}
+         
         </div>
-    
-    <script>
-        // Create a Stripe client.
-        var stripe = Stripe('pk_test_3gflQJsHLK3hUItQx14JLbnk');
-
-        // Create an instance of Elements.
-        var elements = stripe.elements();
-
-        // Custom styling can be passed to options when creating an Element.
-        // (Note that this demo uses a wider set of styles than the guide below.)
-        var style = {
-          base   : {
-            color          : '#32325d',
-            lineHeight     : '18px',
-            fontFamily     : '"Helvetica Neue", Helvetica, sans-serif',
-            fontSmoothing  : 'antialiased',
-            fontSize       : '16px',
-            '::placeholder': {
-              color: '#aab7c4'
-            }
-          },
-          invalid: {
-            color    : '#fa755a',
-            iconColor: '#fa755a'
-          }
-        };
-
-        // Create an instance of the card Element.
-        var card = elements.create('card', {style: style});
-
-        // Add an instance of the card Element into the `card-element` <div>.
-        card.mount('#card-element');
-
-        // Handle real-time validation errors from the card Element.
-        card.addEventListener('change', function (event) {
-          var displayError = document.getElementById('card-errors');
-          if (event.error) {
-            displayError.textContent = event.error.message;
-          } else {
-            displayError.textContent = '';
-          }
-        });
-
-        // Handle form submission.
-        var form = document.getElementById('payment-form');
-        form.addEventListener('submit', function (event) {
-          event.preventDefault();
-
-          stripe.createToken(card).then(function (result) {
-            if (result.error) {
-              // Inform the user if there was an error.
-              var errorElement = document.getElementById('card-errors');
-              errorElement.textContent = result.error.message;
-            } else {
-              // Send the token to your server.
-              console.log(result)
-              stripeTokenHandler(result.token);
-            }
-          });
-        });
-
-        function stripeTokenHandler(token) {
-          var el   = document.getElementById("token"),
-
-              form = document.getElementById("payment-form")
-
-          console.log(token)
-          el.value = token.id;
-          form.submit()
-        }
-    </script>
+        <script src="{{asset("js/manifest.js")}}"></script>
+        <script src="{{asset("js/vendor.js")}}"></script>
+        <script src="{{asset("js/frontEnd.js")}}"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css"
+              rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+        
+        <script>
+            $('.select2').select2();
+        </script>
+        @stack("scripts")
     </body>
 </html>

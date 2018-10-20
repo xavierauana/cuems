@@ -12,7 +12,7 @@ class InstitutionsController extends Controller
      */
     private $repo;
 
-    private $paginateNumber = 1;
+    private $paginateNumber = 100;
 
     /**
      * InstitutionsController constructor.
@@ -25,6 +25,7 @@ class InstitutionsController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
@@ -35,6 +36,10 @@ class InstitutionsController extends Controller
                 ->paginate($this->paginateNumber) :
             $this->repo
                 ->paginate($this->paginateNumber);
+
+        if ($request->ajax()) {
+            return response()->json(compact("institutions"));
+        }
 
         return view("admin.institutions.index", compact("institutions"));
     }

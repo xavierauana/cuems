@@ -11,20 +11,24 @@ class Ticket extends Model
 {
 
     const StoreRules    = [
-        'name'     => 'required',
-        'price'    => 'required|min:0|numeric',
-        'vacancy'  => 'nullable|numeric',
-        'start_at' => 'required|date',
-        'end_at'   => 'required|date|date_gt:start_at',
+        'name'      => 'required',
+        'price'     => 'required|min:0|numeric',
+        'vacancy'   => 'nullable|numeric',
+        'is_public' => 'nullable|boolean',
+        'start_at'  => 'required|date',
+        'end_at'    => 'required|date|date_gt:start_at',
+        'note'      => 'nullable',
     ];
     const ErrorMessages = [];
 
     protected $fillable = [
         'name',
+        'note',
         'price',
+        'end_at',
         'vacancy',
         'start_at',
-        'end_at',
+        'is_public',
     ];
 
     protected $casts = [
@@ -45,6 +49,10 @@ class Ticket extends Model
             ['start_at', "<=", $now],
             ['end_at', ">=", $now],
         ]);
+    }
+
+    public function scopePublic(Builder $query): void {
+        $query->whereIsPublic(true);
     }
 
     // Accessor
@@ -84,6 +92,15 @@ class Ticket extends Model
             $this->attributes['end_at'] = $carbonInstance;
         }
 
+    }
+
+    // Helpers
+    public function hasSeat(): bool {
+        if ($this->seat === null) {
+            return true;
+        }
+
+        return Transaction::whereTicketId($this->id)->count() < $this->vacancy;
     }
 
 }

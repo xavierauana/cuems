@@ -15,6 +15,7 @@ class CreateDelegateRolesTable extends Migration
         Schema::create('delegate_roles', function (Blueprint $table) {
             $table->increments('id');
             $table->string('label');
+            $table->boolean('is_default')->default(false);
             $table->string('code')->unique();
             $table->timestamps();
         });

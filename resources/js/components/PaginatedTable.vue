@@ -127,9 +127,10 @@
         },
         toPage(index) {
           this.alterPageIndex(index)
-          let url = this.window.location.origin + this.window.location.pathname + this.constructQueryString()
+          let url = window.location.origin + window.location.pathname + this.constructQueryString()
           axios.get(url)
                .then(({data}) => {
+                 console.log(data)
                  this.iPaginator = data.institutions
                })
         },
@@ -140,7 +141,6 @@
               return {key: a[0], value: a[1]}
             })
           }
-
         },
         constructQueryString() {
 

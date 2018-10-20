@@ -20,11 +20,14 @@ class CreateTicketsTable extends Migration
             $table->dateTime("end_at")->nullable();
             $table->unsignedInteger("vacancy")->nullable();
             $table->boolean("is_public")->default(true);
+            $table->text("note")->nullable();
+
             $table->unsignedInteger('event_id');
             $table->foreign('event_id')
                   ->references('id')
                   ->on('events')
                   ->onDelete('cascade');
+
             $table->timestamps();
         });
     }

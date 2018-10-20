@@ -4,6 +4,7 @@
 @import 'variables';
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+@import './components/switch';
 
 .navbar-laravel {
   background-color: #fff;
@@ -16,4 +17,8 @@
 
 .form-control.date[readonly] {
   background-color: transparent;
+}
+
+.invalid-feedback{
+  display: block;
 }

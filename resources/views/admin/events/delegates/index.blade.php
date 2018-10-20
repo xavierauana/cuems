@@ -6,6 +6,8 @@
 		        <div class="card-header">Delegates for Event: {{$event->title}}
 			        <a href="{{route('events.delegates.create', $event)}}"
 			           class="btn btn-sm btn-success pull-right">New</a>
+			        <a href="{{route('events.delegates.import', $event)}}"
+			           class="btn btn-sm btn-outline-success pull-right mr-3">Import</a>
                 </div>
                 
                 <div class="table-responsive">
@@ -30,7 +32,8 @@
 					                   <div class="btn-group  btn-group-sm mr-2"
 					                        role="group"
 					                        aria-label="First group">
-						                   <a class="btn btn-info text-light">Edit</a>
+						                   <a class="btn btn-info text-light"
+						                      href="{{route("events.delegates.edit",[$event, $delegate])}}">Edit</a>
 									  </div>
 					                   <div class="btn-group btn-group-sm mr-2"
 					                        role="group"
