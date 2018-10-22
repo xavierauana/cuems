@@ -16,22 +16,34 @@ window.swal = require('sweetalert2');
  */
 import Tickets from "./components/frontEnd/Tickets"
 
+import "select2/dist/css/select2.min.css"
+
+require('select2')
+
 const app = new Vue({
                       el        : '#registration',
-                      data      : {
-                        selectedTicket: null
-                      },
                       components: {
                         Tickets
                       },
-                      watch     : {
-                        selectedTicket(ticket) {
-                          if (this.selectedTicket.note.indexOf("trainee") > -1) {
-                            _.forEach(document.querySelectorAll("fieldset.trainee input, fieldset.trainee select"), item => item.setAttribute('required', true))
-                          } else {
-                            _.forEach(document.querySelectorAll("fieldset.trainee input, fieldset.trainee select"), item => item.removeAttribute('required'))
+                      data      : {
+                        selectedTicket: null
+                      },
+                      computed  : {
+                        isTraineeTicket() {
+                          if (this.selectedTicket) {
+                            let check = this.selectedTicket.note.indexOf('trainee') > -1
+                            if (check) {
+                              Vue.nextTick(() => {
+                                $('.select2').select2();
+                              })
+                            }
+                            return check
                           }
+                          return false
                         }
+                      },
+                      mounted() {
+                        $('.select2').select2();
                       },
                       methods   : {
                         update(ticket) {

@@ -63,6 +63,20 @@
 	@endif
 </div>
 
+<div class="form-group">
+ 
+	 <span class="switch">
+	 {{Form::checkbox('include_ticket',1, null,['class'=>'switch','id'=>'switch-normal'])}}
+		 <label for="switch-normal">Include Ticket</label>
+	 </span>
+	
+	@if ($errors->has('include_ticket'))
+		<span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('include_ticket') }}</strong>
+        </span>
+	@endif
+</div>
+
 @if(!isset($notificaiton))
 	@include("admin.events.notifications._partials.createDates")
 @else

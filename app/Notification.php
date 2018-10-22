@@ -20,6 +20,7 @@ class Notification extends Model
         'from_name',
         'from_email',
         'subject',
+        'include_ticket'
     ];
 
 
@@ -61,16 +62,17 @@ class Notification extends Model
 
     public function getStoreRules(): array {
         return [
-            'template'   => 'required',
-            'name'       => 'required',
-            'schedule'   => 'nullable|date',
-            'event'      => 'required|in:' . implode(",",
+            'template'       => 'required',
+            'name'           => 'required',
+            'schedule'       => 'nullable|date',
+            'event'          => 'required|in:' . implode(",",
                     array_values(SystemEvents::getEvents())),
-            'role_id'    => 'nullable|in:0,' . implode(",",
+            'role_id'        => 'nullable|in:0,' . implode(",",
                     DelegateRole::pluck("id")->toArray()),
-            'from_name'  => "required",
-            'from_email' => "required|email",
-            'subject'    => "required",
+            'from_name'      => "required",
+            'from_email'     => "required|email",
+            'subject'        => "required",
+            'include_ticket' => "nullable|boolean",
         ];
     }
 
@@ -96,7 +98,7 @@ class Notification extends Model
         if ($notifiable instanceof Delegate) {
             $mail = new NotificationMailable($this,
                 $notifiable,
-                $this->event()->first());
+                $this->event()->first(), $this->include_ticket);
 
         } elseif ($notifiable instanceof Transaction) {
 

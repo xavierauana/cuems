@@ -48,7 +48,6 @@ class Transaction extends Model
         ];
     }
 
-
     // Relation
 
     public function payee(): Relation {
@@ -61,5 +60,19 @@ class Transaction extends Model
 
     public function routeNotificationForMail(): string {
         return $this->payee->email;
+    }
+
+    public function getUuidAttribute(): string {
+        return base64_encode(serialize([
+            'transaction_id' => $this->id,
+            'ticket_id'      => $this->ticket->id,
+            'event_id'       => $this->ticket->event->id,
+            'delegate_id'    => $this->payee->id,
+        ]));
+    }
+
+    public function parseUuid($data): array {
+
+        return unserialize(base64_decode($data));
     }
 }

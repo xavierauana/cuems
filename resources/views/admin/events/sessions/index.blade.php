@@ -1,5 +1,5 @@
 @component('admin._components.eventContainer', ['event'=>$event])
-    <div class="row justify-content-center">
+	<div class="row justify-content-center">
         <div class="col">
          @include("admin._partials.alert")
 	        <div class="card">
@@ -38,7 +38,18 @@
 					                   <div class="btn-group btn-group-sm mr-2"
 					                        role="group"
 					                        aria-label="Second group">
-						                  <button class="btn btn-danger text-light">Delete</button>
+						                   <form class="form"
+						                         method="POST"
+						                         action="{{route("events.sessions.destroy",[$event, $session])}}"
+						                         @submit.prevent="confirmDelete"
+						                         style="display: inline">
+							                   @csrf
+							
+							                   <input name="_method"
+							                          value="DELETE"
+							                          type="hidden" />
+							                   <button class="btn btn-danger btn-sm text-light">Delete</button>
+						                   </form>
 									  </div>
 				                  </div>
 				                  

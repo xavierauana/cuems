@@ -62,6 +62,8 @@ class NotificationsController extends Controller
         $validatedData = $this->validate($request,
             $this->repo->getStoreRules());
 
+        $validatedData['include_ticket'] = isset($validatedData['include_ticket']) ? $validatedData['include_ticket'] : false;
+
         $newNotification = $event->notifications()->create($validatedData);
 
         return redirect()->route("events.notifications.index", $event)
@@ -106,6 +108,8 @@ class NotificationsController extends Controller
     ) {
         $validatedData = $this->validate($request,
             $this->repo->getStoreRules());
+
+        $validatedData['include_ticket'] = isset($validatedData['include_ticket']) ? $validatedData['include_ticket'] : false;
 
         $notification->update($validatedData);
 

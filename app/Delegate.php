@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Notifications\Notifiable;
@@ -34,7 +35,45 @@ class Delegate extends Model
     }
 
     public function roles(): Relation {
-        return $this->belongsToMany(DelegateRole::class);
+        return $this->belongsToMany(DelegateRole::class)
+                    ->withPivot('delegate_role_id');
+    }
+
+    // Scope
+    public function scopeExcludeRole($query, $role): Builder {
+        $roleCode = null;
+        if ($role instanceof DelegateRole) {
+            $roleCode = $role->code;
+        } elseif (is_string($role)) {
+            $roleCode = $role;
+        }
+
+        return $query->join('delegate_delegate_role',
+            'delegate_delegate_role.delegate_id', '=', 'delegates.id')
+                     ->whereIn("delegate_delegate_role.delegate_role_id",
+                         function ($q) use ($roleCode) {
+                             $q->select('id')
+                               ->from('delegate_roles')
+                               ->where('code', '<>', $roleCode);
+                         });
+    }
+
+    public function scopeHasRole($query, $role): Builder {
+        $roleCode = null;
+        if ($role instanceof DelegateRole) {
+            $roleCode = $role->code;
+        } elseif (is_string($role)) {
+            $roleCode = $role;
+        }
+
+        return $query->join('delegate_delegate_role',
+            'delegate_delegate_role.delegate_id', '=', 'delegates.id')
+                     ->whereIn("delegate_delegate_role.delegate_role_id",
+                         function ($q) use ($roleCode) {
+                             $q->select('id')
+                               ->from('delegate_roles')
+                               ->where('code', '=', $roleCode);
+                         });
     }
 
     public function transactions(): Relation {
@@ -43,7 +82,7 @@ class Delegate extends Model
 
     // Accessor
     public function getNameAttribute(): string {
-        return $this->last_name . " " . $this->first_name;
+        return $this->prefix . " " . $this->last_name . " " . $this->first_name;
     }
 
     public function getTicketIdAttribute(): int {
@@ -78,14 +117,16 @@ class Delegate extends Model
             'position'                      => "required",
             'department'                    => "required",
             'institution'                   => "required",
+            'other_institution'             => "nullable|required_if:institution,other",
             'address'                       => "required",
             'email'                         => "required|email",
             'mobile'                        => "required",
             'fax'                           => 'nullable',
-            'training_organisation'         => 'nullable',
-            'training_organisation_address' => 'nullable',
-            'supervisor'                    => 'nullable',
-            'training_position'             => 'nullable',
+            'training_organisation'         => 'nullable|traineeInfoRequired',
+            'training_other_organisation'   => 'nullable|required_if:training_organisation,other',
+            'training_organisation_address' => 'nullable|traineeInfoRequired',
+            'supervisor'                    => 'nullable|traineeInfoRequired',
+            'training_position'             => 'nullable|traineeInfoRequired',
             'roles_id.*'                    => 'nullable|in:' . implode(",",
                     DelegateRole::pluck('id')->toArray()),
         ];
@@ -94,4 +135,5 @@ class Delegate extends Model
     public function routeNotificationForMail(): string {
         return $this->email;
     }
+
 }

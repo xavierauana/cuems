@@ -1,5 +1,4 @@
 <template>
-
     <fieldset class="ticket">
         <legend>Tickets:</legend>
          <div class="form-group row" v-for="ticket in tickets">

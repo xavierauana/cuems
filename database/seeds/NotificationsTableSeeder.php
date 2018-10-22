@@ -14,13 +14,14 @@ class NotificationsTableSeeder extends Seeder
         $event = Event::firstOrFail();
         $notifications = [
             [
-                'name'       => "Welcome",
-                'event'      => \App\Enums\SystemEvents::CREATE_DELEGATE,
-                'template'   => "test",
-                'from_name'  => "EMS",
-                'from_email' => "ems@anacreation.com",
-                'subject'    => "Welcome to joining the event (self-registration)",
-                'event_id'   => $event->id,
+                'name'           => "Welcome",
+                'event'          => \App\Enums\SystemEvents::CREATE_DELEGATE,
+                'template'       => "test",
+                'from_name'      => "EMS",
+                'from_email'     => "ems@anacreation.com",
+                'include_ticket' => true,
+                'subject'        => "Welcome to joining the event (self-registration)",
+                'event_id'       => $event->id,
             ],
             [
                 'name'       => "Welcome Admin Created",

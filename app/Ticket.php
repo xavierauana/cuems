@@ -67,6 +67,14 @@ class Ticket extends Model
         return floatval($value / 100);
     }
 
+    public function getTemplateAttribute(): string {
+        return 'ticket';
+    }
+
+    public function getTemplateDimensionAttribute(): array {
+        return array(0, 0, 175, 500);
+    }
+
     // Mutator
     public function setPriceAttribute($value): void {
         $this->attributes['price'] = $value * 100;

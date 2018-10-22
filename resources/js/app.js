@@ -8,6 +8,13 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 window.swal = require('sweetalert2');
+window.swal = require('sweetalert2');
+
+import "select2/dist/css/select2.min.css"
+import "flatpickr/dist/flatpickr.min.css"
+import flatpickr from "flatpickr"
+
+require('select2')
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -19,7 +26,71 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
 Vue.component('delete-button', require('./components/basic/BasicDeleteButton'));
 Vue.component('b-table', require('./components/basic/BasicTable'));
 Vue.component('p-table', require('./components/PaginatedTable'));
+Vue.component('tickets', require('./components/frontEnd/Tickets'));
 
 const app = new Vue({
-                      el: '#app'
-                    });
+                      el      : '#app',
+                      data    : {
+                        selectedTicket: null
+                      },
+                      computed: {
+                        isTraineeTicket() {
+                          if (this.selectedTicket) {
+                            let check = this.selectedTicket.note.indexOf('trainee') > -1
+                            if (check) {
+                              Vue.nextTick(() => {
+                                $('.select2').select2();
+                              })
+                            }
+                            return check
+                          }
+                          return false
+                        }
+                      },
+                      mounted() {
+                        $(".select2").select2()
+                        flatpickr(".date", {
+                          enableTime: true,
+                          dateFormat: "d M Y H:i"
+                        })
+
+                        this.registerSearchDelegateFields('email')
+                        this.registerSearchDelegateFields('mobile')
+                      },
+                      methods : {
+                        confirmDelete(e) {
+                          if (confirm("Are you sure to delete the item?")) {
+                            e.target.submit()
+                          }
+                        },
+                        registerSearchDelegateFields(inputName) {
+                          let el = document.querySelector('input[name="' + inputName + '"]')
+
+                          if (el) {
+                            el.addEventListener('change', () => {
+                              this.searchDelegate(el)
+                            })
+                          }
+                        },
+                        searchDelegate(el) {
+                          let name = el.getAttribute('name')
+                          let value = el.value
+
+                          let data = {}
+                          data[name] = value
+
+                          console.log(data)
+
+                          axios.post('/events/1/delegates/search', data)
+                               .then(({data}) => {
+                                 if (data.length > 0) {
+                                   let message = data.map(delegate => delegate.first_name + " " +delegate.last_name).reduce((carry, name) => carry += name + "<br/>", "")
+                                   swal('', 'There are ' + data.length + ' delegate with same ' + name + '<br/> ' + message)
+                                 }
+                               })
+                        },
+                        update(payload) {
+                          this.selectedTicket = payload
+                        }
+                      }
+                    })

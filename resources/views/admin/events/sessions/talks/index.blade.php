@@ -33,7 +33,17 @@
 					                   <div class="btn-group btn-group-sm mr-2"
 					                        role="group"
 					                        aria-label="Second group">
-						                  <button class="btn btn-danger text-light">Delete</button>
+						                   <form method="POST"
+						                         style="display: inline-block"
+						                         action="{{route("events.sessions.talks.destroy",[$event, $session, $talk])}}"
+						                         @submit.prevent="confirmDelete">
+							                   <input name="_method"
+							                          type="hidden"
+							                          value="DELETE" />
+							                   @csrf
+							                   <button class="btn btn-danger btn-sm text-light">Delete</button>
+						                   </form>
+						                  
 									  </div>
 				                  </div>
 				                  

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\PaymentServiceInterface;
 use App\Observers\TransactionObserver;
+use App\Ticket;
 use App\Transaction;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +29,21 @@ class AppServiceProvider extends ServiceProvider
 
                 return false;
 
+            });
+
+        Validator::extend('traineeInfoRequired',
+            function ($attribute, $value, $parameters, $validator) {
+
+                $ticketId = $validator->getData()['ticket_id'];
+                if ($ticket = Ticket::find($ticketId)) {
+                    if (strpos(strtolower($ticket->note), "trainee") > -1) {
+                        return !empty($value);
+                    };
+
+                    return true;
+                }
+
+                return false;
             });
 
         app()->bind(PaymentServiceInterface::class,

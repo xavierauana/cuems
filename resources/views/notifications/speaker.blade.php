@@ -1,0 +1,1 @@
+Thank you {{$delegate->name}} to giving us a speein in the event: {{$event->name}}.

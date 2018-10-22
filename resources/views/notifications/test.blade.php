@@ -1,1 +1,1 @@
-testing email
+Thank You {{$delegate->name}} for join the event: {{$event->title}}.

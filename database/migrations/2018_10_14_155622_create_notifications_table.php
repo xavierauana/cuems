@@ -19,6 +19,7 @@ class CreateNotificationsTable extends Migration
             $table->string('from_name')->nullable();
             $table->string('from_email')->nullable();
             $table->string('subject')->nullable();
+            $table->boolean('include_ticket')->default(false);
             $table->unsignedInteger('event');
             $table->nullableMorphs('recipient');
             $table->unsignedInteger('role_id')->nullable();

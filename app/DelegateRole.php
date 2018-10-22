@@ -26,7 +26,7 @@ class DelegateRole extends Model
 
     // Relation
     public function delegates(): Relation {
-        return $this->belongsToMany(DelegateRole::class);
+        return $this->belongsToMany(Delegate::class)->withPivot('delegate_id');
     }
 
     // Mutator

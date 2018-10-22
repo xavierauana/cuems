@@ -232,4 +232,14 @@ class DelegatesController extends Controller
 
         return $delegate;
     }
+
+    public function postSearch(Request $request, Event $event) {
+
+        $input = $request->all();
+
+        $delegates = $event->delegates()->where(array_keys($input)[0], '=',
+            array_values($input)[0])->get();
+
+        return response()->json($delegates);
+    }
 }

@@ -9,6 +9,7 @@ use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
 use App\Event;
 use App\Events\SystemEvent;
+use App\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -32,47 +33,51 @@ class PaymentController extends Controller
         $validatedData = $this->validate($request,
             array_merge($this->delegate->getStoreRules(), [
                 'token'     => 'required',
-                'ticket_id' => 'required',
+                'ticket_id' => 'required|in:' . implode(",", Ticket::public()
+                                                                   ->available()
+                                                                   ->pluck('id')
+                                                                   ->toArray()),
             ]));
+
+        $validatedData = $this->sanitizeInputData($validatedData);
 
         $response = redirect()->back();
         $message = null;
 
-        if ($ticketID = $validatedData['ticket_id'] and $ticket = \App\Ticket::find($ticketID)) {
+        $ticket = Ticket::findOrFail($validatedData['ticket_id']);
+
+        try {
+
+            $chargeResponse = $service->charge($request->get('token'),
+                $ticket->price);
+
+            DB::beginTransaction();
+
             try {
+                $event = Event::first();
 
-                $chargeResponse = $service->charge($request->get('token'),
-                    $ticket->price);
+                $newDelegate = $this->createDelegate($event, $validatedData,
+                    $chargeResponse, $ticket);
 
-                DB::beginTransaction();
+                DB::commit();
 
-                try {
-                    $event = Event::first();
-
-                    $newDelegate = $this->createDelegate($event, $validatedData,
-                        $chargeResponse, $ticket);
-
-                    DB::commit();
-
-                    event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
-                        $newDelegate));
-
-                } catch (\Exception $e) {
-                    DB::rollBack();
-                    throw $e;
-                }
-
-                $message = "Buy the ticket.";
+                event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
+                    $newDelegate));
 
             } catch (\Exception $e) {
-                $response = $response->withInput();
-                $message = $e->getMessage();
+                DB::rollBack();
+                throw $e;
             }
 
-            return $message = null ? $response : $response->withAlert($message);
+            $message = "Buy the ticket.";
+
+        } catch (\Exception $e) {
+            $response = $response->withInput();
+            $message = $e->getMessage();
         }
 
-        return $response->withAlert('Ticket is invalid!');
+        return $message = null ? $response : $response->withAlert($message);
+
     }
 
     /**
@@ -85,6 +90,7 @@ class PaymentController extends Controller
     private function createDelegate(
         $event, $validatedData, $chargeResponse, $ticket
     ) {
+
         $newDelegate = $event->delegates()->create($validatedData);
 
         $defaultRole = DelegateRole::whereIsDefault(true)
@@ -101,5 +107,14 @@ class PaymentController extends Controller
         ]);
 
         return $newDelegate;
+    }
+
+    private function sanitizeInputData($validatedData): array {
+
+        $validatedData['institution'] = ($validatedData['institution'] == 'other' and !empty($validatedData['other_institution'])) ? $validatedData['other_institution'] : $validatedData['institution'];
+        $validatedData['training_organisation'] = ($validatedData['training_organisation'] == 'other' and !empty($validatedData['training_other_organisation'])) ? $validatedData['training_other_organisation'] : $validatedData['training_organisation'];
+
+        return $validatedData;
+
     }
 }

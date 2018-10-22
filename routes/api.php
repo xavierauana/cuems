@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\SessionsController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,20 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-Route::get('data', function (Request $request) {
-
-    Log::info($request->query());
-
-    return response()->json(["message" => "good job! with query {$request->query('first')}"]);
-
-});
-
-Route::post('new', function (Request $request) {
-
-    Log::info("data is, ", $request->all());
-    Log::info("query is, ", $request->query());
-
-    return response()->json(["message" => "new good job!"]);
-
-});
+Route::get("events/{event}/sessions",
+    SessionsController::class . "@apiGetSessions");

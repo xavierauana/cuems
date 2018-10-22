@@ -32,8 +32,9 @@
 	        <input type="hidden" id="token" name="token" />
 	        @include("_components.registration_form_basic_section")
 	        @include("_components.registration_form_institution_section")
-	        <tickets :tickets="{{json_encode(\App\Ticket::whereEventId(1)->public()->available()->get())}}"
-            @select="update">
+	        <tickets
+			        :tickets="{{json_encode(\App\Ticket::whereEventId(1)->public()->available()->get())}}"
+			        @select="update">
                 @if ($errors->has('ticket'))
 			        <template slot="errorMessage">
                         <span class="invalid-feedback" role="alert">
@@ -48,18 +49,13 @@
 	        <button class="btn btn-primary">Submit</button>
 	
 	        {{Form::close()}}
-         
         </div>
+        
+        
         <script src="{{asset("js/manifest.js")}}"></script>
         <script src="{{asset("js/vendor.js")}}"></script>
         <script src="{{asset("js/frontEnd.js")}}"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css"
-              rel="stylesheet" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
         
-        <script>
-            $('.select2').select2();
-        </script>
         @stack("scripts")
     </body>
 </html>
