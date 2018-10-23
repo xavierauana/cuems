@@ -21,15 +21,18 @@ class SessionResource extends JsonResource
 
         $moderationType = ucwords(strtolower(array_flip(SessionModerationType::getTypes())[$this->moderation_type]));
 
-        $moderationType = count($moderators) > 1 ? ($this->moderation_type === 1 ? "Chairpersons" : str_plural($moderationType)) : str_singular($moderationType);
+        $moderationType = count($moderators) > 1 ?
+            ($this->moderation_type === 1 ? "Chairpersons" : str_plural($moderationType)) :
+            str_singular($moderationType);
 
         return [
-            "title"           => $this->title,
-            "sponsor"         => $this->sponsor,
-            "start_at"        => $this->start_at,
-            "end_at"          => $this->end_at,
-            "moderation_type" => $moderationType,
+            "id"              => $this->id,
             "moderators"      => $moderators,
+            "title"           => $this->title,
+            "end_at"          => $this->end_at,
+            "sponsor"         => $this->sponsor,
+            "moderation_type" => $moderationType,
+            "start_at"        => $this->start_at,
             "talks"           => TalkResource::collection($this->talks)
         ];
     }

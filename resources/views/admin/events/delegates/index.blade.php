@@ -6,8 +6,12 @@
 		        <div class="card-header">Delegates for Event: {{$event->title}}
 			        <a href="{{route('events.delegates.create', $event)}}"
 			           class="btn btn-sm btn-success pull-right">New</a>
-			        {{--<a href="{{route('events.delegates.import', $event)}}"--}}
-			           {{--class="btn btn-sm btn-outline-success pull-right mr-3">Import</a>--}}
+			        <a href="#"
+			           {{--href="{{route('events.delegates.import', $event)}}"--}}
+			           class="btn btn-sm btn-outline-success pull-right mr-3">Import</a>
+			        <a href="#"
+			           {{--href="{{route('events.delegates.import', $event)}}"--}}
+			           class="btn btn-sm btn-outline-primary pull-right mr-3">Export</a>
                 </div>
                 
                 <div class="table-responsive">

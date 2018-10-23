@@ -1,1 +1,1 @@
-Thank You {{$delegate->name}} for join the event: {{$event->title}}.
+Thank You {{$delegate->name}} for joining the event: {{$event->title}}.
