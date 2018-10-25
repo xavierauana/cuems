@@ -8,10 +8,9 @@
 			           class="btn btn-sm btn-success pull-right">New</a>
 			        <a href="#"
 			           {{--href="{{route('events.delegates.import', $event)}}"--}}
-			           class="btn btn-sm btn-outline-success pull-right mr-3">Import</a>
-			        <a href="#"
-			           {{--href="{{route('events.delegates.import', $event)}}"--}}
-			           class="btn btn-sm btn-outline-primary pull-right mr-3">Export</a>
+			           class="btn btn-sm btn-outline-success pull-right mr-1">Import</a>
+			        <a href="{{route('events.delegates.export', $event)}}"
+			           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
                 </div>
                 
                 <div class="table-responsive">
@@ -45,8 +44,6 @@
 						                  <button class="btn btn-danger text-light">Delete</button>
 									  </div>
 				                  </div>
-				                  
-				                  
 			                  </td>
 		                  </tr>
 	                  @endforeach

@@ -20,6 +20,18 @@ class DelegateRolesTableSeeder extends Seeder
                 'label' => 'Speaker',
                 'code'  => 'speaker',
             ],
+            [
+                'label' => 'Honorary',
+                'code'  => 'honorary',
+            ],
+            [
+                'label' => 'Committee',
+                'code'  => 'committee',
+            ],
+            [
+                'label' => 'Chairperson',
+                'code'  => 'chairperson',
+            ],
         ];
 
         foreach ($roles as $role) {

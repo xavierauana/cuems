@@ -23,10 +23,14 @@ class Delegate extends Model
         'email',
         'mobile',
         'fax',
+        'country',
         'training_organisation',
         'training_organisation_address',
         'supervisor',
         'training_position',
+        'address_1',
+        'address_2',
+        'address_3',
     ];
 
     // Relation
@@ -48,14 +52,14 @@ class Delegate extends Model
             $roleCode = $role;
         }
 
-        return $query->join('delegate_delegate_role',
-            'delegate_delegate_role.delegate_id', '=', 'delegates.id')
-                     ->whereIn("delegate_delegate_role.delegate_role_id",
-                         function ($q) use ($roleCode) {
-                             $q->select('id')
-                               ->from('delegate_roles')
-                               ->where('code', '<>', $roleCode);
-                         });
+        return $query->whereIn('id', function ($query) use ($roleCode) {
+            $query->select('delegate_delegate_role.delegate_id')
+                  ->from('delegate_delegate_role')
+                  ->join("delegate_roles", 'delegate_roles.id', '=',
+                      'delegate_delegate_role.delegate_role_id')
+                  ->where('delegate_roles.code', '!=', $roleCode)
+                  ->distinct();
+        });
     }
 
     public function scopeHasRole($query, $role): Builder {
@@ -118,10 +122,13 @@ class Delegate extends Model
             'department'                    => "required",
             'institution'                   => "required",
             'other_institution'             => "nullable|required_if:institution,other",
-            'address'                       => "required",
+            'address_1'                     => "required",
+            'address_2'                     => "nullable",
+            'address_3'                     => "nullable",
             'email'                         => "required|email",
             'mobile'                        => "required",
             'fax'                           => 'nullable',
+            'country'                       => 'required',
             'training_organisation'         => 'nullable|traineeInfoRequired',
             'training_other_organisation'   => 'nullable|required_if:training_organisation,other',
             'training_organisation_address' => 'nullable|traineeInfoRequired',

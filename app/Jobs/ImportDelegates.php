@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Delegate;
+use App\DelegateRole;
 use App\Event;
 use App\Transaction;
 use App\User;
@@ -52,12 +53,13 @@ class ImportDelegates implements ShouldQueue
      * @return void
      * @throws \ReflectionException
      */
-    public function handle(Transaction $transaction) {
-
-        $rules = $rules = array_merge(Delegate::StoreRules,
-            $transaction->getRules());
+    public function handle(
+        Transaction $transaction, Delegate $delegate, DelegateRole $role
+    ) {
 
         $batchId = str_random();
+
+        $rules = $this->getValidationRules($transaction, $delegate, $role);
 
         foreach ($this->getData() as $record) {
 
@@ -69,6 +71,9 @@ class ImportDelegates implements ShouldQueue
                     $newDelegate = $this->event->delegates()
                                                ->create($validatedData);
 
+                    $newDelegate->roles()->save($role->where('code', '=',
+                        $validatedData['role'])->first());
+
                     $newDelegate->transactions()->create($validatedData);
 
                     DB::table('delegate_creations')->insert([
@@ -76,7 +81,7 @@ class ImportDelegates implements ShouldQueue
                         'user_id'     => $this->user->id
                     ]);
 
-                    DB::table("import_delegates")->create([
+                    DB::table("import_delegates")->insert([
                         'batch_id'    => $batchId,
                         'delegate_id' => $newDelegate->id,
                         'is_success'  => true,
@@ -84,7 +89,7 @@ class ImportDelegates implements ShouldQueue
 
                 } catch (\Exception $exception) {
 
-                    DB::table("import_delegates")->create([
+                    DB::table("import_delegates")->insert([
                         'batch_id'   => $batchId,
                         'note'       => serialize($record),
                         'is_success' => false,
@@ -122,5 +127,25 @@ class ImportDelegates implements ShouldQueue
         }
 
         return null;
+    }
+
+    /**
+     * @param \App\Transaction  $transaction
+     * @param \App\Delegate     $delegate
+     * @param \App\DelegateRole $role
+     * @return array
+     * @throws \ReflectionException
+     */
+    private function getValidationRules(
+        Transaction $transaction, Delegate $delegate, DelegateRole $role
+    ): array {
+        $rules = $delegate->getStoreRules();
+        $rules = array_merge($rules, [
+            'role' => 'required|in:' . implode(',',
+                    $role->pluck('code')->toArray())
+        ]);
+        $rules = $rules = array_merge($rules, $transaction->getRules());
+
+        return $rules;
     }
 }

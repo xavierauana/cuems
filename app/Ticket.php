@@ -2,39 +2,68 @@
 
 namespace App;
 
+use App\Traits\FlatpickrConversion;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Validation\Rule;
 
 class Ticket extends Model
 {
+    use FlatpickrConversion;
 
-    const StoreRules    = [
-        'name'      => 'required',
-        'price'     => 'required|min:0|numeric',
-        'vacancy'   => 'nullable|numeric',
-        'is_public' => 'nullable|boolean',
-        'start_at'  => 'required|date',
-        'end_at'    => 'required|date|date_gt:start_at',
-        'note'      => 'nullable',
-    ];
     const ErrorMessages = [];
 
     protected $fillable = [
+        'code',
         'name',
         'note',
         'price',
         'end_at',
         'vacancy',
+        'template',
         'start_at',
         'is_public',
     ];
 
     protected $casts = [
-        'start_at' => "datetime",
-        'end_at'   => "datetime",
+        'start_at' => 'datetime',
+        'end_at'   => 'datetime',
     ];
+
+    // Validation Rules
+
+    /**
+     * @param null $event_id
+     * @return array
+     */
+    public function getStoreRules($event_id = null): array {
+        // TODO set code to be unique for each Event'
+
+        $rules = [
+            'name'      => 'required',
+            'code'      => ['required'],
+            'price'     => 'required|min:0|numeric',
+            'vacancy'   => 'nullable|numeric',
+            'is_public' => 'nullable|boolean',
+            'start_at'  => 'required|date',
+            'end_at'    => 'required|date|date_gt:start_at',
+            'note'      => 'nullable',
+            'template'  => 'nullable',
+        ];
+
+        if ($event_id) {
+            $rules['code'][] = Rule::unique('tickets')->where(function ($query
+            ) use (
+                $event_id
+            ) {
+                return $query->where('event_id', $event_id);
+            });
+        }
+
+        return $rules;
+    }
 
     // Relation
     public function event(): Relation {
@@ -75,6 +104,23 @@ class Ticket extends Model
         return array(0, 0, 175, 500);
     }
 
+    public function getStartAtAttribute($value): string {
+        return $this->convert($value);
+    }
+
+    public function getEndAtAttribute($value): string {
+        return $this->convert($value);
+    }
+
+    public function getStartAtObjectAttribute() {
+
+        return new Carbon($this->attributes['start_at']);
+    }
+
+    public function getEndAtObjectAttribute() {
+        return new Carbon($this->attributes['end_at']);
+    }
+
     // Mutator
     public function setPriceAttribute($value): void {
         $this->attributes['price'] = $value * 100;
@@ -83,7 +129,6 @@ class Ticket extends Model
     public function setStartAtAttribute($value): void {
         if ($value instanceof Carbon) {
             $this->attributes['start_at'] = $value;
-
         } else {
             $carbonInstance = Carbon::createFromFormat("d M Y H:i", $value);
             $this->attributes['start_at'] = $carbonInstance;

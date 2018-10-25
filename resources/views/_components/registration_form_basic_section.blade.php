@@ -84,12 +84,47 @@
         </div>
     
         <div class="form-group row">
-            <label class="address col-sm-2 col-form-label">Address</label>
+            <label class="address col-sm-2 col-form-label">Address 1</label>
             <div class="col-sm-10">
-                 {{Form::text('address', null, ['class'=>'form-control', 'required'])}}
-	            @if ($errors->has('address'))
+                 {{Form::text('address_1', null, ['class'=>'form-control', 'required'])}}
+	            @if ($errors->has('address_1'))
 		            <span class="invalid-feedback" role="alert">
-                        <strong>{{ $errors->first('address') }}</strong>
+                        <strong>{{ $errors->first('address_1') }}</strong>
+                    </span>
+	            @endif
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="address col-sm-2 col-form-label">Address 2</label>
+            <div class="col-sm-10">
+                 {{Form::text('address_2', null, ['class'=>'form-control', 'required'])}}
+	            @if ($errors->has('address_2'))
+		            <span class="invalid-feedback" role="alert">
+                        <strong>{{ $errors->first('address_2') }}</strong>
+                    </span>
+	            @endif
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="address col-sm-2 col-form-label">Address 3</label>
+            <div class="col-sm-10">
+                 {{Form::text('address_3', null, ['class'=>'form-control', 'required'])}}
+	            @if ($errors->has('address_3'))
+		            <span class="invalid-feedback" role="alert">
+                        <strong>{{ $errors->first('address_3') }}</strong>
+                    </span>
+	            @endif
+            </div>
+        </div>
+    
+    
+        <div class="form-group row">
+            <label class="country col-sm-2 col-form-label">Country</label>
+            <div class="col-sm-10">
+            {{Form::select('country',getCountiesList() ,null, ['class'=>'form-control select2', 'required'])}}
+	            @if ($errors->has('country'))
+		            <span class="invalid-feedback" role="alert">
+                        <strong>{{ $errors->first('country') }}</strong>
                     </span>
 	            @endif
             </div>
@@ -104,7 +139,6 @@
                     </span>
 	            @endif
             </div>
-            
         </div>
         <div class="form-group row">
             <label class="mobile col-sm-2 col-form-label">Mobile Tel</label>
@@ -116,7 +150,6 @@
                     </span>
 	            @endif
             </div>
-            
         </div>
         <div class="form-group row">
             <label class="fax col-sm-2 col-form-label">Fax</label>

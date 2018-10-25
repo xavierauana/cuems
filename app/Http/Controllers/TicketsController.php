@@ -52,7 +52,8 @@ class TicketsController extends Controller
      * @return void
      */
     public function store(Request $request, Event $event) {
-        $validatedData = $this->validate($request, Ticket::StoreRules,
+        $validatedData = $this->validate($request,
+            $this->repo->getStoreRules($event->id),
             Ticket::ErrorMessages);
 
         $validatedData['is_public'] = isset($validatedData['is_public']);
@@ -94,7 +95,8 @@ class TicketsController extends Controller
      * @return void
      */
     public function update(Request $request, Event $event, Ticket $ticket) {
-        $validatedData = $this->validate($request, Ticket::StoreRules,
+        $validatedData = $this->validate($request,
+            $ticket->getStoreRules($event->id),
             Ticket::ErrorMessages);
 
         $validatedData['is_public'] = isset($validatedData['is_public']);

@@ -14,7 +14,8 @@ class CreateTicketsTable extends Migration
     public function up() {
         Schema::create('tickets', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('name');
+            $table->string('name');
+            $table->string('code');
             $table->unsignedInteger('price');
             $table->dateTime("start_at")->nullable();
             $table->dateTime("end_at")->nullable();
@@ -30,6 +31,8 @@ class CreateTicketsTable extends Migration
                   ->onDelete('cascade');
 
             $table->timestamps();
+
+            $table->unique(['event_id', 'code']);
         });
     }
 

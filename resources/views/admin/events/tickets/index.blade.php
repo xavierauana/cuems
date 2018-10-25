@@ -7,7 +7,7 @@
 			        <a href="{{route('events.tickets.create', $event)}}"
 			           class="btn btn-sm btn-success pull-right">New</a>
 			        <a href="{{route('events.tickets.import', $event)}}"
-			           class="btn btn-sm btn-outline-success pull-right mr-3">Import</a>
+			           class="btn btn-sm btn-outline-success pull-right mr-1">Import</a>
                 </div>
                 
                 <div class="table-responsive">
@@ -26,7 +26,7 @@
 			                  <td>{{$ticket->name}}</td>
 			                  <td>{{"HK$". number_format($ticket->price, 1) }}</td>
 			                  <td>{{$ticket->vacancy === null? "Unlimited" : $ticket->vacancy}}</td>
-			                  <td>{{sprintf("%s - %s", $ticket->start_at->format('d M Y h:i A'), $ticket->end_at->format('d M Y h:i A') )}}</td>
+			                  <td>{{sprintf("%s - %s", $ticket->startAtObject->format('d M Y h:i A'), $ticket->endAtObject->format('d M Y h:i A') )}}</td>
 			                  <td>{{$ticket->is_public?"Yes":"No"}}</td>
 			                  <td>
 				                  <div class="btn-toolbar" role="toolbar"
@@ -41,7 +41,8 @@
 					                        role="group"
 					                        aria-label="Second group">
 						                   {{Form::open(['url'=>route('events.tickets.destroy',[$event, $ticket]),'method'=>'DELETE','onsubmit'=>"confirmDelete(event, '{$ticket->name}')"])}}
-						                   <button class="btn btn-danger btn-sm text-light" type="submit">Delete</button>
+						                   <button class="btn btn-danger btn-sm text-light"
+						                           type="submit">Delete</button>
 						                   {{Form::close()}}
 									  </div>
 				                  </div>
@@ -58,7 +59,7 @@
 	@push("scripts")
 		<script>
 			function confirmDelete(e, itemName) {
-			  console.log(e)
+              console.log(e)
               e.preventDefault()
               if (confirm(`Are you sure you wan to delete ${itemName}?`)) {
                 e.target.submit()

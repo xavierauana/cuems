@@ -53,7 +53,7 @@ class Event extends Model
     }
 
     public function settings(): Relation {
-        return $this->belongsTo(Setting::class);
+        return $this->hasMany(Setting::class);
     }
 
 }

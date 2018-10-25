@@ -7,7 +7,7 @@
 			        <a href="{{route('events.notifications.create', $event)}}"
 			           class="btn btn-sm btn-success pull-right">New</a>
 			        <a href="{{route('events.notifications.import', $event)}}"
-			           class="btn btn-sm btn-outline-success pull-right">Upload Template</a>
+			           class="btn btn-sm btn-outline-success pull-right mr-1">Upload Template</a>
                 </div>
                 
                 <div class="table-responsive">

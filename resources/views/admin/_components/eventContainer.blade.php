@@ -15,10 +15,6 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link"
-					   href="#">Delegates Import Rules</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
 					   href="{{route('events.tickets.index', $event)}}">Tickets</a>
 				</li>
 				<li class="nav-item">
@@ -39,7 +35,7 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link"
-					   href="#">Settings</a>
+					   href="{{route('events.settings.index',$event)}}">Settings</a>
 				</li>
 			</ul>
 	    </div>

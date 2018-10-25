@@ -84,7 +84,7 @@ const app = new Vue({
                           axios.post('/events/1/delegates/search', data)
                                .then(({data}) => {
                                  if (data.length > 0) {
-                                   let message = data.map(delegate => delegate.first_name + " " +delegate.last_name).reduce((carry, name) => carry += name + "<br/>", "")
+                                   let message = data.map(delegate => delegate.first_name + " " + delegate.last_name).reduce((carry, name) => carry += name + "<br/>", "")
                                    swal('', 'There are ' + data.length + ' delegate with same ' + name + '<br/> ' + message)
                                  }
                                })

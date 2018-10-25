@@ -43,11 +43,11 @@ class ImportTickets implements ShouldQueue
      *
      * @return void
      */
-    public function handle() {
+    public function handle(Ticket $ticket) {
 
         foreach ($this->getData() as $record) {
             $sanitizedRecord = $this->sanitizeData($record);
-            if ($validatedData = $this->validate($sanitizedRecord)) {
+            if ($validatedData = $this->validate($ticket, $sanitizedRecord)) {
                 $this->event->tickets()->create($validatedData);
             }
         }
@@ -78,8 +78,10 @@ class ImportTickets implements ShouldQueue
      * @return mixed
      */
     private function sanitizeData($record) {
-        $record['start_at'] = new Carbon($record['start_at']);
-        $record['end_at'] = new Carbon($record['end_at']);
+        $record['start_at'] = Carbon::createFromFormat("d/m/Y H:i",
+            $record['start_at']);
+        $record['end_at'] = Carbon::createFromFormat("d/m/Y H:i",
+            $record['end_at']);
         $record['price'] = floatval($record['price']);
         $record['vacancy'] = empty($record['vacancy']) ? null : $record['vacancy'];
         $record['is_public'] = (!empty($record['is_public']) and strtolower($record['is_public']) == "false") ? false : true;
@@ -87,8 +89,8 @@ class ImportTickets implements ShouldQueue
         return $record;
     }
 
-    private function validate($record): ?array {
-        $rules = Ticket::StoreRules;
+    private function validate(Ticket $ticket, $record): ?array {
+        $rules = $ticket->getStoreRules($this->event->id);
         $validator = Validator::make($record, $rules);
 
         if ($validator->passes()) {

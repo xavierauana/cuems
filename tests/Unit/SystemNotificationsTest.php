@@ -55,7 +55,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'event_id' => factory(Event::class)->create()->id
         ]);
         factory(Transaction::class)->create([
-            "status"     => TransactionStatus::PENDING,
+            "status"     => TransactionStatus::PROCESSING,
             "payee_type" => get_class($delegate),
             "payee_id"   => $delegate->id
         ]);

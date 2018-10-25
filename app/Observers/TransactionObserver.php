@@ -17,10 +17,10 @@ class TransactionObserver
             case TransactionStatus::FAILED:
                 event(new SystemEvent(SystemEvents::TRANSACTION_FAILED, $transaction));
                 break;
-            case TransactionStatus::REFUND:
+            case TransactionStatus::REFUNDED:
                 event(new SystemEvent(SystemEvents::TRANSACTION_REFUND, $transaction));
                 break;
-            case TransactionStatus::PENDING:
+            case TransactionStatus::PROCESSING:
                 event(new SystemEvent(SystemEvents::TRANSACTION_PENDING, $transaction));
                 break;
             default:

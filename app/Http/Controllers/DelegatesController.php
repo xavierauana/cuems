@@ -7,11 +7,13 @@ use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
 use App\Event;
 use App\Events\SystemEvent;
+use App\Exports\DelegateExport;
 use App\Jobs\ImportDelegates;
 use App\Transaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DelegatesController extends Controller
 {
@@ -241,5 +243,12 @@ class DelegatesController extends Controller
             array_values($input)[0])->get();
 
         return response()->json($delegates);
+    }
+
+    public function export(Event $event) {
+        $event->load('delegates.transactions.ticket');
+        $event->load('delegates.roles');
+
+        return Excel::download(new DelegateExport($event), 'delegates.xls');
     }
 }

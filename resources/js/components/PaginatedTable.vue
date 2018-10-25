@@ -1,19 +1,19 @@
 <template>
     <div class="paginated-table">
-        <div class="row">
-        <div class="col-sm-6">
-        <div class="input-group m-3">
-        <input type="text" class="form-control" placeholder="Find"
-               aria-label="Find" aria-describedby="basic-addon2"
-               v-model="filterWord">
-        <div class="input-group-append">
-        <button class="btn btn-outline-secondary" type="button"
-                @click.prevent="filter">Filter</button>
-        <button class="btn btn-outline-secondary" type="button"
-                @click.prevent="all">Clear</button>
-        </div>
-        </div>
-        </div>
+        <div class="row" v-if="searchUrl">
+            <div class="col-sm-6">
+                <div class="input-group m-3">
+                <input type="text" class="form-control" placeholder="Find"
+                       aria-label="Find" aria-describedby="basic-addon2"
+                       v-model="filterWord">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button"
+                                @click.prevent="filter">Filter</button>
+                        <button class="btn btn-outline-secondary" type="button"
+                                @click.prevent="all">Clear</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <b-table :items="items"
@@ -87,13 +87,11 @@
         items() {
           return this.iPaginator ? this.iPaginator['data'] : []
         },
-
         baseUrl() {
           return window.location.href.indexOf("page=") > -1 ? window.location.href.split("?")[0] + "?" : window.location.href + "?"
         }
       },
       mounted() {
-
         console.log(window.location)
         this.createQueries()
 
@@ -111,14 +109,17 @@
       },
       methods   : {
         deleteItem(item) {
-          this.items = this.items.filter(i => i.id !== item.id)
+          if (confirm("Are you sure to delete the item?")) {
+            axios.delete(item.urls.delete)
+                 .then(() => this.iPaginator.data = this.iPaginator.data.filter(i => i.id !== item.id))
+          }
         },
         filter() {
           if (this.searchUrl) {
             let url = this.searchUrl + "?keywords=" + this.filterWord
             axios.get(url)
                  .then(({data}) => {
-                   this.iPaginator = data.institutions
+                   this.iPaginator = data
                  })
           }
         },
@@ -135,7 +136,7 @@
                })
         },
         createQueries() {
-          if (window.location.search.length){
+          if (window.location.search.length) {
             this.queries = window.location.search.substring(1).split("&").map(pair => {
               let a = pair.split('=')
               return {key: a[0], value: a[1]}

@@ -13891,7 +13891,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14023,19 +14023,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
   methods: {
     deleteItem: function deleteItem(item) {
-      this.items = this.items.filter(function (i) {
-        return i.id !== item.id;
-      });
+      var _this2 = this;
+
+      if (confirm("Are you sure to delete the item?")) {
+        axios.delete(item.urls.delete).then(function () {
+          return _this2.iPaginator.data = _this2.iPaginator.data.filter(function (i) {
+            return i.id !== item.id;
+          });
+        });
+      }
     },
     filter: function filter() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.searchUrl) {
         var url = this.searchUrl + "?keywords=" + this.filterWord;
         axios.get(url).then(function (_ref) {
           var data = _ref.data;
 
-          _this2.iPaginator = data.institutions;
+          _this3.iPaginator = data;
         });
       }
     },
@@ -14043,7 +14049,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       window.location = this.allUrl;
     },
     toPage: function toPage(index) {
-      var _this3 = this;
+      var _this4 = this;
 
       this.alterPageIndex(index);
       var url = window.location.origin + window.location.pathname + this.constructQueryString();
@@ -14051,7 +14057,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var data = _ref2.data;
 
         console.log(data);
-        _this3.iPaginator = data.institutions;
+        _this4.iPaginator = data.institutions;
       });
     },
     createQueries: function createQueries() {
@@ -14326,70 +14332,72 @@ var render = function() {
     "div",
     { staticClass: "paginated-table" },
     [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-sm-6" }, [
-          _c("div", { staticClass: "input-group m-3" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.filterWord,
-                  expression: "filterWord"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                placeholder: "Find",
-                "aria-label": "Find",
-                "aria-describedby": "basic-addon2"
-              },
-              domProps: { value: _vm.filterWord },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.filterWord = $event.target.value
-                }
-              }
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "input-group-append" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-outline-secondary",
-                  attrs: { type: "button" },
+      _vm.searchUrl
+        ? _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col-sm-6" }, [
+              _c("div", { staticClass: "input-group m-3" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.filterWord,
+                      expression: "filterWord"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    placeholder: "Find",
+                    "aria-label": "Find",
+                    "aria-describedby": "basic-addon2"
+                  },
+                  domProps: { value: _vm.filterWord },
                   on: {
-                    click: function($event) {
-                      $event.preventDefault()
-                      return _vm.filter($event)
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.filterWord = $event.target.value
                     }
                   }
-                },
-                [_vm._v("Filter")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-outline-secondary",
-                  attrs: { type: "button" },
-                  on: {
-                    click: function($event) {
-                      $event.preventDefault()
-                      return _vm.all($event)
-                    }
-                  }
-                },
-                [_vm._v("Clear")]
-              )
+                }),
+                _vm._v(" "),
+                _c("div", { staticClass: "input-group-append" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-outline-secondary",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.filter($event)
+                        }
+                      }
+                    },
+                    [_vm._v("Filter")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-outline-secondary",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.all($event)
+                        }
+                      }
+                    },
+                    [_vm._v("Clear")]
+                  )
+                ])
+              ])
             ])
           ])
-        ])
-      ]),
+        : _vm._e(),
       _vm._v(" "),
       _c("b-table", {
         attrs: {

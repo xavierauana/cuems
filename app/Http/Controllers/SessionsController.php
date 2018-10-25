@@ -7,6 +7,8 @@ use App\Event;
 use App\Http\Resources\SessionResource;
 use App\Session;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 class SessionsController extends Controller
 {
@@ -17,6 +19,7 @@ class SessionsController extends Controller
 
     /**
      * SessionsController constructor.
+     * @param \App\Session $repo
      */
     public function __construct(Session $repo) {
         $this->repo = $repo;
@@ -40,12 +43,12 @@ class SessionsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param Event $event
+     * @param Event         $event
+     * @param \App\Delegate $delegate
      * @return \Illuminate\Http\Response
      */
-    public function create(Event $event) {
-        $delegates = Delegate::excludeRole('default')
-                             ->get();
+    public function create(Event $event, Delegate $delegate) {
+        $delegates = $delegate->excludeRole('default')->get();
 
         return view('admin.events.sessions.create',
             compact('event', 'delegates'));
@@ -56,17 +59,31 @@ class SessionsController extends Controller
      *
      * @param Request $request
      * @param Event   $event
-     * @return void
+     * @return
+     * @throws \Exception
      */
     public function store(Request $request, Event $event) {
 
         $validatedData = $this->validate($request, Session::StoreRules,
             Session::ErrorMessages);
 
-        /** @var \App\Session $newSession */
-        $newSession = $event->sessions()->create($validatedData);
 
-        $newSession->setModerators($validatedData['moderators']);
+        DB::beginTransaction();
+
+        try {
+
+            /** @var \App\Session $newSession */
+            $newSession = $event->sessions()->create($validatedData);
+
+            if (isset($validatedData['moderators'])) {
+                $newSession->setModerators($validatedData['moderators']);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
 
         return redirect()->route("events.sessions.index", $event)
                          ->withStatu('New session created!');
@@ -143,7 +160,7 @@ class SessionsController extends Controller
     /**
      * @param \Illuminate\Http\Request $request
      * @param \App\Event               $event
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResource
      */
     public function apiGetSessions(Request $request, Event $event) {
         $sessions = $event->sessions()->with('talks')->get();

@@ -12,7 +12,7 @@ class InstitutionsController extends Controller
      */
     private $repo;
 
-    private $paginateNumber = 100;
+    private $paginateNumber = 20;
 
     /**
      * InstitutionsController constructor.
@@ -37,9 +37,6 @@ class InstitutionsController extends Controller
             $this->repo
                 ->paginate($this->paginateNumber);
 
-        if ($request->ajax()) {
-            return response()->json(compact("institutions"));
-        }
 
         return view("admin.institutions.index", compact("institutions"));
     }
@@ -137,7 +134,7 @@ class InstitutionsController extends Controller
         }
 
         if ($request->ajax()) {
-            return response()->json(compact("institutions"));
+            return response()->json($institutions);
         }
 
         return view('admin.institutions.index', compact('institutions'));

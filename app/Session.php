@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\FlatpickrConversion;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class Session extends Model
 {
+    use FlatpickrConversion;
 
     protected $fillable = [
         'title',
@@ -53,21 +55,17 @@ class Session extends Model
     }
 
     public function getModeratorsAttribute(): Collection {
-        return DB::table('moderators')->whereSessionId($this->id)
+        return DB::table('moderators')
+                 ->where('session_id', $this->id)
                  ->pluck('delegate_id');
     }
 
-
     public function getStartAtAttribute($value): string {
-        $carbon = new Carbon($value);
-
-        return $carbon->format("d M Y H:i");
+        return $this->convert($value);
     }
 
     public function getEndAtAttribute($value): string {
-        $carbon = new Carbon($value);
-
-        return $carbon->format("d M Y H:i");
+        return $this->convert($value);
     }
 
     // Mutator

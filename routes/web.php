@@ -26,68 +26,9 @@ use App\Http\Controllers\TicketsController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-
-Route::get("qrcode", function () {
-
-    $data = QrCode::format("png")
-                  ->size(400)
-                  ->errorCorrection("Q")
-                  ->generate(base64_encode(serialize([
-                      'event'  => 'this is a greate event',
-                      'ticket' => 'vip ticket',
-                      'note'   => 'event more',
-                      'note1'  => 'event more',
-                      'note2'  => 'event more',
-                  ])));
-
-    return view("test", ["imgData" => base64_encode($data)]);
-});
-
-
-Route::get('/pdf', function () {
-
-    $pdf = new \Dompdf\Dompdf();
-
-    $pdf->setPaper(array(0, 0, 175, 500),
-        "landscape");
-
-
-    $data = \QrCode::format("png")
-                   ->size(400)
-                   ->errorCorrection("Q")
-                   ->generate(base64_encode(serialize([
-                       'event'  => 'this is a greate event',
-                       'ticket' => 'vip ticket',
-                       'note'   => 'event more',
-                       'note1'  => 'event more',
-                       'note2'  => 'event more',
-                   ])));
-
-    $imageData = base64_encode($data);
-
-    $delegateName = "Xavier Au Kai Yuen";
-    $ticketName = "VIP and more";
-    $eventDate = "1 December, 2018";
-
-
-    $html = view('templates.ticket.ticket',
-        compact('imageData', 'delegateName', 'ticketName',
-            'eventDate'))->render();
-
-    $pdf->loadHtml($html);
-
-    $pdf->render();
-
-    return $pdf->stream("ticket.pdf");
-
-});
-Route::get('/template/ticket', function () {
-    return view("templates.ticket.ticket");
-
-});
 
 Route::get('/', function () {
+
     return view('welcome');
 });
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
@@ -101,8 +42,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', DashboardController::class . "@index")
          ->name('dashboard');
 
+    // Event and detail
+    Route::get("events/{event}/details", EventsController::class . "@details")
+         ->name('events.details');
     Route::resource("events", EventsController::class);
 
+    // Event delegates
+    Route::get("events/{event}/delegates/export",
+        DelegatesController::class . "@export")
+         ->name("events.delegates.export");
     Route::post("events/{event}/delegates/import",
         DelegatesController::class . "@postImport")
          ->name("events.delegates.import");
@@ -111,19 +59,22 @@ Route::group(['middleware' => 'auth'], function () {
          ->name("events.delegates.import");
     Route::resource("events.delegates", DelegatesController::class);
 
+    // Session and talks
+    Route::resource("events.sessions", SessionsController::class);
+    Route::resource("events.sessions.talks", TalksController::class);
+
+
+    // Tickets
     Route::get("events/{event}/tickets/import",
         TicketsController::class . "@getImport")->name('events.tickets.import');
     Route::post("events/{event}/tickets/import",
         TicketsController::class . "@postImport");
     Route::resource("events.tickets", TicketsController::class);
-    Route::resource("events.sessions", SessionsController::class);
 
-    Route::resource("events.sessions.talks", TalksController::class);
-    Route::get("events/{event}/details", EventsController::class . "@details")
-         ->name('events.details');
-
+    // Transaction
     Route::resource("events.transactions", TransactionController::class);
 
+    // Event Notification
     Route::get("events/{event}/notifications/import",
         NotificationsController::class . "@getImport")
          ->name('events.notifications.import');
@@ -131,10 +82,20 @@ Route::group(['middleware' => 'auth'], function () {
         NotificationsController::class . "@postImport");
     Route::resource("events.notifications", NotificationsController::class);
 
+    // Delegate Roles
     Route::resource('roles', DelegateRolesController::class);
+
+    // Institution
     Route::get('institutions/search', InstitutionsController::class . "@search")
          ->name('institutions.search');
     Route::resource('institutions', InstitutionsController::class);
+
+
+    // Templates
     Route::resource('events.templates', TemplatesController::class);
+
+    // Event settings
+    Route::get('events/{event}/settings/search',
+        SettingsControllers::class . "@search")->name('events.settings.search');
     Route::resource('events.settings', SettingsControllers::class);
 });

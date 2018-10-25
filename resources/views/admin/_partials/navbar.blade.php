@@ -15,39 +15,44 @@
         <div class="collapse navbar-collapse"
              id="navbarSupportedContent">
             <!-- Left Side Of Navbar -->
-            <ul class="navbar-nav mr-auto">
-				<li class="nav-item">
-                    <a class="nav-link"
-                       href="{{ route('events.index') }}">{{ __('Events') }}</a>
-                </li>
-				<li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#"
-                       id="navbarDropdown" role="button" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">
-                      Settings
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item" href="{{route('roles.index')}}">Delegate Roles</a>
-                      <a class="dropdown-item"
-                         href="{{route('institutions.index')}}">Institutions</a>
-                    </div>
-                  </li>
-            </ul>
+	        @auth
+		        <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="{{ route('events.index') }}">{{ __('Events') }}</a>
+                    </li>
+                <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#"
+                           id="navbarDropdown" role="button"
+                           data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                          Settings
+                        </a>
+                        <div class="dropdown-menu"
+                             aria-labelledby="navbarDropdown">
+                          <a class="dropdown-item"
+                             href="{{route('roles.index')}}">Delegate Roles</a>
+                          <a class="dropdown-item"
+                             href="{{route('institutions.index')}}">Institutions</a>
+                        </div>
+                      </li>
+                </ul>
+        @endauth
 
-            <!-- Right Side Of Navbar -->
-            <ul class="navbar-nav ml-auto">
+        <!-- Right Side Of Navbar -->
+	        <ul class="navbar-nav ml-auto">
                 <!-- Authentication Links -->
-	            @guest
-		            <li class="nav-item">
+		        @guest
+			        <li class="nav-item">
                         <a class="nav-link"
                            href="{{ route('login') }}">{{ __('Login') }}</a>
                     </li>
-		            <li class="nav-item">
+			        <li class="nav-item">
                         <a class="nav-link"
                            href="{{ route('register') }}">{{ __('Register') }}</a>
                     </li>
-	            @else
-		            <li class="nav-item dropdown">
+		        @else
+			        <li class="nav-item dropdown">
                         <a id="navbarDropdown"
                            class="nav-link dropdown-toggle" href="#"
                            role="button" data-toggle="dropdown"
@@ -73,7 +78,7 @@
                             </form>
                         </div>
                     </li>
-	            @endguest
+		        @endguest
             </ul>
         </div>
     </div>
