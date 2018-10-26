@@ -1,3 +1,6 @@
 *
 !public/
+!countries.json
+!names_female.json
+!names_male.json
 !.gitignore
