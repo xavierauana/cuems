@@ -16,6 +16,7 @@
                         <th>Name</th>
                         <th>Event</th>
                         <th>Template</th>
+                        <th>Role</th>
                         <th>Actions</th>
                     </thead>
 	                  <tbody>
@@ -24,6 +25,7 @@
 			                  <td>{{$notification->name}}</td>
 			                  <td>{{$notification->eventName}}</td>
 			                  <td>{{$notification->template}}</td>
+			                  <td>{{optional($notification->role)->label}}</td>
 			                  <td>
 				                  <div class="btn-toolbar" role="toolbar"
 				                       aria-label="Toolbar with button groups">
