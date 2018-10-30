@@ -111,8 +111,8 @@ class PaymentController extends Controller
 
     private function sanitizeInputData($validatedData): array {
 
-        $validatedData['institution'] = ($validatedData['institution'] == 'other' and !empty($validatedData['other_institution'])) ? $validatedData['other_institution'] : $validatedData['institution'];
-        $validatedData['training_organisation'] = ($validatedData['training_organisation'] == 'other' and !empty($validatedData['training_other_organisation'])) ? $validatedData['training_other_organisation'] : $validatedData['training_organisation'];
+        $validatedData['institution'] = (isset($validatedData['institution']) and $validatedData['institution'] == 'other' and !empty($validatedData['other_institution'])) ? $validatedData['other_institution'] : $validatedData['institution'];
+        $validatedData['training_organisation'] = (isset($validatedData['institution']) and ($validatedData['training_organisation'] == 'other' and !empty($validatedData['training_other_organisation']))) ? $validatedData['training_other_organisation'] : $validatedData['training_organisation'];
 
         return $validatedData;
 
