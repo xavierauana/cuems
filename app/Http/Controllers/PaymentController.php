@@ -114,9 +114,12 @@ class PaymentController extends Controller
         $validatedData['institution'] = $this->notEmptyAndOther($validatedData,
             'institution',
             'other_institution') ? $validatedData['other_institution'] : $validatedData['institution'];
-        $validatedData['training_organisation'] = $this->notEmptyAndOther($validatedData,
-            'training_organisation',
-            'training_other_organisation') ? $validatedData['training_other_organisation'] : $validatedData['training_organisation'];
+
+        if (isset($validatedData['training_organisation'])) {
+            $validatedData['training_organisation'] = $this->notEmptyAndOther($validatedData,
+                'training_organisation',
+                'training_other_organisation') ? $validatedData['training_other_organisation'] : $validatedData['training_organisation'];
+        }
 
         return $validatedData;
 
@@ -130,6 +133,7 @@ class PaymentController extends Controller
      */
     private function notEmptyAndOther(array $array, string $key, string $key2
     ): bool {
-        return isset($array[$key]) and $array[$key] == 'other' and !empty($array[$key2]);
+
+        return $array[$key] == 'other' and !empty($array[$key2]);
     }
 }
