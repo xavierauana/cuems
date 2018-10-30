@@ -111,10 +111,25 @@ class PaymentController extends Controller
 
     private function sanitizeInputData($validatedData): array {
 
-        $validatedData['institution'] = (isset($validatedData['institution']) and $validatedData['institution'] == 'other' and !empty($validatedData['other_institution'])) ? $validatedData['other_institution'] : $validatedData['institution'];
-        $validatedData['training_organisation'] = (isset($validatedData['institution']) and ($validatedData['training_organisation'] == 'other' and !empty($validatedData['training_other_organisation']))) ? $validatedData['training_other_organisation'] : $validatedData['training_organisation'];
+        $validatedData['institution'] = $this->notEmptyAndOther($validatedData,
+            'institution',
+            'other_institution') ? $validatedData['other_institution'] : $validatedData['institution'];
+        $validatedData['training_organisation'] = $this->notEmptyAndOther($validatedData,
+            'training_organisation',
+            'training_other_organisation') ? $validatedData['training_other_organisation'] : $validatedData['training_organisation'];
 
         return $validatedData;
 
+    }
+
+    /**
+     * @param array  $array
+     * @param string $key
+     * @param string $key2
+     * @return bool
+     */
+    private function notEmptyAndOther(array $array, string $key, string $key2
+    ): bool {
+        return isset($array[$key]) and $array[$key] == 'other' and !empty($array[$key2]);
     }
 }
