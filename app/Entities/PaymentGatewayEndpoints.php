@@ -19,7 +19,7 @@ class PaymentGatewayEndpoints
      */
     public function __construct() {
 
-        $this->baseUrl = env("APP_ENV") === "production" ? "https://money.bur.cuhk.edu.hk/CU-IPG/" : "https://epaydev.itsc.cuhk.edu.hk/CU-IPG/UAT/";
+        $this->baseUrl = env("APP_ENV") === "production" ? "https://money.bur.cuhk.edu.hk/CU-IPG/" : "http://epaydev.itsc.cuhk.edu.hk:8080/CU-IPG/UAT/";
     }
 
 
