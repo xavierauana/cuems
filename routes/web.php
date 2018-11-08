@@ -44,7 +44,7 @@ Route::post('payment_test/token', function () {
 
     if ($service->checkPaymentGatewayStatus()) {
 
-        $request = new \App\Entities\DigitalOrderRequest("123456789012345678",
+        $request = new \App\Entities\DigitalOrderRequest("12345678901234",
             100, \App\Enums\PaymentType::Authorisation,
             route('paymentCallBack'));
 
