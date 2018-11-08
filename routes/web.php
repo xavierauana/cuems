@@ -27,7 +27,7 @@ use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
+Route::view('/', 'welcome')->name('index');
 
 Route::view('payment_test', 'payment_test');
 Route::post('payment_test/status', function () {
@@ -38,6 +38,8 @@ Route::post('payment_test/status', function () {
 
 });
 Route::post('payment_test/token', function () {
+
+    dd(route('paymentCallBack'));
     /** @var \App\Services\JETCOPaymentService $service */
     $service = app(\App\Services\JETCOPaymentService::class);
 
@@ -50,6 +52,10 @@ Route::post('payment_test/token', function () {
     }
 
 });
+
+Route::get("paymentCallBack", function (\Illuminate\Http\Request $request) {
+    dd("payment call back ", $request);
+})->name('paymentCallBack');
 
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Auth::routes(['verify' => true]);
