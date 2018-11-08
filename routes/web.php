@@ -44,7 +44,7 @@ Route::post('payment_test/token', function () {
 
     if ($service->checkPaymentGatewayStatus()) {
 
-        $request = new \App\Entities\DigitalOrderRequest("1234567890",
+        $request = new \App\Entities\DigitalOrderRequest("1234567",
             100, \App\Enums\PaymentType::Authorisation,
             "http://dev.mect.cuhk.edu.hk/" . 'paymentCallBack');
 

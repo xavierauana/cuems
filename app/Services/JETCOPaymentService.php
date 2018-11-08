@@ -52,11 +52,11 @@ class JETCOPaymentService implements PaymentServiceInterface
 
         $httpRequest = new Request("POST",
             $this->endPoints->getRequestDOUrl() .
-            "?amount=" . urlencode($request->amount) .
-            "&txnType=" . urlencode($request->txnType) .
-            "&returnURL=" . urlencode($request->returnURL) .
-            "&locale=" . urlencode($request->locale) .
-            "&invoiceNumber=" . "U078" . urlencode($request->invoiceNumber)
+            "?amount=" . $request->amount .
+            "&txnType=" . $request->txnType .
+            "&returnURL=" . $request->returnURL .
+            "&locale=" . $request->locale .
+            "&invoiceNumber=" . "U078" . $request->invoiceNumber
         );
 
         $response = $this->client->send($httpRequest);
