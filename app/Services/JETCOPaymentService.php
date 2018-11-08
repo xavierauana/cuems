@@ -50,12 +50,14 @@ class JETCOPaymentService implements PaymentServiceInterface
     public function getDigitalOrder(DigitalOrderRequest $request
     ): ?DigitalOrderResponse {
 
-        dd(json_encode($request));
-
-        $httpRequest = new Request("POST", $this->endPoints->getRequestDOUrl(),
-            [
-                'content-type' => 'application/json'
-            ], json_encode($request));
+        $httpRequest = new Request("GET",
+            $this->endPoints->getRequestDOUrl() .
+            "?amount=" . urlencode($request->amount) .
+            "&txnType=" . urlencode($request->txnType) .
+            "&returnURL=" . urlencode($request->returnURL) .
+            "&locale=" . urlencode($request->locale) .
+            "&invoiceNumber=" . "U078" . urlencode($request->invoiceNumber)
+        );
 
         $response = $this->client->send($httpRequest);
 
