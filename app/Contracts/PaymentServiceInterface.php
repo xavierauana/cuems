@@ -9,9 +9,19 @@ namespace App\Contracts;
 
 
 use App\Entities\ChargeResponse;
+use App\Entities\DigitalOrderRequest;
+use App\Entities\DigitalOrderResponse;
 
 interface PaymentServiceInterface
 {
+
+    public function checkPaymentGatewayStatus(): bool;
+
+    public function getRedirectUrl(array $params): ?string;
+
+    public function getDigitalOrder(DigitalOrderRequest $request
+    ): ?DigitalOrderResponse;
+
     /**
      * @param string $token
      * @param int    $amount

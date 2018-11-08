@@ -48,6 +48,14 @@ const app = new Vue({
                       methods   : {
                         update(ticket) {
                           this.selectedTicket = ticket
+                        },
+                        charge() {
+                          if (!this.checkCUIPGStatus()) {return}
+
+                        },
+                        checkCUIPGStatus() {
+                          swal('Error', 'Payment has some problem, please try again later')
+
                         }
                       }
                     });

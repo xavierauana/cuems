@@ -27,10 +27,30 @@ use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
+Route::view('/', 'welcome');
 
-    return view('welcome');
+Route::view('payment_test', 'payment_test');
+Route::post('payment_test/status', function () {
+    /** @var \App\Services\JETCOPaymentService $service */
+    $service = app(\App\Services\JETCOPaymentService::class);
+
+    echo $service->checkPaymentGatewayStatus() ? 'success' : 'fail';
+
 });
+Route::post('payment_test/token', function () {
+    /** @var \App\Services\JETCOPaymentService $service */
+    $service = app(\App\Services\JETCOPaymentService::class);
+
+    if ($service->checkPaymentGatewayStatus()) {
+
+        $request = new \App\Entities\DigitalOrderRequest("123456",
+            100, \App\Enums\PaymentType::Authorisation, url('/'));
+
+        $service->getDigitalOrder($request);
+    }
+
+});
+
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Auth::routes(['verify' => true]);
 });
