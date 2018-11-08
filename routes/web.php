@@ -46,7 +46,7 @@ Route::post('payment_test/token', function () {
 
         $request = new \App\Entities\DigitalOrderRequest("1234567890",
             100, \App\Enums\PaymentType::Authorisation,
-            route('paymentCallBack'));
+            "http://dev.mect.cuhk.edu.hk/" . 'paymentCallBack');
 
         $service->getDigitalOrder($request);
     }
