@@ -39,7 +39,6 @@ Route::post('payment_test/status', function () {
 });
 Route::post('payment_test/token', function () {
 
-    dd(route('paymentCallBack'));
     /** @var \App\Services\JETCOPaymentService $service */
     $service = app(\App\Services\JETCOPaymentService::class);
 
