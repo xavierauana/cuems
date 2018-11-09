@@ -8,13 +8,11 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 window.swal = require('sweetalert2');
-window.swal = require('sweetalert2');
+window.Dropzone = require('dropzone');
+require('select2')
 
-import "select2/dist/css/select2.min.css"
-import "flatpickr/dist/flatpickr.min.css"
 import flatpickr from "flatpickr"
 
-require('select2')
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -49,9 +47,15 @@ const app = new Vue({
                       },
                       mounted() {
                         $(".select2").select2()
-                        flatpickr(".date", {
+                        $(".select2-tag").select2({
+                                                    tags: true
+                                                  })
+                        flatpickr(".date-time", {
                           enableTime: true,
                           dateFormat: "d M Y H:i"
+                        })
+                        flatpickr(".date", {
+                          dateFormat: "d M Y"
                         })
 
                         this.registerSearchDelegateFields('email')

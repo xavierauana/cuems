@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0417e1f59b46691f16fd389a8103d8ee",
+    "content-hash": "e84e4194d89490835fe2c870300df938",
     "packages": [
         {
             "name": "anahkiasen/underscore-php",
@@ -2641,20 +2641,24 @@
         },
         {
             "name": "spatie/laravel-medialibrary",
-            "version": "7.4.2",
+            "version": "7.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-medialibrary.git",
-                "reference": "3babc8069e37df1a5a94bc2d096ef8f9da7deb49"
+                "reference": "e8aba8e897456d4ce5ad090879e3aef564d3494d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/3babc8069e37df1a5a94bc2d096ef8f9da7deb49",
-                "reference": "3babc8069e37df1a5a94bc2d096ef8f9da7deb49",
+                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/e8aba8e897456d4ce5ad090879e3aef564d3494d",
+                "reference": "e8aba8e897456d4ce5ad090879e3aef564d3494d",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "~5.5.0|~5.6.0|~5.7.0",
+                "illuminate/bus": "~5.5.0|~5.6.0|~5.7.0",
+                "illuminate/console": "~5.5.0|~5.6.0|~5.7.0",
+                "illuminate/database": "~5.5.0|~5.6.0|~5.7.0",
+                "illuminate/pipeline": "~5.5.0|~5.6.0|~5.7.0",
+                "illuminate/support": "~5.5.0|~5.6.0|~5.7.0",
                 "league/flysystem": "^1.0.8",
                 "maennchen/zipstream-php": "~0.4",
                 "php": "^7.1",
@@ -2716,7 +2720,7 @@
                 "media",
                 "spatie"
             ],
-            "time": "2018-09-05T09:31:23+00:00"
+            "time": "2018-09-17T11:28:05+00:00"
         },
         {
             "name": "spatie/laravel-view-models",

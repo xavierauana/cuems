@@ -34,9 +34,13 @@
                              href="{{route('roles.index')}}">Delegate Roles</a>
                           <a class="dropdown-item"
                              href="{{route('institutions.index')}}">Institutions</a>
+                          <a class="dropdown-item"
+                             href="{{route('expense_categories.index')}}">Expenses Categories</a>
+                          <a class="dropdown-item"
+                             href="{{route('vendors.index')}}">Expenses Vendors</a>
                         </div>
-                      </li>
-                </ul>
+	            </li>
+	    </ul>
         @endauth
 
         <!-- Right Side Of Navbar -->
@@ -81,5 +85,5 @@
 		        @endguest
             </ul>
         </div>
-    </div>
+	</div>
 </nav>
