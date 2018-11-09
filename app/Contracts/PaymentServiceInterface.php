@@ -20,7 +20,7 @@ interface PaymentServiceInterface
     public function getRedirectUrl(array $params): ?string;
 
     public function getDigitalOrder(DigitalOrderRequest $request
-    ): ?DigitalOrderResponse;
+    ): DigitalOrderResponse;
 
     /**
      * @param string $token

@@ -48,7 +48,7 @@ class JETCOPaymentService implements PaymentServiceInterface
     }
 
     public function getDigitalOrder(DigitalOrderRequest $request
-    ): ?DigitalOrderResponse {
+    ): DigitalOrderResponse {
 
         $httpRequest = new Request("POST",
             $this->endPoints->getRequestDOUrl() .
@@ -63,14 +63,12 @@ class JETCOPaymentService implements PaymentServiceInterface
 
         $xml = simplexml_load_string((string)$response->getBody());
 
-        var_dump($xml);
-        var_dump((string)$xml->DO);
-        var_dump((string)$xml->url);
+        if ($errorMsg = (string)$xml->errors) {
+            throw new \InvalidArgumentException($errorMsg);
+        }
 
-        $response = new DigitalOrderResponse((string)$xml->DO,
+        return new DigitalOrderResponse((string)$xml->DO,
             (string)$xml->PostUrl);
-
-        dd($response);
     }
 
     /**
