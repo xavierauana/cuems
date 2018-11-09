@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Institution;
+use App\Vendor;
 use Illuminate\Http\Request;
 
-class InstitutionsController extends Controller
+class VendorsController extends Controller
 {
     /**
      * @var \App\Institution
@@ -18,19 +18,17 @@ class InstitutionsController extends Controller
      * InstitutionsController constructor.
      * @param \App\Institution $repo
      */
-    public function __construct(Institution $repo) {
+    public function __construct(Vendor $repo) {
         $this->repo = $repo;
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
-
-        $institutions = ($keyword = $request->query("keywords")) ?
+        $vendors = ($keyword = $request->query("keywords")) ?
             $this->repo
                 ->where('name', 'like', "%{$keyword}%")
                 ->paginate($this->paginateNumber) :
@@ -38,11 +36,13 @@ class InstitutionsController extends Controller
                 ->paginate($this->paginateNumber);
 
         if ($request->ajax()) {
-            return response()->json($institutions);
+            return response()->json($vendors);
         }
 
+        return $request->ajax() ?
+            response()->json($vendors) :
+            view("admin.vendors.index", compact("vendors"));
 
-        return view("admin.institutions.index", compact("institutions"));
     }
 
     /**
@@ -51,7 +51,7 @@ class InstitutionsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view("admin.institutions.create");
+        return view("admin.vendors.create");
     }
 
     /**
@@ -67,80 +67,65 @@ class InstitutionsController extends Controller
 
         $this->repo->create($validatedData);
 
-        return redirect()->route('institutions.index')
-                         ->withStatus('New institution created.');
+        return redirect()->route('vendors.index')
+                         ->withStatus("New vendor created!");
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Institution $institution
-     * @return void
+     * @param  \App\Vendor $vendor
+     * @return \Illuminate\Http\Response
      */
-    public function show(Institution $institution) {
+    public function show(Vendor $vendor) {
         //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Institution $institution
-     * @return void
+     * @param  \App\Vendor $vendor
+     * @return \Illuminate\Http\Response
      */
-    public function edit(Institution $institution) {
-        return view("admin.institutions.edit", compact("institution"));
+    public function edit(Vendor $vendor) {
+        return view("admin.vendors.edit", compact("vendor"));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param  \App\Institution         $institution
+     * @param  \App\Vendor              $vendor
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Institution $institution) {
+    public function update(Request $request, Vendor $vendor) {
         $validatedData = $this->validate($request, [
             'name' => 'required'
         ]);
 
-        $institution->update($validatedData);
+        $vendor->update($validatedData);
 
-        return redirect()
-            ->route('institutions.index')
-            ->withStatus('Institution updated.');
+        return redirect()->route('vendors.index')
+                         ->withStatus("Vendor updated!");
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param  \App\Institution        $institution
+     * @param  \App\Vendor             $vendor
      * @return \Illuminate\Http\Response
      * @throws \Exception
-     * @throws \Exception
      */
-    public function destroy(Request $request, Institution $institution) {
-        $institution->delete();
+    public function destroy(Request $request, Vendor $vendor) {
+        $vendor->delete();
 
         return $request->ajax() ?
             response()->json(['status' => 'completed']) :
             redirect()
-                ->route('institutions.index')
-                ->withStatus('Institution deleted.');
-    }
-
-    public function search(Request $request) {
-        if ($keyword = $request->query("keywords")) {
-            $institutions = $this->repo->where('name', 'like', "%{$keyword}%")
-                                       ->paginate($this->paginateNumber);
-        } else {
-            $institutions = $this->repo->paginate($this->paginateNumber);
-        }
-
-        if ($request->ajax()) {
-            return response()->json($institutions);
-        }
-
-        return view('admin.institutions.index', compact('institutions'));
+                ->route('vendors.index')
+                ->withStatus('Vendor category deleted.');
     }
 }

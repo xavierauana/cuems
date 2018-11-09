@@ -31,7 +31,7 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link"
-					   href="#">Expenses</a>
+					   href="{{route('events.expenses.index', $event)}}">Expenses</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link"

@@ -56,4 +56,8 @@ class Event extends Model
         return $this->hasMany(Setting::class);
     }
 
+    public function expenses(): Relation {
+        return $this->hasMany(Expense::class);
+    }
+
 }
