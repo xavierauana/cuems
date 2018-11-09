@@ -57,6 +57,7 @@
              var tokenInput = document.getElementById("DO")
              tokenInput.value = data.token
              e.target.action = data.url
+             e.target.submit()
            })
     }
 </script>
