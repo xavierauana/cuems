@@ -35,7 +35,7 @@
 	    {{Form::close()}}
 	
 	    <form id="paymentForm" method="POST" action="" onsubmit="pay(event)">
-		    <input type="hidden" name="DO" id="token" />
+		    <input type="hidden" name="DO" id="DO" />
 
 			<button type="submit">Pay</button>
 		</form>
@@ -54,7 +54,7 @@
       axios.post('payment_test/token')
            .then(({data}) => {
              console.log(data)
-             var tokenInput = document.getElementById("token")
+             var tokenInput = document.getElementById("DO")
              tokenInput.value = data.token
              e.target.action = data.url
            })
