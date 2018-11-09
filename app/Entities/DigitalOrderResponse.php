@@ -17,6 +17,7 @@ class DigitalOrderResponse
     /**
      * DigitalOrderRequest constructor.
      * @param string $token
+     * @param string $url
      */
     public function __construct(string $token, string $url) {
         $this->token = $token;

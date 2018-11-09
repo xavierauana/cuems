@@ -63,6 +63,11 @@ class JETCOPaymentService implements PaymentServiceInterface
 
         $xml = simplexml_load_string((string)$response->getBody());
 
+        var_dump($xml);
+        var_dump($xml->digitalOrder);
+        var_dump((string)$xml->digitalOrder->DO);
+        var_dump((string)$xml->digitalOrder->url);
+
         $response = new DigitalOrderResponse((string)$xml->digitalOrder->DO,
             (string)$xml->digitalOrder->PostUrl);
 
