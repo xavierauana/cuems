@@ -25,6 +25,7 @@ class ExpenseCategoriesController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
@@ -36,8 +37,9 @@ class ExpenseCategoriesController extends Controller
             $this->repo
                 ->paginate($this->paginateNumber);
 
-
-        return view("admin.expenseCategories.index", compact("categories"));
+        return $request->ajax() ?
+            response()->json($categories) :
+            view("admin.expenseCategories.index", compact("categories"));
     }
 
     /**
@@ -56,7 +58,14 @@ class ExpenseCategoriesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        //
+        $validatedData = $this->validate($request, [
+            'name' => 'required'
+        ]);
+
+        $this->repo->create($validatedData);
+
+        return redirect()->route('expense_categories.index')
+                         ->withStatus("New expense category created!");
     }
 
     /**
@@ -87,7 +96,14 @@ class ExpenseCategoriesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, ExpenseCategory $expenseCategory) {
-        //
+        $validatedData = $this->validate($request, [
+            'name' => 'required'
+        ]);
+
+        $expenseCategory->update($validatedData);
+
+        return redirect()->route('expense_categories.index')
+                         ->withStatus("Expense category updated!");
     }
 
     /**

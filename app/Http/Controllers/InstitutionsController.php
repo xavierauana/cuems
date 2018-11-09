@@ -37,6 +37,10 @@ class InstitutionsController extends Controller
             $this->repo
                 ->paginate($this->paginateNumber);
 
+        if ($request->ajax()) {
+            return response()->json($institutions);
+        }
+
 
         return view("admin.institutions.index", compact("institutions"));
     }

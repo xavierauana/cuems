@@ -50,7 +50,9 @@ class ExpensesController extends Controller
             "vendor_id"   => "required",
             "category_id" => "required",
             "note"        => "nullable",
-            "files"       => "nullable"
+            "date"        => "nullable|date",
+            "files"       => "nullable",
+            "files.*"     => "file|min:0",
         ]);
 
         if (!Vendor::find($validatedData['vendor_id'])) {
@@ -69,7 +71,7 @@ class ExpensesController extends Controller
 
         $newExpenses = $event->expenses()->create($validatedData);
 
-        if ($validatedData['files']) {
+        if (isset($validatedData['files'])) {
             foreach ($validatedData['files'] as $path) {
                 $newExpenses->files()->create([
                     'path' => $path
@@ -125,7 +127,9 @@ class ExpensesController extends Controller
             "vendor_id"   => "required",
             "category_id" => "required",
             "note"        => "nullable",
-            "files"       => "nullable"
+            "date"        => "nullable|date",
+            "files"       => "nullable",
+            "files.*"     => "file|min:0",
         ]);
 
         if (!Vendor::find($validatedData['vendor_id'])) {
@@ -141,10 +145,9 @@ class ExpensesController extends Controller
             ]);
             $validatedData['category_id'] = $newCategory->id;
         }
+        $expense->update($validatedData);
 
-        $expense->updated($validatedData);
-
-        if ($validatedData['files']) {
+        if (isset($validatedData['files'])) {
             foreach ($validatedData['files'] as $path) {
                 $expense->files()->create([
                     'path' => $path

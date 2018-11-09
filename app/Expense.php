@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -49,5 +50,18 @@ class Expense extends Model implements HasMedia
 
     public function getCategoryNameAttribute(): ?String {
         return $this->category->name;
+    }
+
+    public function getDateAttribute(): ?string {
+
+        if ($dataString = $this->attributes['date']) {
+            return (new Carbon($dataString))->format("d M Y");
+        }
+    }
+
+    // Mutator
+
+    public function setDateAttribute($value): void {
+        $this->attributes['date'] = Carbon::createFromFormat("d M Y", $value);
     }
 }

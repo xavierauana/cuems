@@ -6,15 +6,15 @@
         <div class="col-md-10">
              @include("admin._partials.alert")
 	        <div class="card">
-                <div class="card-header">Create New Institution</div>
+                <div class="card-header">Create new vendor</div>
                 
                 <div class="card-body">
 	                {!! Form::open([
-	                'url' => route("institutions.store"),
+	                'url' => route("vendors.store"),
 	                'method'=>"POST",
 	                'class'=>"needs-validation", "novalidate",
 	                ]) !!}
-	                @include('admin.institutions._partials.form',['buttonText'=>"Create"])
+	                @include('admin.vendors._partials.form',['buttonText'=>"Create"])
 	                {!! Form::close() !!}
                 </div>
             </div>

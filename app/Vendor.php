@@ -12,8 +12,20 @@ class Vendor extends Model
         'name'
     ];
 
+    protected $appends = [
+        'urls',
+    ];
+
     // Relation
     public function expenses(): Relation {
         return $this->hasMany(Expense::class);
+    }
+
+    // Accessor
+    public function getUrlsAttribute() {
+        return [
+            'edit'   => route('vendors.edit', $this),
+            'delete' => route('vendors.destroy', $this),
+        ];
     }
 }

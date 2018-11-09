@@ -30,7 +30,7 @@
 
 <div class="form-group">
     {!!  Form::label('date', 'Date'); !!}
-	{!!  Form::date('date',null,['class'=>'form-control date']); !!}
+	{!!  Form::text('date',null,['class'=>'form-control date']); !!}
 	@if ($errors->has('date'))
 		<span class="invalid-feedback" role="alert">
             <strong>{{ $errors->first('date') }}</strong>

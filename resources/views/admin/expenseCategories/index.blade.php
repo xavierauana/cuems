@@ -7,7 +7,7 @@
          @include("admin._partials.alert")
 	        <div class="card">
                 <div class="card-header">Institutions
-                <a href="{{route('expense_categories.index')}}"
+                <a href="{{route('expense_categories.create')}}"
                    class="btn btn-sm btn-success pull-right">New</a>
                 </div>
                 

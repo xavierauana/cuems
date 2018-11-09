@@ -6,12 +6,12 @@
         <div class="col-md-10">
              @include("admin._partials.alert")
 	        <div class="card">
-                <div class="card-header">Edit Institution: {{$institution->name}}</div>
+                <div class="card-header">Edit vendor: {{$vendor->name}}</div>
                 
                 <div class="card-body">
 	                
-	                {!! Form::model($institution, ['url' => route("institutions.update", $institution), 'method'=>"PUT", 'class'=>"needs-validation", "novalidate"]) !!}
-	                @include('admin.institutions._partials.form', ['buttonText'=>'Update'])
+	                {!! Form::model($vendor, ['url' => route("vendors.update", $vendor), 'method'=>"PUT", 'class'=>"needs-validation", "novalidate"]) !!}
+	                @include('admin.vendors._partials.form', ['buttonText'=>'Update'])
 	                {!! Form::close() !!}
                 </div>
             </div>

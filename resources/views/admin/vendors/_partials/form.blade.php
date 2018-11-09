@@ -11,6 +11,6 @@
 	<input class="btn btn-success"
 	       type="submit"
 	       value="{{$buttonText}}" />
-	<a href="{{route('institutions.index')}}"
+	<a href="{{route('vendors.index')}}"
 	   class="btn btn-info text-light">Back</a>
 </div>

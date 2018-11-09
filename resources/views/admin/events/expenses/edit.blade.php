@@ -17,16 +17,6 @@
             </div>
         </div>
     </div>
-	
-	@push('scripts')
-		
-		<script>
-			_.forEach(document.querySelectorAll("input.date"), el => flatpickr(el, {
-              enableTime: true,
-              dateFormat: "d M Y H:i",
-            }))
-		</script>
-	@endpush
 
 @endcomponent
 
