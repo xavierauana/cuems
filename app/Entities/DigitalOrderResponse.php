@@ -11,14 +11,16 @@ namespace App\Entities;
 class DigitalOrderResponse
 {
 
+    public $url = null;
     public $token = null;
 
     /**
      * DigitalOrderRequest constructor.
      * @param string $token
      */
-    public function __construct(string $token) {
+    public function __construct(string $token, string $url) {
         $this->token = $token;
+        $this->url = $url;
     }
 
 
