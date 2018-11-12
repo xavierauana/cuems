@@ -47,7 +47,8 @@ class PaymentGatewayEndpoints
         } else {
             $url = $baseUrl . "?invoiceNumber=" . $params['invoiceNumber'];
         }
-        dd($url);
+
+        return $url;
     }
 
     public function getRequestDOUrl(): string {
