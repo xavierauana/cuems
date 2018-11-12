@@ -15,6 +15,12 @@ class PaymentRecord extends Model
         'form_data',
     ];
 
+    protected static $logAttributes = [
+        'status',
+    ];
+
+    protected static $logOnlyDirty = true;
+
     public function setFormDataAttribute($value) {
         $this->attributes['form_data'] = encrypt($value);
     }
