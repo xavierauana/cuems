@@ -36,51 +36,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('index');
 
-Route::view('payment_test', 'payment_test');
-Route::post('payment_test/status', function () {
-    /** @var \App\Services\JETCOPaymentService $service */
-    $service = app(\App\Services\JETCOPaymentService::class);
-
-    echo $service->checkPaymentGatewayStatus() ? 'success' : 'fail';
-
-});
-//Route::post('payment_test/token', function (Request $request) {
-//
-//
-//    dd($request->all());
-//    /** @var \App\Services\JETCOPaymentService $service */
-//    $service = app(JETCOPaymentService::class);
-//
-//    if ($service->checkPaymentGatewayStatus()) {
-//
-//        if (!$prefix = env('JETCO_PREFIX', null)) {
-//            throw new \Exception("JETCO PREFIX setting error.");
-//        }
-//
-//        $invoiceId = "test_" . str_random(5);
-//
-//        $invoiceNumber = $prefix . $invoiceId;
-//
-//        $request = new DigitalOrderRequest(
-//            $invoiceNumber,
-//            100,
-//            PaymentType::Authorisation,
-//            route("paymentCallBack", [
-//                'invoiceNumber' => $invoiceNumber,
-//                'ticket_id'     => $request->get("ticket_id"),
-//            ])
-//        );
-//
-//        $data = $service->getDigitalOrder($request);
-//
-//        return response()->json($data);
-//    }
-//
-//});
-
+// JETCO Payment
 Route::post('token', PaymentController::class . "@token");
 
-Route::any("paymentCallBack", PaymentController::class . "@paid")
+Route::post("paymentCallBack", PaymentController::class . "@paid")
      ->name('paymentCallBack');
 
 Route::group(['namespace' => 'App\Http\Controllers'], function () {

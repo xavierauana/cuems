@@ -90,7 +90,8 @@ class Delegate extends Model
     }
 
     public function getTicketIdAttribute(): int {
-        return $this->ticket->ticket_id;
+        return $this->transactions()->with('ticket')->latest()
+                    ->first()->ticket->id;
     }
 
     public function getTicketAttribute(): Transaction {

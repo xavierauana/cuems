@@ -14,4 +14,12 @@ class PaymentRecord extends Model
         'invoice_id',
         'form_data',
     ];
+
+    public function setFormDataAttribute($value) {
+        $this->attributes['form_data'] = encrypt($value);
+    }
+
+    public function getFormDataAttribute($value) {
+        return decrypt($value);
+    }
 }
