@@ -77,9 +77,10 @@ Route::any("paymentCallBack",
     function (\Illuminate\Http\Request $request, JETCOPaymentService $service) {
 
         $dr = $request->get('String1');
+        var_dump($request->get('String1'));
 
         $service->checkPaymentGatewayStatus(["DR" => $dr]);
-        
+
     })->name('paymentCallBack');
 
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
