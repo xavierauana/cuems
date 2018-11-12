@@ -75,42 +75,6 @@ class PaymentController extends Controller
             return response()->json($data);
 
         }
-
-
-        //        $ticket = Ticket::findOrFail($validatedData['ticket_id']);
-        //
-        //        try {
-        //
-        //            $chargeResponse = $service->charge($request->get('token'),
-        //                $ticket->price);
-        //
-        //            DB::beginTransaction();
-        //
-        //            try {
-        //                $event = Event::first();
-        //
-        //                $newDelegate = $this->createDelegate($event, $validatedData,
-        //                    $chargeResponse, $ticket);
-        //
-        //                DB::commit();
-        //
-        //                event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
-        //                    $newDelegate));
-        //
-        //            } catch (\Exception $e) {
-        //                DB::rollBack();
-        //                throw $e;
-        //            }
-        //
-        //            $message = "Buy the ticket.";
-        //
-        //        } catch (\Exception $e) {
-        //            $response = $response->withInput();
-        //            $message = $e->getMessage();
-        //        }
-        //
-        //        return $message = null ? $response : $response->withAlert($message);
-
     }
 
     /**
