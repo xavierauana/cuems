@@ -56,14 +56,14 @@ Route::post('payment_test/token', function () {
             "http://dev.mect.cuhk.edu.hk/" . 'paymentCallBack');
 
 
-
         $data = $service->getDigitalOrder($request);
+
         return response()->json($data);
     }
 
 });
 
-Route::get("paymentCallBack", function (\Illuminate\Http\Request $request) {
+Route::any("paymentCallBack", function (\Illuminate\Http\Request $request) {
     dd("payment call back ", $request);
 })->name('paymentCallBack');
 
