@@ -57,15 +57,15 @@
         <script src="{{asset("js/frontEnd.js")}}"></script>
         <script>
 	        function pay(e) {
-			      e.preventDefault()
-			      axios.post('/pay')
-			           .then(({data}) => {
-			             var tokenInput = document.getElementById("DO")
-			             tokenInput.value = data.token
-			             e.target.action = data.url
-			             e.target.submit()
-			           })
-			    }
+              e.preventDefault()
+              axios.post('/token')
+                   .then(({data}) => {
+                     var tokenInput = document.getElementById("DO")
+                     tokenInput.value = data.token
+                     e.target.action = data.url
+                     e.target.submit()
+                   })
+            }
         </script>
 
         @stack("scripts")
