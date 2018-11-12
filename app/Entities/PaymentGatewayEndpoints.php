@@ -43,7 +43,7 @@ class PaymentGatewayEndpoints
         $baseUrl = "{$this->baseUrl}/getDR.jsp";
 
         if (isset($params['DR'])) {
-            $url = $baseUrl . "?DR=" . $params['DR'];
+            $url = $baseUrl . "?DR=" . urlencode($params['DR']);
         } else {
             $url = $baseUrl . "?invoiceNumber=" . $params['invoiceNumber'];
         }
