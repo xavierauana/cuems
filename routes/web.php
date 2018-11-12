@@ -76,11 +76,13 @@ Route::post('payment_test/token', function () {
 Route::any("paymentCallBack",
     function (\Illuminate\Http\Request $request, JETCOPaymentService $service) {
 
-        $dr = $request->get('String1');
+        $response = simplexml_load_string($service->checkPaymentStatus(["DR" =>  $request->get('String1')]));
 
-        $contentString = $service->checkPaymentStatus(["DR" => $dr]);
+        if ((string)$response->Status === "AP") {
+            return redirect("/")->withStatus("Your payment have been confirmed.");
+        }
 
-        dd($contentString);
+        return redirect("/")->withStatus("Something wrong. Please try again.");
 
     })->name('paymentCallBack');
 

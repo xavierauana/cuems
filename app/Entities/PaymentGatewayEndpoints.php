@@ -45,7 +45,7 @@ class PaymentGatewayEndpoints
         if (isset($params['DR'])) {
             $url = $baseUrl . "?DR=" . urlencode($params['DR']);
         } else {
-            $url = $baseUrl . "?invoiceNumber=" . $params['invoiceNumber'];
+            $url = $baseUrl . "?invoiceNumber=" . urlencode($params['invoiceNumber']);
         }
 
         return $url;
