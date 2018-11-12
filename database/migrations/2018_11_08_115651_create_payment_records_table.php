@@ -16,6 +16,7 @@ class CreatePaymentRecordsTable extends Migration
             $table->increments('id');
             $table->string('invoice_id');
             $table->string('status');
+            $table->longText('form_data')->nullable();
             $table->timestamps();
         });
     }

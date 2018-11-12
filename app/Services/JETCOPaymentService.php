@@ -17,6 +17,7 @@ use App\Enums\PaymentRecordStatus;
 use App\PaymentRecord;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use HttpResponseException;
 
 class JETCOPaymentService implements PaymentServiceInterface
 {
@@ -49,14 +50,14 @@ class JETCOPaymentService implements PaymentServiceInterface
         // TODO: Implement getRedirectUrl() method.
     }
 
+    /**
+     * @param \App\Entities\DigitalOrderRequest $request
+     * @return \App\Entities\DigitalOrderResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \HttpResponseException
+     */
     public function getDigitalOrder(DigitalOrderRequest $request
     ): DigitalOrderResponse {
-
-        PaymentRecord::updateOrCreate([
-            'invoice_id' => $request->invoiceNumber
-        ], [
-            'status' => PaymentRecordStatus::CREATED,
-        ]);
 
         $httpRequest = new Request("POST",
             $this->endPoints->getRequestDOUrl() .
@@ -75,12 +76,6 @@ class JETCOPaymentService implements PaymentServiceInterface
         if (!empty((string)$xml->error)) {
             throw new HttpResponseException(response((string)$xml->error));
         }
-
-        PaymentRecord::updateOrCreate([
-            'invoice_id' => $request->invoiceNumber,
-        ], [
-            'status' => PaymentRecordStatus::REQUEST,
-        ]);
 
         return new DigitalOrderResponse((string)$xml->DO,
             (string)$xml->PostUrl);

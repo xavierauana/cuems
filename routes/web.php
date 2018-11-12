@@ -84,7 +84,8 @@ Route::post('token', PaymentController::class . "@pay");
 Route::any("paymentCallBack",
     function (\Illuminate\Http\Request $request, JETCOPaymentService $service) {
 
-        dd(base64_decode($request->get('data')));
+        dd($request->all(),
+            \App\PaymentRecord::findOrFail($request->get('ref_id')));
 
         $response = simplexml_load_string($service->checkPaymentStatus(["DR" => $request->get('String1')]));
 

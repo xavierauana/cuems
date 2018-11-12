@@ -12,5 +12,6 @@ class PaymentRecord extends Model
     protected $fillable = [
         'status',
         'invoice_id',
+        'form_data',
     ];
 }

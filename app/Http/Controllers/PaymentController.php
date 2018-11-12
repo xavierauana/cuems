@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Delegate;
 use App\DelegateRole;
 use App\Entities\DigitalOrderRequest;
+use App\Enums\PaymentRecordStatus;
 use App\Enums\PaymentType;
 use App\Enums\TransactionStatus;
+use App\PaymentRecord;
 use App\Services\JETCOPaymentService;
 use App\Ticket;
 use Illuminate\Http\Request;
@@ -48,20 +50,27 @@ class PaymentController extends Controller
 
             $invoiceNumber = $prefix . $invoiceId;
 
+            $record = PaymentRecord::updateOrCreate([
+                'invoice_id' => $request->invoiceNumber
+            ], [
+                'status'    => PaymentRecordStatus::CREATED,
+                'form_data' => json_encode($validatedData)
+            ]);
+
             $DORequest = new DigitalOrderRequest(
                 $invoiceNumber,
                 100,
                 PaymentType::Authorisation,
-                route("paymentCallBack",
-                    [
-                        'data' => base64_encode(json_encode(array_merge($validatedData,
-                            [
-                                'invoiceNumber' => $invoiceNumber
-                            ])))
-                    ])
+                route("paymentCallBack", ['ref_id' => $record->id])
             );
 
             $data = $service->getDigitalOrder($DORequest);
+
+            PaymentRecord::updateOrCreate([
+                'invoice_id' => $request->invoiceNumber,
+            ], [
+                'status' => PaymentRecordStatus::REQUEST,
+            ]);
 
             return response()->json($data);
 
