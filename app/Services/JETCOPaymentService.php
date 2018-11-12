@@ -52,7 +52,7 @@ class JETCOPaymentService implements PaymentServiceInterface
     public function getDigitalOrder(DigitalOrderRequest $request
     ): DigitalOrderResponse {
 
-        PaymentRecord::createOrUpdate([
+        PaymentRecord::updateOrCreate([
             'invoice_id' => $request->invoiceNumber
         ], [
             'status' => PaymentRecordStatus::CREATED,
@@ -76,7 +76,7 @@ class JETCOPaymentService implements PaymentServiceInterface
             throw new HttpResponseException(response((string)$xml->error));
         }
 
-        PaymentRecord::createOrUpdate([
+        PaymentRecord::updateOrCreate([
             'invoice_id' => $request->invoiceNumber,
         ], [
             'status' => PaymentRecordStatus::REQUEST,
