@@ -55,7 +55,7 @@
         <script src="{{asset("js/manifest.js")}}"></script>
         <script src="{{asset("js/vendor.js")}}"></script>
         <script src="{{asset("js/frontEnd.js")}}"></script>
-        <srcipt>
+        <script>
 	        function pay(e) {
 			      e.preventDefault()
 			      axios.post('/pay')
@@ -66,7 +66,7 @@
 			             e.target.submit()
 			           })
 			    }
-        </srcipt>
+        </script>
 
         @stack("scripts")
     
