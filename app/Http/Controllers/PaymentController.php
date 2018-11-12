@@ -51,7 +51,7 @@ class PaymentController extends Controller
             $invoiceNumber = $prefix . $invoiceId;
 
             $record = PaymentRecord::updateOrCreate([
-                'invoice_id' => $request->invoiceNumber
+                'invoice_id' => $invoiceNumber
             ], [
                 'status'    => PaymentRecordStatus::CREATED,
                 'form_data' => json_encode($validatedData)
@@ -67,7 +67,7 @@ class PaymentController extends Controller
             $data = $service->getDigitalOrder($DORequest);
 
             PaymentRecord::updateOrCreate([
-                'invoice_id' => $request->invoiceNumber,
+                'invoice_id' => $invoiceNumber,
             ], [
                 'status' => PaymentRecordStatus::REQUEST,
             ]);
