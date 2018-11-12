@@ -78,8 +78,6 @@ Route::any("paymentCallBack",
 
         $dr = $request->get('String1');
 
-        var_dump($request->get('String1'));
-
         $contentString = $service->checkPaymentStatus(["DR" => $dr]);
 
         dd($contentString);

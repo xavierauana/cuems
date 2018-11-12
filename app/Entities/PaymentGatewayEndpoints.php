@@ -36,7 +36,7 @@ class PaymentGatewayEndpoints
 
     public function getEnquireUrl(array $params): string {
 
-        if (!isset($params['invoiceNumber']) or !isset($params['DR'])) {
+        if (!isset($params['invoiceNumber']) and !isset($params['DR'])) {
             throw new \InvalidArgumentException("Missing DR and invoice number.");
         }
 
