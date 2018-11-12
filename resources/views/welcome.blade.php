@@ -58,7 +58,7 @@
         <script>
 	        function pay(e) {
               e.preventDefault()
-              axios.post('/token')
+              axios.post('/token', new FormData(e.target))
                    .then(({data}) => {
                      var tokenInput = document.getElementById("DO")
                      tokenInput.value = data.token
