@@ -13,8 +13,6 @@ use App\Entities\ChargeResponse;
 use App\Entities\DigitalOrderRequest;
 use App\Entities\DigitalOrderResponse;
 use App\Entities\PaymentGatewayEndpoints;
-use App\Enums\PaymentRecordStatus;
-use App\PaymentRecord;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use HttpResponseException;
@@ -87,7 +85,7 @@ class JETCOPaymentService implements PaymentServiceInterface
      * @return \App\Entities\ChargeResponse
      */
     public function charge(string $token, int $amount): ChargeResponse {
-        $response = new ChargeResponse("12", "Visa", "something");
+        $response = new ChargeResponse($token, "", "");
 
         return $response;
     }

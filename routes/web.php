@@ -11,10 +11,7 @@
 |
 */
 
-use App\Enums\PaymentRecordStatus;
-use App\Enums\SystemEvents;
 use App\Event;
-use App\Events\SystemEvent;
 use App\Expense;
 use App\ExpenseMedium;
 use App\Http\Controllers\DashboardController;
@@ -33,12 +30,8 @@ use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\TicketsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VendorsController;
-use App\PaymentRecord;
-use App\Services\JETCOPaymentService;
-use App\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('index');
@@ -85,52 +78,10 @@ Route::post('payment_test/status', function () {
 //
 //});
 
-Route::post('token', PaymentController::class . "@pay");
+Route::post('token', PaymentController::class . "@token");
 
-Route::any("paymentCallBack",
-    function (\Illuminate\Http\Request $request, JETCOPaymentService $service) {
-
-        $response = simplexml_load_string($service->checkPaymentStatus(["DR" => $request->get('String1')]));
-
-        if ((string)$response->Status === "AP") {
-
-            $record = PaymentRecord::findOrFail($request->get('ref_id'));
-            $formData = json_decode($record->form_data, true);
-
-            $ticket = Ticket::findOrFail($formData['ticket_id']);
-
-            $chargeResponse = $service->charge($request->get('token'),
-                $ticket->price);
-
-            DB::beginTransaction();
-
-            try {
-                $event = Event::first();
-
-                $newDelegate = $this->createDelegate($event, $formData,
-                    $chargeResponse, $ticket);
-
-                DB::commit();
-
-                $record->update([
-                    'status' => PaymentRecordStatus::AUTHORIZED
-                ]);
-
-                event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
-                    $newDelegate));
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
-            }
-
-            return redirect("/")->withAlert("Thank you. You payment have been confirmed.");
-        }
-
-
-        return redirect("/")->withAlert("Something wrong. Please try again.");
-
-    })->name('paymentCallBack');
+Route::any("paymentCallBack", PaymentController::class . "@paid")
+     ->name('paymentCallBack');
 
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Auth::routes(['verify' => true]);

@@ -7,11 +7,14 @@ use App\DelegateRole;
 use App\Entities\DigitalOrderRequest;
 use App\Enums\PaymentRecordStatus;
 use App\Enums\PaymentType;
+use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
+use App\Events\SystemEvent;
 use App\PaymentRecord;
 use App\Services\JETCOPaymentService;
 use App\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -28,7 +31,7 @@ class PaymentController extends Controller
         $this->delegate = $delegate;
     }
 
-    public function pay(Request $request, JETCOPaymentService $service) {
+    public function token(Request $request, JETCOPaymentService $service) {
 
         $validatedData = $this->validate($request,
             array_merge($this->delegate->getStoreRules(), [
@@ -75,6 +78,50 @@ class PaymentController extends Controller
             return response()->json($data);
 
         }
+    }
+
+    public function paid(Request $request, JETCOPaymentService $service) {
+
+        $response = simplexml_load_string($service->checkPaymentStatus(["DR" => $request->get('String1')]));
+
+        if ((string)$response->Status === "AP") {
+
+            $record = PaymentRecord::findOrFail($request->get('ref_id'));
+            $formData = json_decode($record->form_data, true);
+
+            $ticket = Ticket::findOrFail($formData['ticket_id']);
+
+            $chargeResponse = $service->charge((string)$response->InvoiceNo,
+                $ticket->price);
+
+            DB::beginTransaction();
+
+            try {
+                $event = Event::first();
+
+                $newDelegate = $this->createDelegate($event, $formData,
+                    $chargeResponse, $ticket);
+
+                DB::commit();
+
+                $record->update([
+                    'status' => PaymentRecordStatus::AUTHORIZED
+                ]);
+
+                event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
+                    $newDelegate));
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+
+            return redirect("/")->withAlert("Thank you. You payment have been confirmed.");
+        }
+
+
+        return redirect("/")->withAlert("Something wrong. Please try again.");
+
     }
 
     /**
