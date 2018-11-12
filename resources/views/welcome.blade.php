@@ -27,8 +27,9 @@
             
             @include("_partials.alert")
 	
-	        {{Form::open(['url' => url('delegates'),'method'=>"POST", 'id'=>"payment-form"])}}
+	        {{Form::open(['url' => "",'method'=>"POST", 'id'=>"payment-form", 'onsubmit'=>"pay(event)"])}}
 	
+	        <input type="hidden" id="DO" name="DO" />
 	        <input type="hidden" id="token" name="token" />
 	        @include("_components.registration_form_basic_section")
 	        @include("_components.registration_form_institution_section")
@@ -44,7 +45,6 @@
 		        @endif
             </tickets>
 	        @include("_components.registration_trainee_section")
-	        @include("_components.paymentForm")
 	
 	        <button class="btn btn-primary">Submit</button>
 	
@@ -55,7 +55,21 @@
         <script src="{{asset("js/manifest.js")}}"></script>
         <script src="{{asset("js/vendor.js")}}"></script>
         <script src="{{asset("js/frontEnd.js")}}"></script>
-        
+        <srcipt>
+	        function pay(e) {
+			      e.preventDefault()
+			      axios.post('/pay')
+			           .then(({data}) => {
+			             var tokenInput = document.getElementById("DO")
+			             tokenInput.value = data.token
+			             e.target.action = data.url
+			             e.target.submit()
+			           })
+			    }
+        </srcipt>
+
         @stack("scripts")
+    
+    
     </body>
 </html>

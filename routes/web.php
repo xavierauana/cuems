@@ -11,8 +11,6 @@
 |
 */
 
-use App\Entities\DigitalOrderRequest;
-use App\Enums\PaymentType;
 use App\Event;
 use App\Expense;
 use App\ExpenseMedium;
@@ -47,31 +45,41 @@ Route::post('payment_test/status', function () {
     echo $service->checkPaymentGatewayStatus() ? 'success' : 'fail';
 
 });
-Route::post('payment_test/token', function () {
+//Route::post('payment_test/token', function (Request $request) {
+//
+//
+//    dd($request->all());
+//    /** @var \App\Services\JETCOPaymentService $service */
+//    $service = app(JETCOPaymentService::class);
+//
+//    if ($service->checkPaymentGatewayStatus()) {
+//
+//        if (!$prefix = env('JETCO_PREFIX', null)) {
+//            throw new \Exception("JETCO PREFIX setting error.");
+//        }
+//
+//        $invoiceId = "test_" . str_random(5);
+//
+//        $invoiceNumber = $prefix . $invoiceId;
+//
+//        $request = new DigitalOrderRequest(
+//            $invoiceNumber,
+//            100,
+//            PaymentType::Authorisation,
+//            route("paymentCallBack", [
+//                'invoiceNumber' => $invoiceNumber,
+//                'ticket_id'     => $request->get("ticket_id"),
+//            ])
+//        );
+//
+//        $data = $service->getDigitalOrder($request);
+//
+//        return response()->json($data);
+//    }
+//
+//});
 
-    /** @var \App\Services\JETCOPaymentService $service */
-    $service = app(JETCOPaymentService::class);
-
-    if ($service->checkPaymentGatewayStatus()) {
-
-        if (!$prefix = env('JETCO_PREFIX', null)) {
-            throw new \Exception("JETCO PREFIX setting error.");
-        }
-
-        $invoiceId = "test_" . str_random(5);
-
-        $invoiceNumber = $prefix . $invoiceId;
-
-        $request = new DigitalOrderRequest($invoiceNumber,
-            100, PaymentType::Authorisation,
-            "http://dev.mect.cuhk.edu.hk/" . 'paymentCallBack?invoiceNumber=' . $invoiceNumber);
-
-        $data = $service->getDigitalOrder($request);
-
-        return response()->json($data);
-    }
-
-});
+Route::post('token', PaymentController::class . "@pay");
 
 Route::any("paymentCallBack",
     function (\Illuminate\Http\Request $request, JETCOPaymentService $service) {

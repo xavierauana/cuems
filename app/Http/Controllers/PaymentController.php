@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Contracts\PaymentServiceInterface;
 use App\Delegate;
 use App\DelegateRole;
+use App\Entities\DigitalOrderRequest;
+use App\Enums\PaymentType;
 use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
 use App\Event;
@@ -41,8 +43,32 @@ class PaymentController extends Controller
 
         $validatedData = $this->sanitizeInputData($validatedData);
 
-        $response = redirect()->back();
-        $message = null;
+        if ($service->checkPaymentGatewayStatus()) {
+
+            if (!$prefix = env('JETCO_PREFIX', null)) {
+                throw new \Exception("JETCO PREFIX setting error.");
+            }
+
+            $invoiceId = "test_" . str_random(5);
+
+            $invoiceNumber = $prefix . $invoiceId;
+
+            $request = new DigitalOrderRequest(
+                $invoiceNumber,
+                100,
+                PaymentType::Authorisation,
+                route("paymentCallBack",
+                    array_merge($validatedData, [
+                        'invoiceNumber' => $invoiceNumber
+                    ]))
+            );
+
+            $data = $service->getDigitalOrder($request);
+
+            return response()->json($data);
+
+        }
+
 
         $ticket = Ticket::findOrFail($validatedData['ticket_id']);
 

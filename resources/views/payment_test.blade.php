@@ -49,17 +49,7 @@
 
 
 <script>
-	function pay(e) {
-      e.preventDefault()
-      axios.post('payment_test/token')
-           .then(({data}) => {
-             console.log(data)
-             var tokenInput = document.getElementById("DO")
-             tokenInput.value = data.token
-             e.target.action = data.url
-             e.target.submit()
-           })
-    }
+
 </script>
 </body>
 </html>
