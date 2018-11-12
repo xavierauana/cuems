@@ -26,36 +26,25 @@ const app = new Vue({
                         Tickets
                       },
                       data      : {
-                        selectedTicket: null
-                      },
-                      computed  : {
-                        isTraineeTicket() {
-                          if (this.selectedTicket) {
-                            let check = this.selectedTicket.note.indexOf('trainee') > -1
-                            if (check) {
-                              Vue.nextTick(() => {
-                                $('.select2').select2();
-                              })
-                            }
-                            return check
-                          }
-                          return false
-                        }
+                        isTraineeTicket: false
                       },
                       mounted() {
                         $('.select2').select2();
                       },
                       methods   : {
-                        update(ticket) {
-                          this.selectedTicket = ticket
+                        update(type) {
+                          this.isTraineeTicket = type === 'trainee'
+                          if (type === 'trainee') {
+                            Vue.nextTick(() => {
+                              $('.select2').select2();
+                            });
+                          }
                         },
                         charge() {
                           if (!this.checkCUIPGStatus()) {return}
-
                         },
                         checkCUIPGStatus() {
                           swal('Error', 'Payment has some problem, please try again later')
-
                         }
                       }
                     });

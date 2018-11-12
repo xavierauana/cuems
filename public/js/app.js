@@ -10412,7 +10412,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -10444,6 +10444,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Tickets",
@@ -10451,6 +10466,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     tickets: {
       type: Array,
       required: true
+    }
+  },
+  data: function data() {
+    return {
+      selectType: 'practitioner'
+    };
+  },
+
+  methods: {
+    showTicket: function showTicket(ticket) {
+      return ticket.note === 'trainee' ? this.selectType === "trainee" : this.selectType === "practitioner";
+    },
+    changeType: function changeType(type) {
+      this.selectType = type;
+      this.$emit('select', type);
     }
   }
 });
@@ -10467,35 +10497,109 @@ var render = function() {
     "fieldset",
     { staticClass: "ticket" },
     [
+      _c("div", { staticClass: "form-group" }, [
+        _c(
+          "div",
+          {
+            staticClass: "btn-group btn-group-toggle",
+            attrs: { "data-toggle": "buttons" }
+          },
+          [
+            _c(
+              "label",
+              {
+                staticClass: "btn btn-outline-primary",
+                class: { active: _vm.selectType === "practitioner" },
+                on: {
+                  click: function($event) {
+                    _vm.changeType("practitioner")
+                  }
+                }
+              },
+              [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.selectType,
+                      expression: "selectType"
+                    }
+                  ],
+                  attrs: { type: "radio", value: "practitioner" },
+                  domProps: { checked: _vm._q(_vm.selectType, "practitioner") },
+                  on: {
+                    change: function($event) {
+                      _vm.selectType = "practitioner"
+                    }
+                  }
+                }),
+                _vm._v(" Practitioner\n              ")
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "label",
+              {
+                staticClass: "btn btn-outline-primary",
+                class: { active: _vm.selectType === "trainee" },
+                on: {
+                  click: function($event) {
+                    _vm.changeType("trainee")
+                  }
+                }
+              },
+              [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.selectType,
+                      expression: "selectType"
+                    }
+                  ],
+                  attrs: { type: "radio", value: "trainee" },
+                  domProps: { checked: _vm._q(_vm.selectType, "trainee") },
+                  on: {
+                    change: function($event) {
+                      _vm.selectType = "trainee"
+                    }
+                  }
+                }),
+                _vm._v(" Trainee\n              ")
+              ]
+            )
+          ]
+        )
+      ]),
+      _vm._v(" "),
       _c("legend", [_vm._v("Tickets:")]),
       _vm._v(" "),
       _vm._l(_vm.tickets, function(ticket) {
-        return _c("div", { staticClass: "form-group row" }, [
-          _c("div", { staticClass: "col-sm-12" }, [
-            _c("div", { staticClass: "form-group" }, [
-              _c("div", { staticClass: "form-check form-check-inline" }, [
-                _c("label", { staticStyle: { "margin-right": "15px" } }, [
-                  _c("input", {
-                    attrs: { type: "radio", name: "ticket_id" },
-                    domProps: { value: ticket.id },
-                    on: {
-                      change: function($event) {
-                        _vm.$emit("select", ticket)
-                      }
-                    }
-                  }),
-                  _vm._v(
-                    " " +
-                      _vm._s(ticket.name) +
-                      " HK$" +
-                      _vm._s(ticket.price) +
-                      "\n                        "
-                  )
+        return _vm.showTicket(ticket)
+          ? _c("div", { staticClass: "form-group row" }, [
+              _c("div", { staticClass: "col-sm-12" }, [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("div", { staticClass: "form-check form-check-inline" }, [
+                    _c("label", { staticStyle: { "margin-right": "15px" } }, [
+                      _c("input", {
+                        attrs: { type: "radio", name: "ticket_id" },
+                        domProps: { value: ticket.id }
+                      }),
+                      _vm._v(
+                        " " +
+                          _vm._s(ticket.name) +
+                          " HK$" +
+                          _vm._s(ticket.price) +
+                          "\n                        "
+                      )
+                    ])
+                  ])
                 ])
               ])
             ])
-          ])
-        ])
+          : _vm._e()
       }),
       _vm._v(" "),
       _vm._t("errorMessage")
