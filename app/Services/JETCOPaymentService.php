@@ -9,13 +9,13 @@ namespace App\Services;
 
 
 use App\Contracts\PaymentServiceInterface;
-use App\Entities\ChargeResponse;
 use App\Entities\DigitalOrderRequest;
 use App\Entities\DigitalOrderResponse;
 use App\Entities\PaymentGatewayEndpoints;
+use App\Enums\PaymentRecordStatus;
+use App\PaymentRecord;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class JETCOPaymentService implements PaymentServiceInterface
 {
@@ -51,13 +51,19 @@ class JETCOPaymentService implements PaymentServiceInterface
     public function getDigitalOrder(DigitalOrderRequest $request
     ): DigitalOrderResponse {
 
+        PaymentRecord::createOrUpdate([
+            'invoice_id' => $request->invoiceNumber
+        ], [
+            'status' => PaymentRecordStatus::CREATED,
+        ]);
+
         $httpRequest = new Request("POST",
             $this->endPoints->getRequestDOUrl() .
             "?amount=" . $request->amount .
             "&txnType=" . $request->txnType .
             "&returnURL=" . $request->returnURL .
             "&locale=" . $request->locale .
-            "&invoiceNumber=" . "U078" . $request->invoiceNumber
+            "&invoiceNumber=" . $request->invoiceNumber
         );
 
         $response = $this->client->send($httpRequest);
@@ -68,6 +74,12 @@ class JETCOPaymentService implements PaymentServiceInterface
         if (!empty((string)$xml->error)) {
             throw new HttpResponseException(response((string)$xml->error));
         }
+
+        PaymentRecord::createOrUpdate([
+            'invoice_id' => $request->invoiceNumber,
+        ], [
+            'status' => PaymentRecordStatus::REQUEST,
+        ]);
 
         return new DigitalOrderResponse((string)$xml->DO,
             (string)$xml->PostUrl);

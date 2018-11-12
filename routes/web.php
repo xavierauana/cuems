@@ -11,6 +11,8 @@
 |
 */
 
+use App\Entities\DigitalOrderRequest;
+use App\Enums\PaymentType;
 use App\Event;
 use App\Expense;
 use App\ExpenseMedium;
@@ -51,10 +53,17 @@ Route::post('payment_test/token', function () {
 
     if ($service->checkPaymentGatewayStatus()) {
 
-        $request = new \App\Entities\DigitalOrderRequest("test_" . str_random(5),
-            100, \App\Enums\PaymentType::Authorisation,
-            "http://dev.mect.cuhk.edu.hk/" . 'paymentCallBack');
+        if (!$prefix = env('JETCO_PREFIX', null)) {
+            throw new \Exception("JETCO PREFIX setting error.");
+        }
 
+        $invoiceId = "test_" . str_random(5);
+
+        $invoiceNumber = $prefix . $invoiceId;
+
+        $request = new DigitalOrderRequest($invoiceNumber,
+            100, PaymentType::Authorisation,
+            "http://dev.mect.cuhk.edu.hk/" . 'paymentCallBack?invoiceNumber=' . $invoiceNumber);
 
         $data = $service->getDigitalOrder($request);
 
@@ -64,7 +73,10 @@ Route::post('payment_test/token', function () {
 });
 
 Route::any("paymentCallBack", function (\Illuminate\Http\Request $request) {
+
     dd("payment call back ", $request);
+
+    
 })->name('paymentCallBack');
 
 Route::group(['namespace' => 'App\Http\Controllers'], function () {

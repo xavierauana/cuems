@@ -10,9 +10,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Transaction extends Model
 {
-    use LogsActivity;
-
-    use Notifiable;
+    use LogsActivity, Notifiable;
 
     protected $fillable = [
         'charge_id',
