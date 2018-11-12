@@ -9,6 +9,7 @@ namespace App\Services;
 
 
 use App\Contracts\PaymentServiceInterface;
+use App\Entities\ChargeResponse;
 use App\Entities\DigitalOrderRequest;
 use App\Entities\DigitalOrderResponse;
 use App\Entities\PaymentGatewayEndpoints;
@@ -91,6 +92,8 @@ class JETCOPaymentService implements PaymentServiceInterface
      * @return \App\Entities\ChargeResponse
      */
     public function charge(string $token, int $amount): ChargeResponse {
-        // TODO: Implement charge() method.
+        $response = new ChargeResponse("12", "Visa", "something");
+
+        return $response;
     }
 }
