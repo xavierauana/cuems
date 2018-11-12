@@ -53,9 +53,12 @@ class PaymentController extends Controller
                 100,
                 PaymentType::Authorisation,
                 route("paymentCallBack",
-                    array_merge($validatedData, [
-                        'invoiceNumber' => $invoiceNumber
-                    ]))
+                    [
+                        'data' => base64_encode(json_encode(array_merge($validatedData,
+                            [
+                                'invoiceNumber' => $invoiceNumber
+                            ])))
+                    ])
             );
 
             $data = $service->getDigitalOrder($DORequest);
