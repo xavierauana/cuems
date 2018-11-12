@@ -98,13 +98,14 @@ class JETCOPaymentService implements PaymentServiceInterface
     }
 
     public function checkPaymentStatus(array $params) {
+
         $httpRequest = new Request("POST",
             $this->endPoints->getEnquireUrl($params)
         );
 
         $response = $this->client->send($httpRequest);
 
-        dd((string)$response->getBody());
+        return (string)$response->getBody();
 
     }
 }

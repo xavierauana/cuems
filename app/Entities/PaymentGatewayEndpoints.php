@@ -42,7 +42,6 @@ class PaymentGatewayEndpoints
 
         $baseUrl = "{$this->baseUrl}/getDR.jsp";
 
-
         if (isset($params['DR'])) {
             return $baseUrl . "?DR=" . $params['DR'];
         }
