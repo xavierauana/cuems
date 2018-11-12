@@ -16,7 +16,6 @@ class CreatePaymentRecordsTable extends Migration
             $table->increments('id');
             $table->string('invoice_id');
             $table->string('status');
-            $table->unsignedInteger('type');
             $table->timestamps();
         });
     }
