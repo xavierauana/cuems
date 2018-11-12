@@ -22,7 +22,6 @@ class PaymentGatewayEndpoints
         $this->baseUrl = env("APP_ENV") === "production" ? "https://money.bur.cuhk.edu.hk/CU-IPG/" : "http://epaydev.itsc.cuhk.edu.hk:8080/CU-IPG/UAT/";
     }
 
-
     public function getServerStatusUrl(): string {
         return "{$this->baseUrl}/status.jsp";
     }
@@ -35,8 +34,20 @@ class PaymentGatewayEndpoints
         return "{$this->baseUrl}/processDC.jsp";
     }
 
-    public function getEnquireUrl(): string {
-        return "{$this->baseUrl}/getDR.jsp";
+    public function getEnquireUrl(array $params): string {
+
+        if (!isset($params['invoiceNumber']) or !isset($params['DR'])) {
+            throw new \InvalidArgumentException("Missing DR and invoice number.");
+        }
+
+        $baseUrl = "{$this->baseUrl}/getDR.jsp";
+
+
+        if (isset($params['DR'])) {
+            return $baseUrl . "?DR=" . $params['DR'];
+        }
+
+        return $baseUrl . "?DR=" . $params['invoiceNumber'];
     }
 
     public function getRequestDOUrl(): string {

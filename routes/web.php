@@ -32,6 +32,7 @@ use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\TicketsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VendorsController;
+use App\Services\JETCOPaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -49,7 +50,7 @@ Route::post('payment_test/status', function () {
 Route::post('payment_test/token', function () {
 
     /** @var \App\Services\JETCOPaymentService $service */
-    $service = app(\App\Services\JETCOPaymentService::class);
+    $service = app(JETCOPaymentService::class);
 
     if ($service->checkPaymentGatewayStatus()) {
 
@@ -72,12 +73,14 @@ Route::post('payment_test/token', function () {
 
 });
 
-Route::any("paymentCallBack", function (\Illuminate\Http\Request $request) {
+Route::any("paymentCallBack",
+    function (\Illuminate\Http\Request $request, JETCOPaymentService $service) {
 
-    dd("payment call back ", $request);
+        $dr = $request->get('String1');
 
-    
-})->name('paymentCallBack');
+        $service->checkPaymentGatewayStatus(["DR" => $dr]);
+        
+    })->name('paymentCallBack');
 
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Auth::routes(['verify' => true]);
