@@ -84,6 +84,8 @@ Route::post('token', PaymentController::class . "@pay");
 Route::any("paymentCallBack",
     function (\Illuminate\Http\Request $request, JETCOPaymentService $service) {
 
+        dd($request->all());
+
         $response = simplexml_load_string($service->checkPaymentStatus(["DR" => $request->get('String1')]));
 
         if ((string)$response->Status === "AP") {
