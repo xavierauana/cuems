@@ -95,7 +95,7 @@ Route::any("paymentCallBack",
         if ((string)$response->Status === "AP") {
 
             $record = PaymentRecord::findOrFail($request->get('ref_id'));
-            $formData = json_decode($record->form_data);
+            $formData = json_decode($record->form_data, true);
 
             $ticket = Ticket::findOrFail($formData['ticket_id']);
 
