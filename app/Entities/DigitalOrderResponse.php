@@ -20,6 +20,10 @@ class DigitalOrderResponse
      * @param string $url
      */
     public function __construct(string $token, string $url) {
+
+        if (empty($token) or empty($url)) {
+            throw new \InvalidArgumentException("Argument missing for DigitalOrderResponse instantiation.");
+        }
         $this->token = $token;
         $this->url = $url;
     }

@@ -55,8 +55,9 @@ Route::post('payment_test/token', function () {
             100, \App\Enums\PaymentType::Authorisation,
             "http://dev.mect.cuhk.edu.hk/" . 'paymentCallBack');
 
-        $data = $service->getDigitalOrder($request);
 
+
+        $data = $service->getDigitalOrder($request);
         return response()->json($data);
     }
 

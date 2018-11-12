@@ -15,6 +15,7 @@ use App\Entities\DigitalOrderResponse;
 use App\Entities\PaymentGatewayEndpoints;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class JETCOPaymentService implements PaymentServiceInterface
 {
@@ -61,10 +62,11 @@ class JETCOPaymentService implements PaymentServiceInterface
 
         $response = $this->client->send($httpRequest);
 
+
         $xml = simplexml_load_string((string)$response->getBody());
 
-        if ($errorMsg = (string)$xml->errors) {
-            throw new \InvalidArgumentException($errorMsg);
+        if (!empty((string)$xml->error)) {
+            throw new HttpResponseException(response((string)$xml->error));
         }
 
         return new DigitalOrderResponse((string)$xml->DO,
