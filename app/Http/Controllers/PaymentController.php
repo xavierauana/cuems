@@ -30,7 +30,6 @@ class PaymentController extends Controller
 
         $validatedData = $this->validate($request,
             array_merge($this->delegate->getStoreRules(), [
-                'token'     => 'required',
                 'ticket_id' => 'required|in:' . implode(",", Ticket::public()
                                                                    ->available()
                                                                    ->pluck('id')
@@ -49,7 +48,7 @@ class PaymentController extends Controller
 
             $invoiceNumber = $prefix . $invoiceId;
 
-            $request = new DigitalOrderRequest(
+            $DORequest = new DigitalOrderRequest(
                 $invoiceNumber,
                 100,
                 PaymentType::Authorisation,
@@ -59,14 +58,14 @@ class PaymentController extends Controller
                     ]))
             );
 
-            $data = $service->getDigitalOrder($request);
+            $data = $service->getDigitalOrder($DORequest);
 
             return response()->json($data);
 
         }
 
 
-//        $ticket = Ticket::findOrFail($validatedData['ticket_id']);
+        //        $ticket = Ticket::findOrFail($validatedData['ticket_id']);
         //
         //        try {
         //
