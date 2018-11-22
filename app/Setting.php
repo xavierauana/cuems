@@ -28,4 +28,9 @@ class Setting extends Model
     public function event(): Relation {
         return $this->belongsTo(Event::class);
     }
+
+    public function getCacheKey(): string {
+
+        return "settings_{$this->event_id}_{$this->key}";
+    }
 }

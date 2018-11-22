@@ -33,6 +33,8 @@
                           <a class="dropdown-item"
                              href="{{route('roles.index')}}">Delegate Roles</a>
                           <a class="dropdown-item"
+                             href="{{route('positions.index')}}">Positions</a>
+                          <a class="dropdown-item"
                              href="{{route('institutions.index')}}">Institutions</a>
                           <a class="dropdown-item"
                              href="{{route('expense_categories.index')}}">Expenses Categories</a>

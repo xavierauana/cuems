@@ -42,22 +42,87 @@
  
 </head>
 <body>
-    <table class="ticket">
-            <tr>
-                <td class="left">
-                    <img src="data:image/png;base64,{{$imageData}}">
-                </td>
-                <td class="right">
-                    <p class="event-title"
-                       style="font-size: 18px">Event Name: {{$event->title}}</p>
-                    <p class="event-title"
-                       style="font-weight: normal">Name: {{$delegateName}}</p>
-                    <p class="event-title"
-                       style="font-weight: normal">Ticket: {{$ticketName}}</p>
-                    <p class="event-title"
-                       style="font-weight: normal"> Date: {{$event->start_at->toDateString()}}</p>
-                </td>
-            </tr>
-    </table>
+<table id="ticket">
+    <tr>
+        <td>
+            <img>
+        </td>
+        <td>
+            <h2>ADVANCES IN MEDICINE 2019</h2>
+            <h2>25-26 May 2019</h2>
+            <h4>Hong Kong Convention & Exhibition Centre</h4>
+            <p>
+                Department of Medicine & Therapeutics <br>
+                Faculty of Medicine <br>
+                The Chinese University of Hong Kong
+            </p>
+        </td>
+        <td>
+            <img class="logo2">
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td>
+            (Date)
+	(QR Code)
+«Title» «Given_name» «Surname»
+«Department»
+«Institution__Hospital»
+«Address1»
+«Address2»
+«Address3»
+«Country»
+        </td>
+    </tr>
+</table>
+    (Date)
+	(QR Code)
+«Title» «Given_name» «Surname»
+«Department»
+«Institution__Hospital»
+«Address1»
+«Address2»
+«Address3»
+«Country»
+
+Your registration no.: «ID»
+
+CONFIRMATION OF REGISTRATION
+
+We are pleased to confirm your registration details as follows:-
+
+Category	Unit price (HK$)	No. of person	Amount paid (HK$)
+«Registration_Category»
+«Registration_Code»
+	«Unit_Price»
+1
+	«Amount»
+
+	Grand Total (HK$):	«Amount»
+
+
+«Payment_Code»
+
+*Lunch box will be served at the venue on a first-come-first-served basis.
+
+Remarks:
+1)  Please quote your registration number above in all communications.
+2)  This confirmation is an official receipt of your registration.
+3)  Should there be any amendments regarding your registration, please inform Ms. Celia Lin at at 3505-1299 as soon as possible.
+4)	Please present this letter at the Conference registration counter to obtain your registration kit.
+
+Should you have any questions, please feel free to contact the Conference Secretariat by email at aim@cuhk.edu.hk.
+
+
+
+
+
+
+Conference Secretariat, AIM 2019
+Department of Medicine & Therapeutics
+The Chinese University of Hong Kong
+
 </body>
 </html>

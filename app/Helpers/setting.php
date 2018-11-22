@@ -5,10 +5,22 @@
  * Time: 6:16 AM
  */
 
-use App\Setting;
+use App\Event;
 
 if (!function_exists('setting')) {
-    function setting(string $key): ?string {
-        return optional(Setting::where("key", $key)->first())->value;
+    function setting(Event $event, string $key): ?string {
+
+        $cacheKey = "settings_{$event->id}_{$key}";
+
+        if (cache()->has($key)) {
+            return cache($key);
+        } else {
+            $value = optional($event->settings()->where('key', $key)
+                                    ->first())->value;
+            $minutes = 10;
+            cache()->put($cacheKey, $value, $minutes);
+
+            return $value;
+        }
     }
 }

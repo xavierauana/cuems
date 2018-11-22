@@ -96,7 +96,7 @@ class TicketsController extends Controller
      */
     public function update(Request $request, Event $event, Ticket $ticket) {
         $validatedData = $this->validate($request,
-            $ticket->getStoreRules($event->id),
+            $ticket->getUpdateRules($event->id),
             Ticket::ErrorMessages);
 
         $validatedData['is_public'] = isset($validatedData['is_public']);

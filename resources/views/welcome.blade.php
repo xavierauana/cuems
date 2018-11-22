@@ -34,7 +34,7 @@
 	        @include("_components.registration_form_basic_section")
 	        @include("_components.registration_form_institution_section")
 	        <tickets
-			        :tickets="{{json_encode(\App\Ticket::whereEventId(1)->public()->available()->get())}}"
+			        :tickets="{{json_encode(\App\Ticket::whereEventId($event->id)->public()->available()->get())}}"
 			        @select="update">
                 @if ($errors->has('ticket'))
 			        <template slot="errorMessage">
@@ -45,6 +45,10 @@
 		        @endif
             </tickets>
 	        @include("_components.registration_trainee_section")
+	
+	        <div>{!! setting($event, "important_note") !!}</div>
+	        
+	        <div>{!! setting($event, "privacy") !!}</div>
 	
 	        <button class="btn btn-primary">Submit</button>
 	

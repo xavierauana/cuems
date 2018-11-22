@@ -65,6 +65,32 @@ class Ticket extends Model
         return $rules;
     }
 
+    public function getUpdateRules($event_id = null): array {
+        // TODO set code to be unique for each Event'
+
+        $rules = [
+            'name'      => 'required',
+            'code'      => [
+                'required',
+                Rule::unique('tickets')->where(function ($query
+                ) use (
+                    $event_id
+                ) {
+                    return $query->where('event_id', $event_id);
+                })->ignore($this->id),
+            ],
+            'price'     => 'required|min:0|numeric',
+            'vacancy'   => 'nullable|numeric',
+            'is_public' => 'nullable|boolean',
+            'start_at'  => 'required|date',
+            'end_at'    => 'required|date|date_gt:start_at',
+            'note'      => 'nullable',
+            'template'  => 'nullable',
+        ];
+
+        return $rules;
+    }
+
     // Relation
     public function event(): Relation {
 

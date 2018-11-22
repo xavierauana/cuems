@@ -11,6 +11,7 @@
 |
 */
 
+use Adldap\AdldapInterface;
 use App\Event;
 use App\Expense;
 use App\ExpenseMedium;
@@ -23,6 +24,7 @@ use App\Http\Controllers\ExpensesController;
 use App\Http\Controllers\InstitutionsController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PositionsController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\SettingsControllers;
 use App\Http\Controllers\TalksController;
@@ -34,7 +36,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('index');
+Route::get('/', function (Request $request) {
+    $id = $request->get('event');
+    $event = Event::findOrFail($id);
+
+    return view("welcome")->withEvent($event);
+})->name('index');
+
+Route::get('reg', function (Request $request) {
+    $id = $request->get('event');
+    $event = Event::findOrFail($id);
+
+    return view("welcome", compact('event'));
+});
+
+Route::get('ldap', function (Request $request, AdldapInterface $adldap) {
+
+    dd($adldap);
+});
 
 // JETCO Payment
 Route::post('token', PaymentController::class . "@token");
@@ -48,7 +67,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
 Route::post('delegates', PaymentController::class . "@pay");
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(/**
+ *
+ */
+    ['middleware' => 'auth'], function () {
 
     Route::get('/dashboard', DashboardController::class . "@index")
          ->name('dashboard');
@@ -100,6 +122,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('institutions/search', InstitutionsController::class . "@search")
          ->name('institutions.search');
     Route::resource('institutions', InstitutionsController::class);
+
+    // Position
+    Route::get('positions/search', PositionsController::class . "@search")
+         ->name('positions.search');
+    Route::resource('positions', PositionsController::class);
 
 
     // Templates

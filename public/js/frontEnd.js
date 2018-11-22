@@ -7176,6 +7176,16 @@ var app = new Vue({
   },
   mounted: function mounted() {
     $('.select2').select2();
+    $('.other_institution_container').hide();
+    $('.select2[name=institution]').on('select2:close', function (e) {
+      if (e.target.value === 'other') {
+        $('.other_institution_container').show();
+        $('input[name=other_institution]').attr('require', true);
+      } else {
+        $('.other_institution_container').hide();
+        $('input[name=other_institution]').attr('require', false);
+      }
+    });
   },
 
   methods: {

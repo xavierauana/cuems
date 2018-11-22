@@ -14,3 +14,17 @@ if (!function_exists('getCountiesList')) {
         return array_combine($array, $array);
     }
 }
+if (!function_exists('getPositionList')) {
+    function getPositionList() {
+
+        if (!$positions = cache('positions')) {
+            $positions = \App\Position::pluck('name');
+
+            cache()->put('positions', $positions, 10);
+        }
+
+        return $positions;
+
+    }
+}
+
