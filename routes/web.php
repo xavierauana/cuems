@@ -52,7 +52,9 @@ Route::get('reg', function (Request $request) {
 
 Route::get('ldap', function (Request $request, AdldapInterface $adldap) {
 
-    dd($adldap);
+    var_dump($adldap->search()->users()->count());
+    dd($adldap->search()->users()->first());
+
 });
 
 // JETCO Payment
