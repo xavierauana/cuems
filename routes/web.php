@@ -32,7 +32,7 @@ Route::get('reg', function (Request $request) {
 
 Route::get('ldap', function (Request $request, AdldapInterface $adldap) {
     try {
-        $number = $adldap->search()->users()->count();
+        $number = $adldap->search()->users();
 
         return "number or ldap user: {$number}";
     } catch (Exception $e) {
