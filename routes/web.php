@@ -13,27 +13,7 @@
 
 use Adldap\AdldapInterface;
 use App\Event;
-use App\Expense;
-use App\ExpenseMedium;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DelegateRolesController;
-use App\Http\Controllers\DelegatesController;
-use App\Http\Controllers\EventsController;
-use App\Http\Controllers\ExpenseCategoriesController;
-use App\Http\Controllers\ExpensesController;
-use App\Http\Controllers\InstitutionsController;
-use App\Http\Controllers\NotificationsController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\PositionsController;
-use App\Http\Controllers\SessionsController;
-use App\Http\Controllers\SettingsControllers;
-use App\Http\Controllers\TalksController;
-use App\Http\Controllers\TemplatesController;
-use App\Http\Controllers\TicketsController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\VendorsController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function (Request $request) {
@@ -52,7 +32,13 @@ Route::get('reg', function (Request $request) {
 
 Route::get('ldap', function (Request $request, AdldapInterface $adldap) {
 
-    dd("number or ldap user: ", $adldap->search()->users()->count());
+
+    try {
+        $number = $adldap->search()->users()->count();
+        dd("number or ldap user: {$number}");
+    } catch (Exception $e) {
+        return $e->getMessage();
+    }
 
 });
 
@@ -77,44 +63,52 @@ Route::group(/**
          ->name('dashboard');
 
     // Event and detail
-    Route::get("events/{event}/details", EventsController::class . "@details")
+    Route::get("events /{
+        event}/details", EventsController::class . "@details")
          ->name('events.details');
     Route::resource("events", EventsController::class);
 
     // Event delegates
-    Route::get("events/{event}/delegates/export",
+    Route::get("events /{
+        event}/delegates / export",
         DelegatesController::class . "@export")
-         ->name("events.delegates.export");
-    Route::post("events/{event}/delegates/import",
+         ->name("events . delegates . export");
+    Route::post("events /{
+        event}/delegates / import",
         DelegatesController::class . "@postImport")
-         ->name("events.delegates.import");
-    Route::post("events/{event}/delegates/search",
+         ->name("events . delegates . import");
+    Route::post("events /{
+        event}/delegates / search",
         DelegatesController::class . "@postSearch")
-         ->name("events.delegates.import");
-    Route::resource("events.delegates", DelegatesController::class);
+         ->name("events . delegates . import");
+    Route::resource("events . delegates", DelegatesController::class);
 
     // Session and talks
-    Route::resource("events.sessions", SessionsController::class);
-    Route::resource("events.sessions.talks", TalksController::class);
+    Route::resource("events . sessions", SessionsController::class);
+    Route::resource("events . sessions . talks", TalksController::class);
 
 
     // Tickets
-    Route::get("events/{event}/tickets/import",
+    Route::get("events /{
+        event}/tickets / import",
         TicketsController::class . "@getImport")->name('events.tickets.import');
-    Route::post("events/{event}/tickets/import",
+    Route::post("events /{
+        event}/tickets / import",
         TicketsController::class . "@postImport");
-    Route::resource("events.tickets", TicketsController::class);
+    Route::resource("events . tickets", TicketsController::class);
 
     // Transaction
-    Route::resource("events.transactions", TransactionController::class);
+    Route::resource("events . transactions", TransactionController::class);
 
     // Event Notification
-    Route::get("events/{event}/notifications/import",
+    Route::get("events /{
+        event}/notifications / import",
         NotificationsController::class . "@getImport")
          ->name('events.notifications.import');
-    Route::post("events/{event}/notifications/import",
+    Route::post("events /{
+        event}/notifications / import",
         NotificationsController::class . "@postImport");
-    Route::resource("events.notifications", NotificationsController::class);
+    Route::resource("events . notifications", NotificationsController::class);
 
     // Delegate Roles
     Route::resource('roles', DelegateRolesController::class);
@@ -142,7 +136,7 @@ Route::group(/**
     Route::resource('events.expenses', ExpensesController::class);
     Route::get('expenses/{expense}/files/{fileName}',
         function (Expense $expense, string $fileName) {
-            if ($file = $expense->files()->wherePath("files/" . $fileName)
+            if ($file = $expense->files()->wherePath("files / " . $fileName)
                                 ->first()) {
                 $path = storage_path('app/' . $file->path);
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -154,7 +148,10 @@ Route::group(/**
                 ]);
             }
         });
-    Route::delete("events/{event}/expenses/{expense}/files/{file}",
+    Route::delete("events /{
+        event}/expenses /{
+        expense}/files /{
+        file}",
         function (
             Request $request, Event $event, Expense $expense,
             ExpenseMedium $file
