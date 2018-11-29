@@ -31,15 +31,13 @@ Route::get('reg', function (Request $request) {
 });
 
 Route::get('ldap', function (Request $request, AdldapInterface $adldap) {
-
-
     try {
         $number = $adldap->search()->users()->count();
-        dd("number or ldap user: {$number}");
+
+        return "number or ldap user: {$number}";
     } catch (Exception $e) {
         return $e->getMessage();
     }
-
 });
 
 // JETCO Payment
