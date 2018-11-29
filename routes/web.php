@@ -31,12 +31,12 @@ Route::get('reg', function (Request $request) {
 });
 
 Route::get('ldap', function (Request $request, AdldapInterface $adldap) {
+
     try {
-        $firstUser = $adldap->search()->users()->first();
+        $adldap->search()->users()->first();
 
-        dd($firstUser);
+        return "Okay";
 
-        return "number or ldap user: {$number}";
     } catch (Exception $e) {
         return $e->getMessage();
     }
