@@ -52,8 +52,7 @@ Route::get('reg', function (Request $request) {
 
 Route::get('ldap', function (Request $request, AdldapInterface $adldap) {
 
-    var_dump($adldap->search()->users()->count());
-    dd($adldap->search()->users()->first());
+    dd("number or ldap user: ", $adldap->search()->users()->count());
 
 });
 
