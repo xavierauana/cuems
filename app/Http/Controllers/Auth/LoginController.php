@@ -43,7 +43,7 @@ class LoginController extends Controller
     public function attemptLogin(Request $request) {
 
         if ($user = User::whereEmail($request->get('email'))
-                        ->whereIsLadpUser(true)
+                        ->whereIsLdapUser(true)
                         ->first()) {
 
             try {
