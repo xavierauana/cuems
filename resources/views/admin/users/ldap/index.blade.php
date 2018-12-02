@@ -41,7 +41,7 @@
 				                    <td>{{$user->getDisplayName()}}</td>
 				                    <td>{{$user->getEmail()}}</td>
 				                    <td>
-					                    @if(App\User::whereEmail($user->getFirstAttribute('cn'))->count())
+					                    @if(App\User::whereEmail($user->getFirstAttribute('cn'))->count() === 0)
 						                    {!! Form(['url'=>route('users.ldap')]) !!}
 						                    <input name="name"
 						                           value="{{$user->getFirstAttribute('cn')}}"
