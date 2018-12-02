@@ -166,7 +166,7 @@ class UsersController extends Controller
 
         $search = $adldap->search();
 
-        $users = $search->get();
+        $users = $search->users()->get();
 
         dd($users);
 
