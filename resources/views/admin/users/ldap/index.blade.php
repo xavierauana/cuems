@@ -12,6 +12,7 @@
 	                
 	                <table class="table">
 		                <thead>
+		                    <th>CN</th>
 		                    <th>Employee Id</th>
 		                    <th>Principle Name</th>
 		                    <th>Display Name</th>
@@ -23,6 +24,7 @@
 		                <tbody>
 		                    @foreach($users as $user)
 			                    <tr>
+				                    <td>{{$user->getFirstAttribute('cn')}}</td>
 				                    <td>{{$user->getEmployeeId()}}</td>
 				                    <td>{{$user->getUserPrincipalName()}}</td>
 				                    <td>{{$user->getDisplayName()}}</td>
