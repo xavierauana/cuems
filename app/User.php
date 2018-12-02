@@ -42,4 +42,10 @@ class User extends Authenticatable implements MustVerifyEmail
             'delete' => route('users.destroy', $this),
         ];
     }
+
+    // helpers
+
+    public function getCN(): ?string {
+        return $this->getFirstAttribute('cn') ?? null;
+    }
 }
