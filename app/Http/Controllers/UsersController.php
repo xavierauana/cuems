@@ -174,8 +174,8 @@ class UsersController extends Controller
     public function addLdapUser(Request $request) {
 
         $validatedData = $this->validate($request, [
-            'name'  => 'requried',
-            'email' => 'requried|email|unique:users',
+            'name'  => 'required',
+            'email' => 'required|email|unique:users',
         ]);
 
         $user = new User($validatedData);
