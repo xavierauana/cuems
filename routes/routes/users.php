@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('users/ldap', UsersController::class . "@ldap")
      ->name('users.ldap');
-Route::post('users/ldap', UsersController::class . "@ldap")
+Route::post('users/ldap', UsersController::class . "@ldap");
 Route::get('users/search', UsersController::class . "@search")
      ->name('users.search');
 Route::resource('users', UsersController::class);
