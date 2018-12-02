@@ -179,7 +179,7 @@ class UsersController extends Controller
         ]);
 
         $user = new User($validatedData);
-        $user->password = bcrypt(str_random(10));
+        $user->password = bcrypt(str_random(26));
         $user->is_ldap_user = true;
         $user->save();
 
