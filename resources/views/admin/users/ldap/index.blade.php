@@ -24,7 +24,7 @@
 		                <tbody>
 		                    @foreach($users as $user)
 			                    <tr>
-				                    <td>{{$user->getCN()}}</td>
+				                    <td>{{$user->getFirstAttribute('cn')()}}</td>
 				                    <td>{{$user->getEmployeeId()}}</td>
 				                    <td>{{$user->getUserPrincipalName()}}</td>
 				                    <td>{{$user->getDisplayName()}}</td>

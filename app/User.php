@@ -44,8 +44,4 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     // helpers
-
-    public function getCN(): ?string {
-        return $this->getFirstAttribute('cn') ?? null;
-    }
 }
