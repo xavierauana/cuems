@@ -12,19 +12,23 @@
 	                
 	                <table class="table">
 		                <thead>
+		                    <th>Employee Id</th>
 		                    <th>Principle Name</th>
 		                    <th>Display Name</th>
 		                    <th>Email</th>
 		                    <th>HomeMdb</th>
+		                    <th>Info</th>
 		                    <th>Actions</th>
 		                </thead>
 		                <tbody>
 		                    @foreach($users as $user)
 			                    <tr>
+				                    <td>{{$user->getEmployeeId()}}</td>
 				                    <td>{{$user->getUserPrincipalName()}}</td>
 				                    <td>{{$user->getDisplayName()}}</td>
 				                    <td>{{$user->getEmail()}}</td>
 				                    <td>{{$user->getHomeMdb()}}</td>
+				                    <td>{{$user->getInfo()}}</td>
 				                    <td>
 					                    <button class="btn btn-success">Add</button>
 				                    </td>
