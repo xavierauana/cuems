@@ -166,7 +166,7 @@ class UsersController extends Controller
 
         $search = $adldap->search();
 
-        $users = $search->users()->get();
+        $users = $search->get();
 
         return view("admin.users.ldap.index", compact('users'));
     }
