@@ -31,6 +31,8 @@
                         <div class="dropdown-menu"
                              aria-labelledby="navbarDropdown">
                           <a class="dropdown-item"
+                             href="{{route('users.index')}}">Users</a>
+                          <a class="dropdown-item"
                              href="{{route('roles.index')}}">Delegate Roles</a>
                           <a class="dropdown-item"
                              href="{{route('positions.index')}}">Positions</a>

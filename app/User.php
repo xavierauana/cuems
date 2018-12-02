@@ -31,4 +31,15 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
+
+    protected $appends = [
+        'urls',
+    ];
+
+    public function getUrlsAttribute() {
+        return [
+            'edit'   => route('users.edit', $this),
+            'delete' => route('users.destroy', $this),
+        ];
+    }
 }
