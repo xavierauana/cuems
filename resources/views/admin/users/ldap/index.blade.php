@@ -11,7 +11,7 @@
 			        <ul class="list-unstyled">
 				        @foreach(session()->get('errors') as $message )
 					        <li>{{$message->getMessage()}}</li>
-					        @endif
+				        @endforeach
 			        </ul>
 				  <button type="button" class="close" data-dismiss="alert"
 				          aria-label="Close">
