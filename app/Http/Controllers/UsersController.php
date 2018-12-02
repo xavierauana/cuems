@@ -170,4 +170,19 @@ class UsersController extends Controller
 
         return view("admin.users.ldap.index", compact('users'));
     }
+
+    public function addLdapUser(Request $request) {
+
+        $validatedData = $this->validate($request, [
+            'name'  => 'requried',
+            'email' => 'requried|email|unique:users',
+        ]);
+
+        $user = new User($validatedData);
+        $user->password = bcrypt(str_random(10));
+        $user->is_ldap_user = true;
+        $user->save();
+
+        return redirect()->route('users.index');
+    }
 }
