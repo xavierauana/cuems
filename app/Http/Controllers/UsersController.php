@@ -168,8 +168,6 @@ class UsersController extends Controller
 
         $users = $search->users()->get();
 
-        var_dump($users->first());
-
         return view("admin.users.ldap.index", compact('users'));
     }
 }

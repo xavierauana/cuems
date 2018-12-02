@@ -19,8 +19,8 @@
 		                <tbody>
 		                    @foreach($users as $user)
 			                    <tr>
-				                    <td>{{$user->name}}</td>
-				                    <td>{{$user->email}}</td>
+				                    <td>{{$user->getDisplayName()}}</td>
+				                    <td>{{$user->getEmail()}}</td>
 				                    <td>
 					                    <button class="btn btn-success">Add</button>
 				                    </td>
