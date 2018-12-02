@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -46,18 +47,26 @@ class LoginController extends Controller
                         ->whereIsLdapUser(true)
                         ->first()) {
 
+            Log::info('try login ldap user');
+
             try {
                 $provider = app(AdldapInterface::class);
                 if ($provider->auth()->attempt(
                     $request->get('email'),
                     $request->get('password'))) {
 
+                    Log::info('ldap user login successfully');
+
                     Auth::login($user);
 
                 } else {
+                    Log::info('ldap user login failed');
+
                     return false;
                 }
             } catch (\Exception $e) {
+                Log::info('ldap user login exception' . $e->getMessage());
+
                 return false;
             }
         }
