@@ -37,11 +37,14 @@
 						                   <a class="btn btn-info text-light"
 						                      href="{{route("events.delegates.edit",[$event, $delegate])}}">Edit</a>
 									  </div>
-					                   <div class="btn-group btn-group-sm mr-2"
-					                        role="group"
-					                        aria-label="Second group">
-						                  <button class="btn btn-danger text-light">Delete</button>
-									  </div>
+					                    <form class="action"
+					                          action="{{route("events.delegates.destroy",[$event, $delegate])}}"
+					                          onsubmit="deleteItem(event)"
+					                          method="POST">
+							                   @method('delete')
+						                    @csrf
+						                    <button class="btn btn-sm btn-danger text-light">Delete</button>
+						                   </form>
 				                  </div>
 			                  </td>
 		                  </tr>
@@ -52,4 +55,16 @@
             </div>
         </div>
     </div>
+	
+	@push('scripts')
+		<script>
+			function deleteItem(e) {
+              e.preventDefault();
+              if (confirm("are you sure to delete the delegate?")) {
+                e.target.submit()
+              }
+            }
+		</script>
+	
+	@endpush
 @endcomponent

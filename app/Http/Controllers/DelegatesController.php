@@ -190,10 +190,11 @@ class DelegatesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param \App\Event     $event
      * @param  \App\Delegate $delegate
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, Event $event, Delegate $delegate
+    public function destroy(Event $event, Delegate $delegate
     ) {
         $delegate = $event->delegates()->find($delegate->id);
 
