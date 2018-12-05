@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class DelegateExport implements FromCollection, WithHeadings, WithMapping
+class NewDelegate implements FromCollection, WithHeadings, WithMapping
 {
     /**
      * @var \App\Event
@@ -17,21 +17,21 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
     private $event;
     private $transactionStatus;
 
-    /**
-     * DelegateExport constructor.
-     * @param \App\Event $event
-     */
     public function __construct(Event $event) {
         $this->event = $event;
         $this->transactionStatus = array_flip(TransactionStatus::getStatus());
     }
 
     /**
-     * Excel header
-     * @return array
+     * param \Illuminate\Support\Collection
      */
+    public function collection() {
+        return $this->event->delegates()->whereIsVerified(false)->get();
+    }
+
     public function headings(): array {
         return [
+            'id',
             'first_name',
             'last_name',
             'email',
@@ -40,15 +40,8 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
             'roles',
             'ticket',
             'transaction_status',
+            'is_duplicated',
         ];
-    }
-
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-
-    public function collection() {
-        return $this->event->delegates;
     }
 
     /**
@@ -57,8 +50,8 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
      * @return array
      */
     public function map($delegate): array {
-
         return [
+            $delegate->id,
             $delegate->first_name,
             $delegate->last_name,
             $delegate->email,
@@ -70,6 +63,7 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
             }, ""),
             $delegate->transactions->first()->ticket->name,
             $this->transactionStatus[$delegate->transactions->first()->status],
+            $delegate->is_duplicated,
         ];
     }
 }

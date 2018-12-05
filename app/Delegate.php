@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Enums\DelegateDuplicationStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -31,6 +32,10 @@ class Delegate extends Model
         'address_1',
         'address_2',
         'address_3',
+    ];
+
+    protected $casts = [
+        'is_verified' => 'boolean',
     ];
 
     // Relation
@@ -142,6 +147,15 @@ class Delegate extends Model
 
     public function routeNotificationForMail(): string {
         return $this->email;
+    }
+
+    public function markDuplicated(): void {
+        $this->is_duplicated = DelegateDuplicationStatus::DUPLICATED;
+        $this->save();
+    }
+
+    public function isDuplicated(): bool {
+        return $this->is_duplicated === DelegateDuplicationStatus::DUPLICATED;
     }
 
 }

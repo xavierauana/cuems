@@ -8,10 +8,8 @@
 use App\Http\Controllers\TicketsController;
 use Illuminate\Support\Facades\Route;
 
-Route::get("events /{
-        event}/tickets / import",
+Route::get("events/{event}/tickets/import",
     TicketsController::class . "@getImport")->name('events.tickets.import');
-Route::post("events /{
-        event}/tickets / import",
+Route::post("events/{event}/tickets/import",
     TicketsController::class . "@postImport");
-Route::resource("events . tickets", TicketsController::class);
+Route::resource("events.tickets", TicketsController::class);

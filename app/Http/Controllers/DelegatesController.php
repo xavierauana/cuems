@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Delegate;
+use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
 use App\Event;
 use App\Events\SystemEvent;
 use App\Exports\DelegateExport;
+use App\Exports\NewDelegate;
+use App\Imports\NewDelegateImport;
 use App\Jobs\ImportDelegates;
+use App\Jobs\UpdateNewDelegates;
+use App\Services\DelegateDuplicateChecker;
 use App\Transaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,7 +41,10 @@ class DelegatesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Event $event) {
-        $delegates = $event->delegates;
+        $delegates = $event->delegates()
+                           ->whereIsDuplicated(DelegateDuplicationStatus::NO)
+                           ->orderBy('last_name')
+                           ->paginate();
 
         return view('admin.events.delegates.index',
             compact('event', 'delegates'));
@@ -83,6 +91,11 @@ class DelegatesController extends Controller
 
             $newDelegate = $this->createDelegate($event, $request,
                 $validatedData);
+
+            $newDelegate->is_verified = true;
+            $newDelegate->is_duplicated = DelegateDuplicationStatus::NO;
+
+            $newDelegate->save();
 
             DB::commit();
 
@@ -239,8 +252,14 @@ class DelegatesController extends Controller
 
         $input = $request->all();
 
-        $delegates = $event->delegates()->where(array_keys($input)[0], '=',
-            array_values($input)[0])->get();
+        $delegates = collect([]);
+
+        if (array_keys($input)[0] and array_values($input)[0]) {
+            $checker = new DelegateDuplicateChecker($event);
+            $delegates = $checker->find(array_keys($input)[0],
+                array_values($input)[0]);
+        }
+
 
         return response()->json($delegates);
     }
@@ -250,5 +269,50 @@ class DelegatesController extends Controller
         $event->load('delegates.roles');
 
         return Excel::download(new DelegateExport($event), 'delegates.xls');
+    }
+
+    public function new(Event $event) {
+        $delegates = $event->delegates()->whereIsVerified(false)->get();
+
+        return view("admin.events.delegates.new.index",
+            compact('delegates', 'event'));
+    }
+
+    public function duplicates(Event $event) {
+        $delegates = $event->delegates()
+                           ->whereIsDuplicated(DelegateDuplicationStatus::DUPLICATED)
+                           ->get();
+
+        return view("admin.events.delegates.duplicates.index",
+            compact('delegates', 'event'));
+    }
+
+    public function exportNew(Event $event) {
+        $event->load('delegates.transactions.ticket');
+        $event->load('delegates.roles');
+
+        return Excel::download(new NewDelegate($event), 'new_delegates.xls');
+    }
+
+    public function getImportNew(Event $event) {
+
+        return view('admin.events.delegates.new.import', compact('event'));
+    }
+
+    public function importNew(Event $event, Request $request) {
+
+        $this->validate($request, [
+            'file' => 'required|file|min:1'
+        ]);
+
+        $file = $request->file('file');
+
+        $collection = Excel::toCollection(new NewDelegateImport(),
+            $file);
+
+        $this->dispatch(new UpdateNewDelegates($collection, $event));
+
+        return redirect()->route("events.delegates.new", $event)
+                         ->withStatus("delegates verified!");
     }
 }

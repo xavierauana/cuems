@@ -29,10 +29,7 @@ Route::get('expenses/{expense}/files/{fileName}',
             ]);
         }
     });
-Route::delete("events /{
-        event}/expenses /{
-        expense}/files /{
-        file}",
+Route::delete("events/{event}/expenses/{expense}/files/{file}",
     function (
         Request $request, Event $event, Expense $expense,
         ExpenseMedium $file

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Delegate;
 use App\DelegateRole;
 use App\Entities\DigitalOrderRequest;
+use App\Enums\DelegateDuplicationStatus;
 use App\Enums\PaymentRecordStatus;
 use App\Enums\PaymentType;
 use App\Enums\SystemEvents;
@@ -12,6 +13,7 @@ use App\Enums\TransactionStatus;
 use App\Event;
 use App\Events\SystemEvent;
 use App\PaymentRecord;
+use App\Services\DelegateDuplicateChecker;
 use App\Services\JETCOPaymentService;
 use App\Ticket;
 use Illuminate\Http\Request;
@@ -103,11 +105,11 @@ class PaymentController extends Controller
                 $newDelegate = $this->createDelegate($event, $formData,
                     $chargeResponse, $ticket);
 
+                $this->checkIsNewDelegateIsDuplicated($event, $newDelegate);
+
                 DB::commit();
 
-                $record->update([
-                    'status' => PaymentRecordStatus::AUTHORIZED
-                ]);
+                $record->update(['status' => PaymentRecordStatus::AUTHORIZED]);
 
                 event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
                     $newDelegate));
@@ -180,5 +182,24 @@ class PaymentController extends Controller
     ): bool {
 
         return $array[$key] == 'other' and !empty($array[$key2]);
+    }
+
+    /**
+     * @param $event
+     * @param $newDelegate
+     */
+    private function checkIsNewDelegateIsDuplicated($event, $newDelegate
+    ): void {
+
+        $checker = new DelegateDuplicateChecker($event);
+
+        $duplications = $checker->find(['email', 'mobile'],
+            [$newDelegate->email, $newDelegate->mobile]);
+
+        $newDelegate->is_duplicated = ($duplications->count() > 1) ?
+            DelegateDuplicationStatus::DUPLICATED :
+            $newDelegate->is_duplicated = DelegateDuplicationStatus::NO;
+
+        $newDelegate->save();
     }
 }

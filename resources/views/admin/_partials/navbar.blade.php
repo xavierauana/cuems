@@ -30,10 +30,12 @@
                         </a>
                         <div class="dropdown-menu"
                              aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item"
-                             href="{{route('users.index')}}">Users</a>
-                          <a class="dropdown-item"
-                             href="{{route('roles.index')}}">Delegate Roles</a>
+                            @if(!auth()->user()->is_ldap_user)
+		                        <a class="dropdown-item"
+		                           href="{{route('users.index')}}">Users</a>
+	                        @endif
+	                        <a class="dropdown-item"
+	                           href="{{route('roles.index')}}">Delegate Roles</a>
                           <a class="dropdown-item"
                              href="{{route('positions.index')}}">Positions</a>
                           <a class="dropdown-item"

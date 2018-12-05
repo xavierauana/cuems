@@ -21,6 +21,9 @@ class UsersController extends Controller
      */
     public function __construct(User $repo) {
         $this->repo = $repo;
+
+        $this->middleware('ldap_user');
+
     }
 
     /**

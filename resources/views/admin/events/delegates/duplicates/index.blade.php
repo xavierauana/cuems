@@ -3,16 +3,9 @@
         <div class="col">
          @include("admin._partials.alert")
 	        <div class="card">
-		        <div class="card-header">Delegates for Event: {{$event->title}}
-			        <a href="{{route('events.delegates.create', $event)}}"
-			           class="btn btn-sm btn-success pull-right">New</a>
-			        <a href="#"
-			           {{--href="{{route('events.delegates.import', $event)}}"--}}
-			           class="btn btn-sm btn-outline-success pull-right mr-1">Import</a>
+		        <div class="card-header">Duplicated delegates for Event: {{$event->title}}
 			        <a href="{{route('events.delegates.export', $event)}}"
 			           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
-			        <a href="{{route('events.delegates.duplicates', $event)}}"
-			           class="btn btn-sm btn-outline-primary pull-right mr-1">Duplicates</a>
                 </div>
                 
                 <div class="table-responsive">
@@ -22,6 +15,7 @@
                         <th>Email</th>
                         <th>Institution</th>
                         <th>Role</th>
+                        <th>Is Duplicated</th>
                         <th>Actions</th>
                     </thead>
 	                  <tbody>
@@ -31,6 +25,11 @@
 			                  <td>{{$delegate->email}}</td>
 			                  <td>{{$delegate->institution}}</td>
 			                  <td>{{$delegate->roles->implode('label',', ')}}</td>
+			                  <td>@if($delegate->isDuplicated())
+					                  <span class="badge badge-warning">Duplicated</span>
+				                  @else
+					                  <span class="badge badge-success">NO</span>
+				                  @endif</td>
 			                  <td>
 				                  <div class="btn-toolbar" role="toolbar"
 				                       aria-label="Toolbar with button groups">
@@ -51,10 +50,6 @@
 	                  @endforeach
 	                  </tbody>
                   </table>
-	                <div class="col">
-		            {!! $delegates->links() !!}
-	                </div>
-	                
                 </div>
             </div>
         </div>

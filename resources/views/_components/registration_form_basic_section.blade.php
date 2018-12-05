@@ -50,10 +50,10 @@
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Surname</label>
             <div class="col-sm-10">
-               {{Form::text('first_name', null, ['class'=>'form-control', 'required','placeholder'=>'Chan'])}}
-	            @if ($errors->has('first_name'))
+               {{Form::text('last_name', null, ['class'=>'form-control', 'required','placeholder'=>'Chan'])}}
+	            @if ($errors->has('last_name'))
 		            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('first_name') }}</strong>
+                            <strong>{{ $errors->first('last_name') }}</strong>
                         </span>
 	            @endif
             </div>
@@ -62,10 +62,10 @@
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Given Name</label>
             <div class="col-sm-10">
-                 {{Form::text('last_name', null, ['class'=>'form-control', 'required','placeholder'=>'Tai-Man or Peter Tai-Man'])}}
-	            @if ($errors->has('last_name'))
+                 {{Form::text('first_name', null, ['class'=>'form-control', 'required','placeholder'=>'Tai-Man or Peter Tai-Man'])}}
+	            @if ($errors->has('first_name'))
 		            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('last_name') }}</strong>
+                            <strong>{{ $errors->first('first_name') }}</strong>
                         </span>
 	            @endif
             </div>
