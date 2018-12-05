@@ -22,7 +22,8 @@
 	                  <tbody>
 	                  @foreach($delegates as $delegate)
 		                  <tr data-id="{{$delegate->id}}">
-			                  <td>{{$delegate->name}}</td>
+			                  <td><a target="_blank"
+			                         href="{{route('events.delegates.show',[$event, $delegate])}}">{{$delegate->name}}</a></td>
 			                  <td>{{$delegate->email}}</td>
 			                  <td>{{$delegate->institution}}</td>
 			                  <td>{{$delegate->roles->implode('label',', ')}}</td>
