@@ -150,7 +150,7 @@ class PaymentController extends Controller
             'card_brand' => $chargeResponse->brand,
             'last_4'     => $chargeResponse->last4,
             'ticket_id'  => $ticket->id,
-            'status'     => TransactionStatus::COMPLETED,
+            'status'     => TransactionStatus::AUTHORIZED,
         ]);
 
         return $newDelegate;

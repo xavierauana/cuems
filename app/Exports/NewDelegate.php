@@ -40,6 +40,7 @@ class NewDelegate implements FromCollection, WithHeadings, WithMapping
             'roles',
             'ticket',
             'transaction_status',
+            'transaction_id',
             'is_duplicated',
         ];
     }
@@ -63,6 +64,7 @@ class NewDelegate implements FromCollection, WithHeadings, WithMapping
             }, ""),
             $delegate->transactions->first()->ticket->name,
             $this->transactionStatus[$delegate->transactions->first()->status],
+            $delegate->transactions->first()->charge_id,
             $delegate->is_duplicated,
         ];
     }

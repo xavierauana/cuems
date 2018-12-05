@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Delegate;
 use App\Enums\DelegateDuplicationStatus;
 use App\Enums\TransactionStatus;
 use App\Event;
@@ -55,8 +56,8 @@ class UpdateNewDelegates implements ShouldQueue
             }
         });
 
-        $goodData = collect($data)->filter(function ($item) {
-            return !Validator::make($item, [
+        $validate = function ($item) {
+            $validator = Validator::make($item, [
                 "id"                 => [
                     'required',
                     Rule::exists('delegates')->where(function ($query) {
@@ -72,10 +73,28 @@ class UpdateNewDelegates implements ShouldQueue
                 "ticket"             => "required",
                 "transaction_status" => "required|in:" . join(',',
                         array_keys(TransactionStatus::getStatus())),
+                "transaction_id"     => [
+                    "required",
+                    Rule::exists('transactions', 'charge_id')->where(function (
+                        $query
+                    ) use (
+                        $item
+                    ) {
+                        $query->where([
+                            ['event_id', '=', $this->event->id],
+                            ['payee_type', '=', Delegate::class],
+                            ['payee_id', '=', $item['id']],
+                        ]);
+                    })
+                ],
                 "is_duplicated"      => "required|in:" . join(',',
                         array_keys(DelegateDuplicationStatus::getStatus())),
-            ])->fails();
-        })->each(function ($item) use (&$count) {
+            ]);
+
+            return !$validator->fails();
+        };
+
+        $update = function ($item) use (&$count) {
 
             if ($delegate = $this->event->delegates()->whereIsVerified(false)
                                         ->find($item['id'])) {
@@ -88,6 +107,8 @@ class UpdateNewDelegates implements ShouldQueue
 
                 $count++;
             }
-        });
+        };
+
+        collect($data)->filter($validate)->each($update);
     }
 }
