@@ -11,16 +11,20 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \App\Event $event
      * @return \Illuminate\Http\Response
      */
     public function index(Event $event) {
-        $transactions = Transaction::whereIn('ticket_id',
+
+        $query = Transaction::whereIn('ticket_id',
             function ($query) use ($event) {
                 $query->select('id')
                       ->from("tickets")
                       ->where('event_id', $event->id);
-            })->with(['payee', 'ticket'])
-                                   ->get();
+            })->with(['payee', 'ticket'])->latest();
+
+
+        $transactions = $query->paginate();
 
         return view('admin.events.transactions.index',
             compact('transactions', 'event'));
@@ -84,5 +88,33 @@ class TransactionController extends Controller
      */
     public function destroy(Transaction $transaction) {
         //
+    }
+
+    public function search(
+        Request $request, Event $event, Transaction $transaction
+    ) {
+        if ($request->has('keyword')) {
+
+            $transactions = $transaction
+                ->join('delegates as d',
+                    'transactions.payee_id', '=', 'd.id')
+                ->join('tickets as t',
+                    'transactions.ticket_id', '=', 't.id')
+                ->where('transactions.charge_id', 'like',
+                    "%" . $request->get('keyword') . "%")
+                ->orWhere('d.first_name', 'like',
+                    "%" . $request->get('keyword') . "%")
+                ->orWhere('d.last_name', 'like',
+                    "%" . $request->get('keyword') . "%")
+                ->orWhere('t.name', 'like',
+                    "%" . $request->get('keyword') . "%")
+                ->paginate();
+
+            return view("admin.events.transactions.index",
+                compact('event', 'transactions'));
+
+        }
+
+        return redirect()->route('events.transactions.index', $event);
     }
 }

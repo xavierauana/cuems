@@ -8,19 +8,38 @@ $status = array_flip((new \ReflectionClass(\App\Enums\TransactionStatus::class))
 	        <div class="card">
 		        <div class="card-header">Delegates for Event: {{$event->title}}</div>
                 
+		        <div class="row mt-3 mx-3">
+			        <div class="col-md-6 float-right">
+				        <form action="{{route('events.transactions.search', $event)}}"
+				              method="GET">
+					        
+					        <div class="input-group mb-3">
+							  <input type="text" class="form-control"
+							         name="keyword"
+							         placeholder="Keyword" aria-label="Keyword">
+							  <div class="input-group-append">
+							    <button class="btn btn-outline-secondary"
+							            type="submit">Search</button>
+							  </div>
+							</div>
+				        </form>
+			        </div>
+		        </div>
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
                         <th>Delegate Name</th>
                         <th>Ticket</th>
                         <th>Transaction Id</th>
-                        <th>Date</th>
+                        <th>Timestamp</th>
                         <th>Status</th>
                     </thead>
 	                  <tbody>
 	                  @foreach($transactions as $transaction)
 		                  <tr>
-			                  <td>{{optional($transaction->payee)->name}}</td>
+			                  <td>@if($delegate = $transaction->payee) <a
+						                  href="{{route('events.delegates.show',[$event,$delegate])}}">{{$delegate->name}}</a> @else
+					                  NA @endif</td>
 			                  <td>{{$transaction->ticket->name}}</td>
 			                  <td>{{$transaction->charge_id}}</td>
 			                  <td>{{$transaction->created_at->toDateTimeString()}}</td>
@@ -29,6 +48,7 @@ $status = array_flip((new \ReflectionClass(\App\Enums\TransactionStatus::class))
 	                  @endforeach
 	                  </tbody>
                   </table>
+	                {{$transactions->links()}}
                 </div>
             </div>
         </div>

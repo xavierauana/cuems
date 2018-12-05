@@ -88,7 +88,7 @@ Route::group(['middleware' => 'auth'], function () {
     @include('routes/tickets.php');
 
     // Transaction
-    Route::resource("events.transactions", TransactionController::class);
+    @include('routes/transactions.php');
 
     // Event Notification
     @include('routes/event_notification.php');
