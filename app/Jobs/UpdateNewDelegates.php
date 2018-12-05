@@ -40,24 +40,10 @@ class UpdateNewDelegates implements ShouldQueue
      */
     public function handle() {
 
-        $headers = [];
-
-        $data = [];
-
         $count = 0;
 
-        $this->collection->first()->each(function ($row, $index) use (
-            &$headers, &$data
-        ) {
-            if ($index === 0) {
-                $headers = $row->toArray();
-            } else {
-                $data[] = array_combine($headers, $row->toArray());
-            }
-        });
-
         $validate = function ($item) {
-            $validator = Validator::make($item, [
+            $validator = Validator::make($item->toArray(), [
                 "id"                 => [
                     'required',
                     Rule::exists('delegates')->where(function ($query) {
@@ -74,27 +60,25 @@ class UpdateNewDelegates implements ShouldQueue
                 "transaction_status" => "required|in:" . join(',',
                         array_keys(TransactionStatus::getStatus())),
                 "transaction_id"     => [
-                    "required",
-                    Rule::exists('transactions', 'charge_id')->where(function (
-                        $query
-                    ) use (
-                        $item
-                    ) {
-                        $query->where([
-                            ['payee_type', '=', Delegate::class],
-                            ['payee_id', '=', $item['id']],
-                        ]);
-                    })
+                    "nullable",
+                    Rule::exists('transactions', 'charge_id')
+                        ->where(function ($query) use ($item) {
+                            $query->where([
+                                ['payee_type', '=', Delegate::class],
+                                ['payee_id', '=', $item['id']],
+                            ]);
+                        })
                 ],
                 "is_duplicated"      => "required|in:" . join(',',
                         array_keys(DelegateDuplicationStatus::getStatus())),
             ]);
 
+
             return !$validator->fails();
         };
 
         $update = function ($item) use (&$count) {
-
+            $item = $item->toArray();
             if ($delegate = $this->event->delegates()->whereIsVerified(false)
                                         ->find($item['id'])) {
                 $delegate->update($item);
@@ -109,11 +93,10 @@ class UpdateNewDelegates implements ShouldQueue
                                         ->first();
                 $transaction->status = TransactionStatus::getStatus()[strtoupper($item['transaction_status'])];
                 $transaction->save();
-
                 $count++;
             }
         };
 
-        collect($data)->filter($validate)->each($update);
+        $this->collection->first()->filter($validate)->each($update);
     }
 }

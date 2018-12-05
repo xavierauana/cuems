@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\SystemEvents;
 use App\Event;
 use App\Notification;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -59,10 +60,14 @@ class NotificationsController extends Controller
      * @return void
      */
     public function store(Request $request, Event $event) {
-        $validatedData = $this->validate($request,
-            $this->repo->getStoreRules());
+        $rules = $this->repo->getStoreRules();
+        $validatedData = $this->validate($request, $rules);
 
         $validatedData['include_ticket'] = isset($validatedData['include_ticket']) ? $validatedData['include_ticket'] : false;
+        $validatedData['verified_only'] = isset($validatedData['verified_only']) ? $validatedData['verified_only'] : false;
+        $validatedData['include_duplicated'] = isset($validatedData['include_duplicated']) ? $validatedData['include_duplicated'] : false;
+        $validatedData['schedule'] = Carbon::createFromFormat('d M Y h:m',
+            $validatedData['schedule']);
 
         $newNotification = $event->notifications()->create($validatedData);
 

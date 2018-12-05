@@ -14,19 +14,15 @@ $status = array_flip((new \ReflectionClass(\App\Enums\TransactionStatus::class))
                         <th>Delegate Name</th>
                         <th>Ticket</th>
                         <th>Transaction Id</th>
-                        <th>Card</th>
-                        <th>Last 4</th>
                         <th>Date</th>
                         <th>Status</th>
                     </thead>
 	                  <tbody>
 	                  @foreach($transactions as $transaction)
 		                  <tr>
-			                  <td>{{$transaction->payee->name}}</td>
+			                  <td>{{optional($transaction->payee)->name}}</td>
 			                  <td>{{$transaction->ticket->name}}</td>
 			                  <td>{{$transaction->charge_id}}</td>
-			                  <td>{{$transaction->card_brand ?? "NA"}}</td>
-			                  <td>{{$transaction->last_4 ?? "NA"}}</td>
 			                  <td>{{$transaction->created_at->toDateTimeString()}}</td>
 			                  <td>{{$status[$transaction->status]}}</td>
 		                  </tr>

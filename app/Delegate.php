@@ -6,11 +6,12 @@ use App\Enums\DelegateDuplicationStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
 class Delegate extends Model
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
     protected $fillable = [
         'prefix',
@@ -32,6 +33,7 @@ class Delegate extends Model
         'address_1',
         'address_2',
         'address_3',
+        'is_duplicated',
     ];
 
     protected $casts = [
@@ -140,8 +142,8 @@ class Delegate extends Model
             'training_organisation_address' => 'nullable|traineeInfoRequired',
             'supervisor'                    => 'nullable|traineeInfoRequired',
             'training_position'             => 'nullable|traineeInfoRequired',
-            'roles_id.*'                    => 'nullable|in:' . implode(",",
-                    DelegateRole::pluck('id')->toArray()),
+            'is_duplicated'                 => 'nullable|in:' . DelegateDuplicationStatus::DUPLICATED,
+            'roles_id.*'                    => 'nullable|exists:delegate_roles,id',
         ];
     }
 

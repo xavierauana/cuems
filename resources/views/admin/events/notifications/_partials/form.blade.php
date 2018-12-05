@@ -63,18 +63,52 @@
 	@endif
 </div>
 
-<div class="form-group">
+
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="form-group">
  
-	 <span class="switch">
-	 {{Form::checkbox('include_ticket',1, null,['class'=>'switch','id'=>'switch-normal'])}}
-		 <label for="switch-normal">Include Ticket</label>
-	 </span>
-	
-	@if ($errors->has('include_ticket'))
-		<span class="invalid-feedback" role="alert">
-            <strong>{{ $errors->first('include_ticket') }}</strong>
-        </span>
-	@endif
+			 <span class="switch">
+			 {{Form::checkbox('include_ticket',1, null,['class'=>'switch','id'=>'switch-normal'])}}
+				 <label for="switch-normal">Include Ticket</label>
+			 </span>
+			
+			@if ($errors->has('include_ticket'))
+				<span class="invalid-feedback" role="alert">
+		            <strong>{{ $errors->first('include_ticket') }}</strong>
+		        </span>
+			@endif
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="form-group">
+			 <span class="switch">
+			 {{Form::checkbox('verified_only',1, null,['class'=>'switch','id'=>'switch-1'])}}
+				 <label for="switch-1">Verified Delegates Only</label>
+			 </span>
+			
+			@if ($errors->has('verified_only'))
+				<span class="invalid-feedback" role="alert">
+		            <strong>{{ $errors->first('verified_only') }}</strong>
+		        </span>
+			@endif
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="form-group">
+			 <span class="switch">
+			 {{Form::checkbox('include_duplicated',1, null,['class'=>'switch','id'=>'switch-2'])}}
+				 <label for="switch-2">Include Duplicated Delegates</label>
+			 </span>
+			
+			@if ($errors->has('include_duplicated'))
+				<span class="invalid-feedback" role="alert">
+		            <strong>{{ $errors->first('include_duplicated') }}</strong>
+		        </span>
+			@endif
+		</div>
+	</div>
 </div>
 
 @if(!isset($notificaiton))

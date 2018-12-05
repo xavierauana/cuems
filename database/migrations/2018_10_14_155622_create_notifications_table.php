@@ -20,10 +20,12 @@ class CreateNotificationsTable extends Migration
             $table->string('from_email')->nullable();
             $table->string('subject')->nullable();
             $table->boolean('include_ticket')->default(false);
-            $table->unsignedInteger('event');
+            $table->unsignedInteger('event')->nullable();
             $table->nullableMorphs('recipient');
             $table->unsignedInteger('role_id')->nullable();
             $table->dateTime('schedule')->nullable();
+            $table->boolean('verified_only')->default(false);
+            $table->boolean('include_duplicated')->default(false);
             $table->boolean('is_sent')->default(false);
 
             $table->unsignedInteger('event_id');

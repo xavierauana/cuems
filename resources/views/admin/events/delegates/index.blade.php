@@ -12,7 +12,7 @@
 			        <a href="{{route('events.delegates.export', $event)}}"
 			           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
 			        <a href="{{route('events.delegates.duplicates', $event)}}"
-			           class="btn btn-sm btn-outline-primary pull-right mr-1">Duplicates</a>
+			           class="btn btn-sm btn-warning pull-right mr-1">Duplicates</a>
                 </div>
                 
                 <div class="table-responsive">
@@ -27,7 +27,7 @@
 	                  <tbody>
 	                  @foreach($delegates as $delegate)
 		                  <tr>
-			                  <td>{{$delegate->name}}</td>
+			                  <td><a href="{{route('events.delegates.show',[$event,$delegate])}}">{{$delegate->name}}</a></td>
 			                  <td>{{$delegate->email}}</td>
 			                  <td>{{$delegate->institution}}</td>
 			                  <td>{{$delegate->roles->implode('label',', ')}}</td>

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Mail\NotificationMailable;
 use App\Mail\TransactionMail;
@@ -20,7 +21,9 @@ class Notification extends Model
         'from_name',
         'from_email',
         'subject',
-        'include_ticket'
+        'include_ticket',
+        'verified_only',
+        'include_duplicated'
     ];
 
 
@@ -41,8 +44,12 @@ class Notification extends Model
     public function getEventNameAttribute(): string {
         $systemEvents = array_flip((new \ReflectionClass(SystemEvents::class))->getConstants());
 
-        return ucwords(strtolower(str_replace("_", " ",
-            $systemEvents[$this->event])));
+        if (isset($systemEvents[$this->event])) {
+            return ucwords(strtolower(str_replace("_", " ",
+                $systemEvents[$this->event])));
+        }
+
+        return "None";
     }
 
 
@@ -54,37 +61,73 @@ class Notification extends Model
 
         list($email, $mail) = $this->createMail($notifiable);
 
-        Mail::to($email)
-            ->send($mail);
+        Mail::to($email)->send($mail);
     }
 
     // Helpers
 
     public function getStoreRules(): array {
         return [
-            'template'       => 'required',
-            'name'           => 'required',
-            'schedule'       => 'nullable|date',
-            'event'          => 'required|in:' . implode(",",
+            'template'           => 'required',
+            'name'               => 'required',
+            'schedule'           => 'nullable|date',
+            'event'              => 'nullable|in:0,' . implode(",",
                     array_values(SystemEvents::getEvents())),
-            'role_id'        => 'nullable|in:0,' . implode(",",
-                    DelegateRole::pluck("id")->toArray()),
-            'from_name'      => "required",
-            'from_email'     => "required|email",
-            'subject'        => "required",
-            'include_ticket' => "nullable|boolean",
+            'role_id'            => 'nullable|in:0,' . implode(",",
+                    DelegateRole::pluck('id')->toArray()),
+            'from_name'          => "required",
+            'from_email'         => "required|email",
+            'subject'            => "required",
+            'verified_only'      => "nullable|boolean",
+            'include_duplicated' => "nullable|boolean",
+            'include_ticket'     => "nullable|boolean",
         ];
     }
 
     public function send($notifiable = null): void {
 
         if ($notifiable) {
+
             $this->sendNotificationToDelegate($notifiable);
+
         } elseif ($this->role) {
-            $delegates = $this->role->delegates;
+
+            $query = $this->role->delegates();
+
+            if (!$this->include_duplicated) {
+                $query->where('is_duplicated', DelegateDuplicationStatus::NO);
+            }
+
+            if ($this->verified_only) {
+                $query->where('is_verified', true);
+            }
+
+            $delegates = $query->get();
+
             $delegates->each(function (Delegate $delegate) {
                 $this->sendNotificationToDelegate($delegate);
             });
+
+        } else {
+
+            $query = Delegate::latest();
+
+            if (!$this->include_duplicated) {
+                $query->where('is_duplicated', DelegateDuplicationStatus::NO);
+            }
+
+            if ($this->verified_only) {
+                $query->where('is_verified', true);
+            }
+
+            $delegates = $query->get();
+
+            $delegates->each(function ($d) {
+                $this->sendNotificationToDelegate($d);
+            });
+
+            $this->is_sent = true;
+            $this->save();
         }
     }
 
@@ -96,15 +139,18 @@ class Notification extends Model
     private function createMail($notifiable): array {
         $email = $notifiable->routeNotificationForMail();
         if ($notifiable instanceof Delegate) {
-            $mail = new NotificationMailable($this,
+            $mail = new NotificationMailable(
+                $this,
                 $notifiable,
-                $this->event()->first(), $this->include_ticket);
+                $this->event()->first(),
+                $this->include_ticket);
 
         } elseif ($notifiable instanceof Transaction) {
 
             $notifiable->load('payee');
 
-            $mail = new TransactionMail($this,
+            $mail = new TransactionMail(
+                $this,
                 $notifiable,
                 $this->event()->first());
         } else {

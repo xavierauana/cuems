@@ -13,23 +13,21 @@
                     <thead>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Institution</th>
-                        <th>Role</th>
-                        <th>Is Duplicated</th>
+                        <th>Mobile</th>
+                        <th>Ticket</th>
+                        <th>Transaction ID</th>
+                        <th>Transaction Status</th>
                         <th>Actions</th>
                     </thead>
 	                  <tbody>
 	                  @foreach($delegates as $delegate)
 		                  <tr>
-			                  <td>{{$delegate->name}}</td>
+			                  <td><a href="{{route('events.delegates.show',[$event,$delegate])}}">{{$delegate->name}}</a> </td>
 			                  <td>{{$delegate->email}}</td>
-			                  <td>{{$delegate->institution}}</td>
-			                  <td>{{$delegate->roles->implode('label',', ')}}</td>
-			                  <td>@if($delegate->isDuplicated())
-					                  <span class="badge badge-warning">Duplicated</span>
-				                  @else
-					                  <span class="badge badge-success">NO</span>
-				                  @endif</td>
+			                  <td>{{$delegate->mobile}}</td>
+			                  <td>{{$delegate->transactions->first()->ticket->name}}</td>
+			                  <td>{{$delegate->transactions->first()->charge_id ?? "NA"}}</td>
+			                  <td>{{array_flip(\App\Enums\TransactionStatus::getStatus())[$delegate->transactions->first()->status]}}</td>
 			                  <td>
 				                  <div class="btn-toolbar" role="toolbar"
 				                       aria-label="Toolbar with button groups">

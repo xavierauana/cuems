@@ -49,6 +49,9 @@ Route::get("events/{event}/delegates/new/export",
 Route::get("events/{event}/delegates/duplicates",
     DelegatesController::class . "@duplicates")
      ->name("events.delegates.duplicates");
+Route::get("events/{event}/delegates/{delegate}",
+    DelegatesController::class . "@show")
+     ->name("events.delegates.show");
 
 Route::get("events/{event}/delegates/export",
     DelegatesController::class . "@export")

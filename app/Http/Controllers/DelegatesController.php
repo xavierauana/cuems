@@ -116,11 +116,22 @@ class DelegatesController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param \App\Event     $event
      * @param  \App\Delegate $delegate
      * @return \Illuminate\Http\Response
      */
-    public function show(Delegate $delegate) {
-        //
+    public function show(Event $event, Delegate $delegate) {
+
+        $checker = new DelegateDuplicateChecker($event);
+        $duplicates = $checker->find(['email', 'mobile'],
+            [$delegate->email, $delegate->mobile])->filter(function ($i) use (
+            $delegate
+        ) {
+            return $i->id !== $delegate->id;
+        });
+
+        return view("admin.events.delegates.show",
+            compact('event', 'delegate', 'duplicates'));
     }
 
     /**
@@ -280,6 +291,7 @@ class DelegatesController extends Controller
 
     public function duplicates(Event $event) {
         $delegates = $event->delegates()
+                           ->with('transactions.ticket')
                            ->whereIsDuplicated(DelegateDuplicationStatus::DUPLICATED)
                            ->get();
 

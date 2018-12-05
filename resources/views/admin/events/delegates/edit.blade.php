@@ -19,9 +19,23 @@
 	
 	                @include('_components.registration_admin_section', compact('status'))
 	
-	                <button class="btn btn-primary">Update</button>
 	
-	                {{Form::close()}}
+	                <!-- Normal switch -->
+		                <div class="form-group">
+						  <span class="switch">
+							  {{Form::checkbox('is_duplicated',\App\Enums\DelegateDuplicationStatus::DUPLICATED, $delegate->is_duplicated === \App\Enums\DelegateDuplicationStatus::DUPLICATED,['class'=>'switch','id'=>'switch-normal'])}}
+							  <label for="switch-normal">Is Duplicated</label>
+						  </span>
+			                @if ($errors->has('ticket'))
+				                <span class="invalid-feedback" role="alert">
+						            <strong>{{ $errors->first('ticket') }}</strong>
+						        </span>
+			                @endif
+						</div>
+	
+	                <button class="btn btn-primary">Update</button>
+		
+		                {{Form::close()}}
                 </div>
             </div>
         </div>
