@@ -105,6 +105,12 @@ class UpdateNewDelegates implements ShouldQueue
 
                 $delegate->save();
 
+                $transaction = $delegate->transactions()
+                                        ->whereChargeId($item['charge_id'])
+                                        ->first();
+                $transaction->status = TransactionStatus::getStatus()[strtoupper($item['transaction_status'])];
+                $transaction->save();
+
                 $count++;
             }
         };
