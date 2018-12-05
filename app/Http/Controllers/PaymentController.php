@@ -70,7 +70,7 @@ class PaymentController extends Controller
 
             $DORequest = new DigitalOrderRequest(
                 $invoiceNumber,
-                $ticket->price / 100,
+                $ticket->price,
                 PaymentType::Authorisation,
                 route("paymentCallBack", ['ref_id' => $record->id])
             );
