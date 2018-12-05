@@ -42,7 +42,7 @@ class PaymentController extends Controller
                 'ticket_id' => [
                     'required',
                     Rule::exists('tickets', 'id')->where(function ($query) {
-                        $query->where('public', true);
+                        $query->where('is_public', true);
                     })
                 ]
             ]));
