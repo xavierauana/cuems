@@ -38,10 +38,12 @@ class PaymentController extends Controller
 
         $validatedData = $this->validate($request,
             array_merge($this->delegate->getStoreRules(), [
-                'ticket_id' => 'required|in:' . implode(",", Ticket::public()
-                                                                   ->available()
-                                                                   ->pluck('id')
-                                                                   ->toArray()),
+                'ticket_id' => [
+                    'required',
+                    Rule::exists('tickets', 'id')->where(function ($query) {
+                        $query->where('public', true);
+                    })
+                ]
             ]));
 
         $validatedData = $this->sanitizeInputData($validatedData);
@@ -63,9 +65,11 @@ class PaymentController extends Controller
                 'form_data' => json_encode($validatedData)
             ]);
 
+            $ticket = Ticket::findOrFail($validatedData['ticket_id']);
+
             $DORequest = new DigitalOrderRequest(
                 $invoiceNumber,
-                100,
+                $ticket->price / 100,
                 PaymentType::Authorisation,
                 route("paymentCallBack", ['ref_id' => $record->id])
             );
