@@ -81,7 +81,6 @@ class UpdateNewDelegates implements ShouldQueue
                         $item
                     ) {
                         $query->where([
-                            ['event_id', '=', $this->event->id],
                             ['payee_type', '=', Delegate::class],
                             ['payee_id', '=', $item['id']],
                         ]);
