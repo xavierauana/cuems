@@ -18,6 +18,7 @@ use App\Services\JETCOPaymentService;
 use App\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
 {
