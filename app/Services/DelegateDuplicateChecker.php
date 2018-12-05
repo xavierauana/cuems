@@ -32,7 +32,7 @@ class DelegateDuplicateChecker
         return $this->event->delegates()->where($predicates)->get();
     }
 
-    public function isDuplicated(string $field, string $value): bool {
+    public function isDuplicated($field, $value): bool {
         $predicates = $this->fetchPredicates($field, $value);
 
         return $this->event->delegates()->where($predicates)->count() > 1;

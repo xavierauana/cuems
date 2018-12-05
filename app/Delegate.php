@@ -50,6 +50,11 @@ class Delegate extends Model
                     ->withPivot('delegate_role_id');
     }
 
+    public function sponsorRecord(): Relation {
+        return $this->hasOne(SponsorRecord::class);
+
+    }
+
     // Scope
     public function scopeExcludeRole($query, $role): Builder {
         $roleCode = null;
@@ -144,6 +149,12 @@ class Delegate extends Model
             'training_position'             => 'nullable|traineeInfoRequired',
             'is_duplicated'                 => 'nullable|in:' . DelegateDuplicationStatus::DUPLICATED,
             'roles_id.*'                    => 'nullable|exists:delegate_roles,id',
+
+            'sponsor'            => 'nullable',
+            'sponsor.email'      => 'nullable|email',
+            'sponsor.name'       => 'nullable',
+            'sponsor.address'    => 'nullable',
+            'sponsor.sponsor_id' => 'nullable|exists:sponsors,id',
         ];
     }
 

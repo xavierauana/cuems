@@ -10,6 +10,14 @@ use App\Http\Controllers\DelegatesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+Route::get("events/{event}/delegates/import",
+    DelegatesController::class . "@getImport")
+     ->name("events.delegates.import");
+Route::post("events/{event}/delegates/import",
+    DelegatesController::class . "@postImport");
+
+
 Route::post('events/{event}/delegates/{delegate}/duplicated',
     function (Request $request, \App\Event $event, \App\Delegate $delegate) {
         $delegate = $event->delegates()->find($delegate->id);
@@ -49,17 +57,12 @@ Route::get("events/{event}/delegates/new/export",
 Route::get("events/{event}/delegates/duplicates",
     DelegatesController::class . "@duplicates")
      ->name("events.delegates.duplicates");
-Route::get("events/{event}/delegates/{delegate}",
-    DelegatesController::class . "@show")
-     ->name("events.delegates.show");
 
 Route::get("events/{event}/delegates/export",
     DelegatesController::class . "@export")
      ->name("events.delegates.export");
-Route::post("events/{event}/delegates/import",
-    DelegatesController::class . "@postImport")
-     ->name("events.delegates.import");
-Route::post("events/{event}/delegates/search",
-    DelegatesController::class . "@postSearch")
-     ->name("events.delegates.import");
+
+//Route::post("events/{event}/delegates/search",
+//    DelegatesController::class . "@postSearch")
+//     ->name("events.delegates.import");
 Route::resource("events.delegates", DelegatesController::class);

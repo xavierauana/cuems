@@ -66,8 +66,11 @@ class NotificationsController extends Controller
         $validatedData['include_ticket'] = isset($validatedData['include_ticket']) ? $validatedData['include_ticket'] : false;
         $validatedData['verified_only'] = isset($validatedData['verified_only']) ? $validatedData['verified_only'] : false;
         $validatedData['include_duplicated'] = isset($validatedData['include_duplicated']) ? $validatedData['include_duplicated'] : false;
-        $validatedData['schedule'] = Carbon::createFromFormat('d M Y h:m',
-            $validatedData['schedule']);
+
+        if($validatedData['schedule']){
+            $validatedData['schedule'] = Carbon::createFromFormat('d M Y h:m',
+                $validatedData['schedule']);
+        }
 
         $newNotification = $event->notifications()->create($validatedData);
 

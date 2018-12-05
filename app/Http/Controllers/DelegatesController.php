@@ -10,6 +10,7 @@ use App\Event;
 use App\Events\SystemEvent;
 use App\Exports\DelegateExport;
 use App\Exports\NewDelegate;
+use App\Imports\DelegatesImport;
 use App\Imports\NewDelegateImport;
 use App\Jobs\ImportDelegates;
 use App\Jobs\UpdateNewDelegates;
@@ -192,8 +193,13 @@ class DelegatesController extends Controller
      * @param  \App\Delegate $delegate
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Delegate $delegate) {
-        //
+    public function destroy(Request $request, Event $event, Delegate $delegate
+    ) {
+        $delegate = $event->delegates()->find($delegate->id);
+
+        $delegate->delete();
+
+        return redirect()->back()->withStatus('Delegate deleted');
     }
 
     /**
@@ -203,22 +209,27 @@ class DelegatesController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function import(Event $event, Request $request): RedirectResponse {
+    public function postImport(Event $event, Request $request
+    ): RedirectResponse {
         $this->validate($request, [
             'file' => 'required|file|min:0'
         ]);
 
-        $file = $request->file('file');
+        $collection = Excel::toCollection(new DelegatesImport,
+            $request->file('file'));
 
-        $filePath = $file->move("../storage/temp",
-            $file->getClientOriginalName());
-
-        $job = new ImportDelegates($event, $filePath);
+        $job = new ImportDelegates($event, $collection->first(),
+            $request->user());
 
         $this->dispatch($job);
 
-        return redirect()->route('events.tickets.index', $event);
+        return redirect()->route('events.delegates.index', $event);
     }
+
+    public function getImport(Event $event, Request $request) {
+        return view("admin.events.delegates.import", compact('event'));
+    }
+
 
     /**
      * @param \App\Event               $event
@@ -226,7 +237,8 @@ class DelegatesController extends Controller
      * @param                          $validatedData
      * @return $this|\Illuminate\Database\Eloquent\Model
      */
-    private function createDelegate(
+    private
+    function createDelegate(
         Event $event, Request $request, $validatedData
     ) {
         $newDelegate = $event->delegates()->create($validatedData);
@@ -240,6 +252,12 @@ class DelegatesController extends Controller
             'user_id'     => $request->user()->id
         ]);
 
+        if (isset($validatedData['sponsor']['sponsor_id'])) {
+            $sponsorData = $validatedData['sponsor'];
+
+            $newDelegate->sponsorRecord()->create($sponsorData);
+        }
+
         return $newDelegate;
     }
 
@@ -248,18 +266,34 @@ class DelegatesController extends Controller
      * @param array         $validatedData
      * @return \App\Delegate
      */
-    private function updateDelegate(Delegate $delegate, array $validatedData
+    private
+    function updateDelegate(
+        Delegate $delegate, array $validatedData
     ): Delegate {
         $delegate->update($validatedData);
 
-        $delegate->transactions()->latest()->first()->update($validatedData);
+        $delegate->transactions()->latest()->first()
+                 ->update($validatedData);
 
         $delegate->roles()->sync($validatedData['roles_id']);
+
+        if (isset($validatedData['sponsor']['sponsor_id'])) {
+            $sponsorData = $validatedData['sponsor'];
+
+            $delegate->sponsorRecord()
+                     ->updateOrCreate(['delegate_id' => $delegate->id],
+                         $sponsorData);
+        } elseif ($delegate->sponsorRecord) {
+            $delegate->sponsorRecord->delete();
+        }
 
         return $delegate;
     }
 
-    public function postSearch(Request $request, Event $event) {
+    public
+    function postSearch(
+        Request $request, Event $event
+    ) {
 
         $input = $request->all();
 
@@ -275,14 +309,20 @@ class DelegatesController extends Controller
         return response()->json($delegates);
     }
 
-    public function export(Event $event) {
+    public
+    function export(
+        Event $event
+    ) {
         $event->load('delegates.transactions.ticket');
         $event->load('delegates.roles');
 
         return Excel::download(new DelegateExport($event), 'delegates.xls');
     }
 
-    public function new(Event $event) {
+    public
+    function new(
+        Event $event
+    ) {
         $delegates = $event->delegates()->whereIsVerified(false)->get();
 
         return view("admin.events.delegates.new.index",
@@ -303,7 +343,8 @@ class DelegatesController extends Controller
         $event->load('delegates.transactions.ticket');
         $event->load('delegates.roles');
 
-        return Excel::download(new NewDelegate($event), 'new_delegates.xls');
+        return Excel::download(new NewDelegate($event),
+            'new_delegates.xls');
     }
 
     public function getImportNew(Event $event) {

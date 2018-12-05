@@ -6,13 +6,13 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class NewDelegateImport implements ToCollection, WithHeadingRow
+class DelegatesImport implements ToCollection, WithHeadingRow
 {
     /**
-     * @param Collection $collection
-     */
-    public function collection(Collection $collection) {
-
+    * @param Collection $collection
+    */
+    public function collection(Collection $collection)
+    {
+        //
     }
-
 }

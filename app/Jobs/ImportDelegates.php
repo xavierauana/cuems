@@ -4,7 +4,13 @@ namespace App\Jobs;
 
 use App\Delegate;
 use App\DelegateRole;
+use App\Enums\DelegateDuplicationStatus;
+use App\Enums\SystemEvents;
+use App\Enums\TransactionStatus;
 use App\Event;
+use App\Events\SystemEvent;
+use App\Services\DelegateDuplicateChecker;
+use App\Ticket;
 use App\Transaction;
 use App\User;
 use Illuminate\Bus\Queueable;
@@ -12,8 +18,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ImportDelegates implements ShouldQueue
@@ -24,25 +31,27 @@ class ImportDelegates implements ShouldQueue
      */
     private $event;
     /**
-     * @var string
+     * @var \Illuminate\Support\Collection
      */
-    private $filePath;
+    private $collection;
     /**
      * @var \App\User
      */
     private $user;
 
+
     /**
      * Create a new job instance.
      *
-     * @param \App\Event $event
-     * @param string     $filePath
-     * @param \App\User  $user
+     * @param \App\Event                     $event
+     * @param \Illuminate\Support\Collection $collection
      */
-    public function __construct(Event $event, string $filePath, User $user) {
+    public function __construct(Event $event, Collection $collection, User $user
+    ) {
         //
         $this->event = $event;
-        $this->filePath = $filePath;
+
+        $this->collection = $collection;
         $this->user = $user;
     }
 
@@ -57,71 +66,84 @@ class ImportDelegates implements ShouldQueue
         Transaction $transaction, Delegate $delegate, DelegateRole $role
     ) {
 
-        $batchId = str_random();
-
         $rules = $this->getValidationRules($transaction, $delegate, $role);
 
-        foreach ($this->getData() as $record) {
 
-            if ($validatedData = $this->validateData($record, $rules)) {
+        $this->conversion();
 
-                DB::beginTransaction();
+        $collection = $this->collection->filter(function ($item) use ($rules) {
+            return !!$this->validateData($item, $rules);
+        });
 
-                try {
-                    $newDelegate = $this->event->delegates()
-                                               ->create($validatedData);
+        $collection->each(function ($data) use ($role) {
 
-                    $newDelegate->roles()->save($role->where('code', '=',
-                        $validatedData['role'])->first());
+            DB::beginTransaction();
 
-                    $newDelegate->transactions()->create($validatedData);
+            try {
+                $newDelegate = $this->event->delegates()
+                                           ->create($data);
 
-                    DB::table('delegate_creations')->insert([
-                        'delegate_id' => $newDelegate->id,
-                        'user_id'     => $this->user->id
-                    ]);
+                $newDelegate->roles()->save($role->where('code',
+                    $data['role'])->first());
 
-                    DB::table("import_delegates")->insert([
-                        'batch_id'    => $batchId,
-                        'delegate_id' => $newDelegate->id,
-                        'is_success'  => true,
-                    ]);
+                $newDelegate->transactions()->create($data);
 
-                } catch (\Exception $exception) {
+                $newDelegate->transactions()->create($data);
 
-                    DB::table("import_delegates")->insert([
-                        'batch_id'   => $batchId,
-                        'note'       => serialize($record),
-                        'is_success' => false,
-                    ]);
+                if (isset($data['sponsor']['sponsor_id'])) {
+                    $sponsorData = $data['sponsor'];
+
+                    $newDelegate->sponsorRecord()->create($sponsorData);
                 }
+
+                DB::table('delegate_creations')->insert([
+                    'delegate_id' => $newDelegate->id,
+                    'user_id'     => $this->user->id
+                ]);
+
+                DB::commit();
+
+                $this->checkDuplicated($newDelegate);
+
+                Log::info('fire event: ' . $newDelegate->name);
+
+                sleep(0.5);
+                event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
+                    $newDelegate));
+
+            } catch (\Exception $exception) {
+
+                DB::rollBack();
+
+                throw $exception;
+
             }
-        }
+        });
+
     }
 
+    /**
+     * @param $this
+     * @param $newDelegate
+     */
+    function checkDuplicated($newDelegate): void {
+        $checker = new DelegateDuplicateChecker($this->event);
 
-    private function getData() {
-
-        $handle = fopen($this->filePath, "r");
-
-        $header = null;
-
-        while ($data = fgetcsv($handle)) {
-            if ($header === null) {
-                $header = $data;
-            } else {
-                yield array_combine($header, $data);
-            }
+        if ($checker->isDuplicated(['email', 'mobile'],
+            [$newDelegate->email, $newDelegate->mobile])) {
+            $newDelegate->is_duplicated = DelegateDuplicationStatus::DUPLICATED;
+        } else {
+            $newDelegate->is_duplicated = DelegateDuplicationStatus::NO;
         }
 
-        fclose($handle);
+        $newDelegate->is_verified = true;
 
-        File::delete($this->filePath);
+        $newDelegate->save();
     }
 
     private function validateData(array $data, array $rules): ?array {
-        $validator = Validator::make($data, $rules);
 
+        $validator = Validator::make($data, $rules);
         if ($validator->passes()) {
             return $validator->validate();
         }
@@ -140,6 +162,7 @@ class ImportDelegates implements ShouldQueue
         Transaction $transaction, Delegate $delegate, DelegateRole $role
     ): array {
         $rules = $delegate->getStoreRules();
+
         $rules = array_merge($rules, [
             'role' => 'required|in:' . implode(',',
                     $role->pluck('code')->toArray())
@@ -147,5 +170,53 @@ class ImportDelegates implements ShouldQueue
         $rules = $rules = array_merge($rules, $transaction->getRules());
 
         return $rules;
+    }
+
+    private function conversion() {
+
+        $this->collection = $this->collection
+            ->map(function ($item) {
+                $data = $item->toArray();
+
+                return $data;
+            })
+            ->map(function ($data) {
+
+                $new = [];
+                $new['prefix'] = $data['title'];
+                $new['first_name'] = $data['given_name'];
+                $new['last_name'] = $data['surname'];
+                $new['is_male'] = strtolower($data['gender']) == 'male';
+                $new['position'] = $data['position'];
+                $new['department'] = $data['department'];
+                $new['institution'] = $data['institution_hospital'];
+                $new['address_1'] = $data['address_line_1'];
+                $new['address_2'] = $data['address_line_2'];
+                $new['address_3'] = $data['address_line_3'];
+                $new['country'] = $data['country'];
+                $new['email'] = $data['email'];
+                $new['mobile'] = $data['tel'];
+                $new['fax'] = $data['fax'];
+
+                $states = array_keys(TransactionStatus::getStatus());
+                $new['status'] = in_array($data['transaction_status'],
+                    $states) ? (TransactionStatus::getStatus())[$data['transaction_status']] : "";
+                $new['role'] = optional(DelegateRole::whereCode(strtolower($data['role']))
+                                                    ->first())->code;
+                $new['ticket_id'] = optional(Ticket::whereCode($data['ticket_code'])
+                                                   ->first())->id;
+                if ($data['sponsor_company']) {
+                    $new['sponsor']['sponsor_id'] = optional($this->event->sponsors()
+                                                                         ->firstOrCreate(['name' => $data['sponsor_company']]))->id;
+                }
+
+                $new['sponsor']['name'] = $data['sponsor_correspondent_name'];
+                $new['sponsor']['email'] = $data['sponsor_correspondent_email'];
+                $new['sponsor']['tel'] = $data['sponsor_correspondent_tel'];
+                $new['sponsor']['address'] = $data['sponsor_correspondent_address'];
+
+                return $new;
+
+            });
     }
 }

@@ -60,4 +60,8 @@ class Event extends Model
         return $this->hasMany(Expense::class);
     }
 
+    public function sponsors(): Relation {
+        return $this->hasMany(Sponsor::class);
+    }
+
 }

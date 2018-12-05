@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Sponsor extends Model
 {
+    protected $fillable = [
+        'name'
+    ];
     // Relation
 
     public function event(): Relation {

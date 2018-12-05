@@ -7,6 +7,10 @@
 			<ul class="nav flex-column">
 				<li class="nav-item dropdown">
 					<a class="nav-link"
+					   href="{{route('events.details', $event)}}">Dashboard</a>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link"
 					   href="{{route('events.sessions.index', $event)}}">Sessions</a>
 				</li>
 				<li class="nav-item">

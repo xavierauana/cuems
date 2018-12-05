@@ -30,6 +30,9 @@ const app = new Vue({
                       },
                       mounted() {
                         $('.select2').select2();
+                        $('.select2-tag').select2({
+                                                    tags: true
+                                                  });
                         $('.other_institution_container').hide();
                         $('.select2[name=institution]').on('select2:close', e => {
                           if (e.target.value === 'other') {

@@ -33,7 +33,7 @@
 				        <div class="row">
 					        <div class="col-sm-12"><strong>Institution: </strong> {{$delegate->institution}}</div>
 					        <div class="col-sm-6"><strong>Department: </strong> {{$delegate->department}}</div>
-					        <div class="col-sm-6"><strong>Position: </strong> {{(App\Position::pluck('name')->toArray())[$delegate->position]}}</div>
+					        <div class="col-sm-6"><strong>Position: </strong> {{$delegate->position}}</div>
 				        </div>
 				        <hr>
 				        <div class="row">
