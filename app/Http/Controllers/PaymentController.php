@@ -72,7 +72,8 @@ class PaymentController extends Controller
                 $invoiceNumber,
                 $ticket->price,
                 PaymentType::Authorisation,
-                route("paymentCallBack", ['ref_id' => $record->id])
+                route("paymentCallBack",
+                    ['ref_id' => $record->id, 'event' => 1])
             );
 
             $data = $service->getDigitalOrder($DORequest);
@@ -124,11 +125,13 @@ class PaymentController extends Controller
                 throw $e;
             }
 
-            return redirect("/")->withAlert("Thank you. You payment have been confirmed.");
+            return redirect("/",
+                ['event' => $request->get('event')])->withAlert("Thank you. You payment have been confirmed.");
         }
 
 
-        return redirect("/")->withAlert("Something wrong. Please try again.");
+        return redirect("/",
+            ['event' => $request->get('event')])->withAlert("Something wrong. Please try again.");
 
     }
 
