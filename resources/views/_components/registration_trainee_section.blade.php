@@ -23,17 +23,6 @@
             </div>
         </div>
         <div class="form-group row">
-            <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Address</label>
-            <div class="col-sm-6 col-md-8  col-lg-9">
-               {{Form::text("training_organisation_address",null,['class'=>'form-control select2','required'])}}
-	            @if ($errors->has('training_organisation_address'))
-		            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('training_organisation_address') }}</strong>
-                        </span>
-	            @endif
-            </div>
-        </div>
-        <div class="form-group row">
             <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Name of supervisor:</label>
             <div class="col-sm-6 col-md-8  col-lg-9">
                 {{Form::text("supervisor",null,['class'=>'form-control','required'])}}

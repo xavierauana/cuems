@@ -17,6 +17,7 @@
                         <th>Ticket</th>
                         <th>Transaction ID</th>
                         <th>Transaction Status</th>
+                        <th>Date</th>
                         <th>Actions</th>
                     </thead>
 	                  <tbody>
@@ -28,6 +29,7 @@
 			                  <td>{{$delegate->transactions->first()->ticket->name}}</td>
 			                  <td>{{$delegate->transactions->first()->charge_id ?? "NA"}}</td>
 			                  <td>{{array_flip(\App\Enums\TransactionStatus::getStatus())[$delegate->transactions->first()->status]}}</td>
+			                    <td>{{$delegate->created_at->toDatetimeString()}}</td>
 			                  <td>
 				                  <div class="btn-toolbar" role="toolbar"
 				                       aria-label="Toolbar with button groups">

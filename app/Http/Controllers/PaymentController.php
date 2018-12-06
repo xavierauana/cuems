@@ -73,7 +73,10 @@ class PaymentController extends Controller
                 $ticket->price,
                 PaymentType::Authorisation,
                 route("paymentCallBack",
-                    ['ref_id' => $record->id, 'event' => 1])
+                    [
+                        'ref_id' => $record->id,
+                        'event'  => $request->get('event')
+                    ])
             );
 
             $data = $service->getDigitalOrder($DORequest);

@@ -26,33 +26,33 @@
         <div class="container" id="registration">
         
         @include("_partials.alert")
-    
-            {{Form::open(['url' => "",'method'=>"POST", 'id'=>"payment-form", 'onsubmit'=>"pay(event)"])}}
-    
-            <input type="hidden" id="DO" name="DO" />
+	
+	        {{Form::open(['url' => "",'method'=>"POST", 'id'=>"payment-form", 'onsubmit'=>"pay(event)"])}}
+	
+	        <input type="hidden" id="DO" name="DO" />
         <input type="hidden" id="token" name="token" />
-            @include("_components.registration_form_basic_section")
-            @include("_components.registration_form_institution_section")
-            <tickets
-                    :tickets="{{json_encode(\App\Ticket::whereEventId($event->id)->public()->available()->get())}}"
-                    @select="update">
+	        @include("_components.registration_form_basic_section")
+	        @include("_components.registration_form_institution_section")
+	        <tickets
+			        :tickets="{{json_encode(\App\Ticket::whereEventId($event->id)->public()->available()->get())}}"
+			        @select="update">
         @if ($errors->has('ticket'))
-                    <template slot="errorMessage">
+			        <template slot="errorMessage">
         <span class="invalid-feedback" role="alert">
         <strong>{{ $errors->first('ticket') }}</strong>
         </span>
         </template>
-                @endif
+		        @endif
         </tickets>
-            @include("_components.registration_trainee_section")
-    
-            <div>{!! setting($event, "important_note") !!}</div>
+	        @include("_components.registration_trainee_section")
+	
+	        <div>{!! setting($event, "important_note") !!}</div>
         
         <div>{!! setting($event, "privacy") !!}</div>
         
         <button class="btn btn-primary">Pay Ticket</button>
-    
-            {{Form::close()}}
+	
+	        {{Form::close()}}
         </div>
 
         <script src="{{asset("js/manifest.js")}}"></script>
@@ -61,7 +61,7 @@
         <script>
         function pay(e) {
           e.preventDefault()
-          axios.post('/token', new FormData(e.target))
+          axios.post('/token?event={{$event->id}}', new FormData(e.target))
                .then(({data}) => {
                  var tokenInput = document.getElementById("DO")
                  tokenInput.value = data.token

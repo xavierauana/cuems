@@ -138,8 +138,10 @@ class DelegatesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
+     * @param \App\Event     $event
      * @param  \App\Delegate $delegate
      * @return \Illuminate\Http\Response
+     * @throws \ReflectionException
      */
     public function edit(Event $event, Delegate $delegate) {
         $reflection = new \ReflectionClass(TransactionStatus::class);
