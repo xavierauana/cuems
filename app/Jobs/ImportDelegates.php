@@ -183,37 +183,37 @@ class ImportDelegates implements ShouldQueue
             ->map(function ($data) {
 
                 $new = [];
-                $new['prefix'] = $data['title'];
-                $new['first_name'] = $data['given_name'];
-                $new['last_name'] = $data['surname'];
-                $new['is_male'] = strtolower($data['gender']) == 'male';
-                $new['position'] = $data['position'];
-                $new['department'] = $data['department'];
-                $new['institution'] = $data['institution_hospital'];
-                $new['address_1'] = $data['address_line_1'];
-                $new['address_2'] = $data['address_line_2'];
-                $new['address_3'] = $data['address_line_3'];
-                $new['country'] = $data['country'];
-                $new['email'] = $data['email'];
-                $new['mobile'] = $data['tel'];
-                $new['fax'] = $data['fax'];
+                $new['prefix'] = $data['title'] ?? null;
+                $new['first_name'] = $data['given_name'] ?? null;
+                $new['last_name'] = $data['surname'] ?? null;
+                $new['is_male'] = strtolower($data['gender'] ?? "") == 'male';
+                $new['position'] = $data['position'] ?? null;
+                $new['department'] = $data['department'] ?? null;
+                $new['institution'] = $data['institution_hospital'] ?? null;
+                $new['address_1'] = $data['address_line_1'] ?? null;
+                $new['address_2'] = $data['address_line_2'] ?? null;
+                $new['address_3'] = $data['address_line_3'] ?? null;
+                $new['country'] = $data['country'] ?? null;
+                $new['email'] = $data['email'] ?? null;
+                $new['mobile'] = $data['tel'] ?? null;
+                $new['fax'] = $data['fax'] ?? null;
 
                 $states = array_keys(TransactionStatus::getStatus());
-                $new['status'] = in_array($data['transaction_status'],
+                $new['status'] = in_array($data['transaction_status'] ?? "",
                     $states) ? (TransactionStatus::getStatus())[$data['transaction_status']] : "";
-                $new['role'] = optional(DelegateRole::whereCode(strtolower($data['role']))
+                $new['role'] = optional(DelegateRole::whereCode(strtolower($data['role'] ?? ""))
                                                     ->first())->code;
-                $new['ticket_id'] = optional(Ticket::whereCode($data['ticket_code'])
+                $new['ticket_id'] = optional(Ticket::whereCode($data['ticket_code'] ?? "")
                                                    ->first())->id;
-                if ($data['sponsor_company']) {
+                if ($data['sponsor_company'] ?? null) {
                     $new['sponsor']['sponsor_id'] = optional($this->event->sponsors()
                                                                          ->firstOrCreate(['name' => $data['sponsor_company']]))->id;
                 }
 
-                $new['sponsor']['name'] = $data['sponsor_correspondent_name'];
-                $new['sponsor']['email'] = $data['sponsor_correspondent_email'];
-                $new['sponsor']['tel'] = $data['sponsor_correspondent_tel'];
-                $new['sponsor']['address'] = $data['sponsor_correspondent_address'];
+                $new['sponsor']['name'] = $data['sponsor_correspondent_name'] ?? null;
+                $new['sponsor']['email'] = $data['sponsor_correspondent_email'] ?? null;
+                $new['sponsor']['tel'] = $data['sponsor_correspondent_tel'] ?? null;
+                $new['sponsor']['address'] = $data['sponsor_correspondent_address'] ?? null;
 
                 return $new;
 
