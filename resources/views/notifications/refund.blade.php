@@ -1,2 +1,2 @@
-Hi {{$delegate->name}},
-Refund invoice {{optional($delegate->transactions->first())->charge_id ?? "NA"}}
+Hi {{$transaction->payee->name}},
+Refund invoice {{$transaction->charge_id ?? "NA"}}
