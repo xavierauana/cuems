@@ -43,8 +43,9 @@ class ScheduleSendNotification extends Command
      * @return mixed
      */
     public function handle() {
-        Log::info('going to send schedule notification');
         $now = Carbon::now();
+        Log::info('going to send schedule notification');
+        Log::info('now:' . $now->toDateTimeString());
         $notifications = $this->notification->whereIsSent(false)
                                             ->where('schedule', '<', $now)
                                             ->get();

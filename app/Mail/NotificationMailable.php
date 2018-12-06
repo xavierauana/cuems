@@ -80,7 +80,7 @@ class NotificationMailable extends Mailable
 
             $transactions->each(function (Transaction $transaction, $index) use
             (
-                $builder, $service
+                &$builder, $service
             ) {
                 $data = $service->createPDF($transaction);
                 $builder->attachData($data, "ticket.pdf", [
@@ -88,5 +88,7 @@ class NotificationMailable extends Mailable
                 ]);
             });
         }
+
+        return $builder;
     }
 }
