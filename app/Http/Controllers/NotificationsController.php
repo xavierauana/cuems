@@ -118,7 +118,13 @@ class NotificationsController extends Controller
             $this->repo->getStoreRules());
 
         $validatedData['include_ticket'] = isset($validatedData['include_ticket']) ? $validatedData['include_ticket'] : false;
+        $validatedData['verified_only'] = isset($validatedData['verified_only']) ? $validatedData['verified_only'] : false;
+        $validatedData['include_duplicated'] = isset($validatedData['include_duplicated']) ? $validatedData['include_duplicated'] : false;
 
+        if ($validatedData['schedule']) {
+            $validatedData['schedule'] = Carbon::createFromFormat('d M Y h:m',
+                $validatedData['schedule']);
+        }
         $notification->update($validatedData);
 
         return redirect()->route("events.notifications.index", $event)
@@ -201,6 +207,7 @@ class NotificationsController extends Controller
         $values = array_prepend($values, 0);
 
         $events = array_combine($values, $keys);
+
         return $events;
     }
 
