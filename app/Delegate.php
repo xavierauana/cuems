@@ -148,6 +148,7 @@ class Delegate extends Model
             'supervisor'                    => 'nullable|traineeInfoRequired',
             'training_position'             => 'nullable|traineeInfoRequired',
             'is_duplicated'                 => 'nullable|in:' . DelegateDuplicationStatus::DUPLICATED,
+            'is_verified'                   => 'nullable|boolean',
             'roles_id.*'                    => 'nullable|exists:delegate_roles,id',
 
             'sponsor'            => 'nullable',

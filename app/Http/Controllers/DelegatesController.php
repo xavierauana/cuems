@@ -169,7 +169,10 @@ class DelegatesController extends Controller
         $rules = array_merge($delegate->getStoreRules(),
             $transaction->getRules());
 
+
         $validatedData = $this->validate($request, $rules);
+
+        $validatedData['is_verified'] = isset($validatedData['is_verified']) ? $validatedData['is_verified'] : false;
 
         DB::beginTransaction();
 
@@ -274,6 +277,8 @@ class DelegatesController extends Controller
         Delegate $delegate, array $validatedData
     ): Delegate {
         $delegate->update($validatedData);
+
+        $delegate->is_verified = $validatedData['is_verified'];
 
         $delegate->transactions()->latest()->first()
                  ->update($validatedData);
