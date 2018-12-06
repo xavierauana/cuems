@@ -124,12 +124,20 @@ class DelegatesController extends Controller
     public function show(Event $event, Delegate $delegate) {
 
         $checker = new DelegateDuplicateChecker($event);
-        $duplicates = $checker->find(['email', 'mobile'],
-            [$delegate->email, $delegate->mobile])->filter(function ($i) use (
-            $delegate
-        ) {
-            return $i->id !== $delegate->id;
-        });
+        $duplicates = $checker->find('email', $delegate->email)
+                              ->filter(function ($i) use (
+                                  $delegate
+                              ) {
+                                  return $i->id !== $delegate->id;
+                              });
+
+        $duplicates = $duplicates->merge($checker->find('mobile', $delegate->mobile)
+                                   ->filter(function ($i) use (
+                                       $delegate
+                                   ) {
+                                       return $i->id !== $delegate->id;
+                                   }));
+        $duplicates = $duplicates->unique('id');
 
         return view("admin.events.delegates.show",
             compact('event', 'delegate', 'duplicates'));
