@@ -202,10 +202,12 @@ class PaymentController extends Controller
 
         $checker = new DelegateDuplicateChecker($event);
 
-        $duplications = $checker->find(['email', 'mobile'],
-            [$newDelegate->email, $newDelegate->mobile]);
+        $emailDuplications = $checker->isDuplicated('email',
+            $newDelegate->email);
+        $mobileDuplications = $checker->isDuplicated('mobile',
+            $newDelegate->mobile);
 
-        $newDelegate->is_duplicated = ($duplications->count() > 1) ?
+        $newDelegate->is_duplicated = ($emailDuplications or $mobileDuplications) ?
             DelegateDuplicationStatus::DUPLICATED :
             $newDelegate->is_duplicated = DelegateDuplicationStatus::NO;
 

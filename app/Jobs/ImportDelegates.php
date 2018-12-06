@@ -129,8 +129,9 @@ class ImportDelegates implements ShouldQueue
     function checkDuplicated($newDelegate): void {
         $checker = new DelegateDuplicateChecker($this->event);
 
-        if ($checker->isDuplicated(['email', 'mobile'],
-            [$newDelegate->email, $newDelegate->mobile])) {
+        if ($checker->isDuplicated('email',
+                $newDelegate->email) or $checker->isDuplicated('mobile',
+                $newDelegate->mobile)) {
             $newDelegate->is_duplicated = DelegateDuplicationStatus::DUPLICATED;
         } else {
             $newDelegate->is_duplicated = DelegateDuplicationStatus::NO;
