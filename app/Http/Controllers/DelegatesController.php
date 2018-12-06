@@ -279,6 +279,7 @@ class DelegatesController extends Controller
         $delegate->update($validatedData);
 
         $delegate->is_verified = $validatedData['is_verified'];
+        $delegate->save();
 
         $delegate->transactions()->latest()->first()
                  ->update($validatedData);
