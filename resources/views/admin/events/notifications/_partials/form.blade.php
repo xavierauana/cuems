@@ -9,7 +9,7 @@
 </div>
 <div class="form-group">
 	{!!  Form::label('event', 'System Event'); !!}
-	{!!  Form::select('event',array_merge([0=>"-- Pick One --"],$events),null,['class'=>'form-control']); !!}
+	{!!  Form::select('event',$events,null,['class'=>'form-control']); !!}
 	@if ($errors->has('event'))
 		<span class="invalid-feedback" role="alert">
             <strong>{{ $errors->first('event') }}</strong>

@@ -67,7 +67,7 @@ class NotificationsController extends Controller
         $validatedData['verified_only'] = isset($validatedData['verified_only']) ? $validatedData['verified_only'] : false;
         $validatedData['include_duplicated'] = isset($validatedData['include_duplicated']) ? $validatedData['include_duplicated'] : false;
 
-        if($validatedData['schedule']){
+        if ($validatedData['schedule']) {
             $validatedData['schedule'] = Carbon::createFromFormat('d M Y h:m',
                 $validatedData['schedule']);
         }
@@ -196,8 +196,11 @@ class NotificationsController extends Controller
 
             return ucwords(strtolower($newString));
         }, $keys);
-        $events = array_combine($values, $keys);
 
+        $keys = array_prepend($keys, "-- Please Select --");
+        $values = array_prepend($values, 0);
+
+        $events = array_combine($values, $keys);
         return $events;
     }
 
