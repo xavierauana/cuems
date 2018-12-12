@@ -41,6 +41,7 @@ class ImportTickets implements ShouldQueue
     /**
      * Execute the job.
      *
+     * @param \App\Ticket $ticket
      * @return void
      */
     public function handle(Ticket $ticket) {

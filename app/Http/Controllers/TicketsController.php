@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Event;
+use App\Imports\TicketImport;
 use App\Jobs\ImportTickets;
 use App\Ticket;
 use Illuminate\Http\Request;
@@ -10,13 +11,13 @@ use Illuminate\Http\Request;
 class TicketsController extends Controller
 {
     /**
-     * @var \App\Ticket
+     * @var Ticket
      */
     private $repo;
 
     /**
      * TicketsController constructor.
-     * @param \App\Ticket $repo
+     * @param Ticket $repo
      */
     public function __construct(Ticket $repo) {
         $this->repo = $repo;
@@ -26,7 +27,7 @@ class TicketsController extends Controller
      * Display a listing of the resource.
      *
      * @param \App\Event $event
-     * @return void
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Event $event) {
         $event->load('tickets');
@@ -47,9 +48,10 @@ class TicketsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param \App\Event                $event
-     * @return void
+     * @param  Request   $request
+     * @param \App\Event $event
+     * @return
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request, Event $event) {
         $validatedData = $this->validate($request,
@@ -68,8 +70,8 @@ class TicketsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Ticket $ticket
-     * @return \Illuminate\Http\Response
+     * @param  Ticket $ticket
+     * @return void
      */
     public function show(Ticket $ticket) {
         //
@@ -78,7 +80,8 @@ class TicketsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Ticket $ticket
+     * @param \App\Event $event
+     * @param  Ticket    $ticket
      * @return \Illuminate\Http\Response
      */
     public function edit(Event $event, Ticket $ticket) {
@@ -89,10 +92,11 @@ class TicketsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param \App\Event                $event
-     * @param  \App\Ticket              $ticket
-     * @return void
+     * @param  Request   $request
+     * @param \App\Event $event
+     * @param  Ticket    $ticket
+     * @return
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, Event $event, Ticket $ticket) {
         $validatedData = $this->validate($request,
@@ -110,9 +114,9 @@ class TicketsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Event   $event
-     * @param  \App\Ticket $ticket
-     * @return void
+     * @param \App\Event $event
+     * @param  Ticket    $ticket
+     * @return
      */
     public function destroy(Event $event, Ticket $ticket) {
         $event->tickets()->whereId($ticket->id)->delete();
@@ -125,18 +129,19 @@ class TicketsController extends Controller
         return view('admin.events.tickets.import', compact('event'));
     }
 
+    /**
+     * @param \App\Event $event
+     * @param Request    $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function postImport(Event $event, Request $request) {
 
         $this->validate($request, [
-            'file' => 'required|file|min:0'
+            'file' => 'required|file|min:0.1'
         ]);
 
-        $file = $request->file('file');
-
-        $filePath = $file->move("../storage/temp",
-            $file->getClientOriginalName());
-
-        $job = new ImportTickets($event, $filePath);
+        $job = new ImportTickets($event, $request->file('file'));
 
         $this->dispatch($job);
 

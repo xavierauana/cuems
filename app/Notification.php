@@ -40,6 +40,10 @@ class Notification extends Model
         return $this->belongsTo(DelegateRole::class);
     }
 
+    public function uploadFiles(): Relation {
+        return $this->belongsToMany(UploadFile::class);
+    }
+
     // Accessor
     public function getEventNameAttribute(): string {
         $systemEvents = array_flip((new \ReflectionClass(SystemEvents::class))->getConstants());
@@ -50,6 +54,12 @@ class Notification extends Model
         }
 
         return "None";
+    }
+
+    public function getFilesAttribute() {
+        $result = $this->uploadFiles()->pluck('id')->toArray();
+
+        return $result;
     }
 
 
@@ -81,6 +91,8 @@ class Notification extends Model
             'verified_only'      => "nullable|boolean",
             'include_duplicated' => "nullable|boolean",
             'include_ticket'     => "nullable|boolean",
+            'files'              => "nullable",
+            'files.*'            => "exists:upload_files,id",
         ];
     }
 
@@ -138,12 +150,12 @@ class Notification extends Model
      */
     private function createMail($notifiable): array {
         $email = $notifiable->routeNotificationForMail();
+        $attachments = $this->uploadFiles()->get();
         if ($notifiable instanceof Delegate) {
             $mail = new NotificationMailable(
                 $this,
                 $notifiable,
-                $this->event()->first(),
-                $this->include_ticket);
+                $this->event()->first());
 
         } elseif ($notifiable instanceof Transaction) {
 

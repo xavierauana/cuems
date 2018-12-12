@@ -7,6 +7,8 @@ use App\Expense;
 use App\ExpenseCategory;
 use App\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class ExpensesController extends Controller
 {
@@ -14,7 +16,7 @@ class ExpensesController extends Controller
      * Display a listing of the resource.
      *
      * @param  \App\Event $event
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(Event $event) {
         $event->load('expenses');
@@ -26,7 +28,7 @@ class ExpensesController extends Controller
      * Show the form for creating a new resource.
      *
      * @param  \App\Event $event
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create(Event $event) {
 
@@ -42,7 +44,8 @@ class ExpensesController extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \App\Event               $event
-     * @return \Illuminate\Http\Response
+     * @return Response
+     * @throws ValidationException
      */
     public function store(Request $request, Event $event) {
         $validatedData = $this->validate($request, [
@@ -52,7 +55,7 @@ class ExpensesController extends Controller
             "note"        => "nullable",
             "date"        => "nullable|date",
             "files"       => "nullable",
-            "files.*"     => "file|min:0",
+            "files.*"     => "required",
         ]);
 
         if (!Vendor::find($validatedData['vendor_id'])) {

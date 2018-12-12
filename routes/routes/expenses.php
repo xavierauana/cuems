@@ -17,13 +17,13 @@ use Illuminate\Support\Facades\Route;
 Route::resource('events.expenses', ExpensesController::class);
 Route::get('expenses/{expense}/files/{fileName}',
     function (Expense $expense, string $fileName) {
-        if ($file = $expense->files()->wherePath("files / " . $fileName)
+        if ($file = $expense->files()->wherePath("files/" . $fileName)
                             ->first()) {
             $path = storage_path('app/' . $file->path);
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mime = finfo_file($finfo, $path);
 
-            return response()->download($path, $file->paht, [
+            return response()->download($path, $fileName, [
                 'content-type'   => $mime,
                 'content-length' => filesize($path),
             ]);

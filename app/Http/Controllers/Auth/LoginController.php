@@ -43,7 +43,8 @@ class LoginController extends Controller
 
     public function attemptLogin(Request $request) {
 
-        if ($user = User::whereEmail($request->get('email'))
+        $email = $request->get('email') . "@medt.cuhk.edu.hk";
+        if ($user = User::whereEmail($email)
                         ->whereIsLdapUser(true)
                         ->first()) {
 
@@ -71,8 +72,37 @@ class LoginController extends Controller
             }
         }
 
+        return false;
+    }
+
+    public function adminLogin(Request $request) {
+
+        if ($this->attemptAdminLogin($request)) {
+            return $this->sendLoginResponse($request);
+        }
+
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+        $this->incrementLoginAttempts($request);
+
+        return $this->sendFailedLoginResponse($request);
+
+    }
+
+    private function attemptAdminLogin($request) {
+        if (User::whereEmail($request->get("email"))
+                ->whereIsLdapUser(true)->count()) {
+            return false;
+        }
+
         return $this->guard()->attempt(
             $this->credentials($request), $request->filled('remember')
         );
     }
+
+    protected function authenticated(Request $request, $user) {
+        return redirect()->intended("/dashboard");
+    }
+
 }

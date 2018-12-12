@@ -10,6 +10,7 @@ use App\Event;
 use App\Events\SystemEvent;
 use App\Exports\DelegateExport;
 use App\Exports\NewDelegate;
+use App\Http\Requests\DelegateUpdateRequest;
 use App\Imports\DelegatesImport;
 use App\Imports\NewDelegateImport;
 use App\Jobs\ImportDelegates;
@@ -39,11 +40,13 @@ class DelegatesController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \App\Event $event
      * @return \Illuminate\Http\Response
      */
     public function index(Event $event) {
         $delegates = $event->delegates()
-                           ->whereIsDuplicated(DelegateDuplicationStatus::NO)
+                           ->where("is_duplicated",
+                               "<>", DelegateDuplicationStatus::DUPLICATED)
                            ->orderBy('last_name')
                            ->paginate();
 
@@ -131,12 +134,13 @@ class DelegatesController extends Controller
                                   return $i->id !== $delegate->id;
                               });
 
-        $duplicates = $duplicates->merge($checker->find('mobile', $delegate->mobile)
-                                   ->filter(function ($i) use (
-                                       $delegate
-                                   ) {
-                                       return $i->id !== $delegate->id;
-                                   }));
+        $duplicates = $duplicates->merge($checker->find('mobile',
+            $delegate->mobile)
+                                                 ->filter(function ($i) use (
+                                                     $delegate
+                                                 ) {
+                                                     return $i->id !== $delegate->id;
+                                                 }));
         $duplicates = $duplicates->unique('id');
 
         return view("admin.events.delegates.show",
@@ -163,24 +167,18 @@ class DelegatesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param \App\Event                $event
-     * @param  \App\Delegate            $delegate
-     * @param \App\Transaction          $transaction
+     * @param \App\Http\Requests\DelegateUpdateRequest $request
+     * @param \App\Event                               $event
+     * @param  \App\Delegate                           $delegate
+     * @param \App\Transaction                         $transaction
      * @return \Illuminate\Http\Response
-     * @throws \ReflectionException
+     * @throws \Exception
      */
     public function update(
-        Request $request, Event $event, Delegate $delegate,
+        DelegateUpdateRequest $request, Event $event, Delegate $delegate,
         Transaction $transaction
     ) {
-        $rules = array_merge($delegate->getStoreRules(),
-            $transaction->getRules());
-
-
-        $validatedData = $this->validate($request, $rules);
-
-        $validatedData['is_verified'] = isset($validatedData['is_verified']) ? $validatedData['is_verified'] : false;
+        $validatedData = $request->validated();
 
         DB::beginTransaction();
 
@@ -222,6 +220,7 @@ class DelegatesController extends Controller
      * @param \App\Event               $event
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function postImport(Event $event, Request $request
     ): RedirectResponse {
@@ -251,8 +250,7 @@ class DelegatesController extends Controller
      * @param                          $validatedData
      * @return $this|\Illuminate\Database\Eloquent\Model
      */
-    private
-    function createDelegate(
+    private function createDelegate(
         Event $event, Request $request, $validatedData
     ) {
         $newDelegate = $event->delegates()->create($validatedData);
@@ -280,14 +278,10 @@ class DelegatesController extends Controller
      * @param array         $validatedData
      * @return \App\Delegate
      */
-    private
-    function updateDelegate(
+    private function updateDelegate(
         Delegate $delegate, array $validatedData
     ): Delegate {
         $delegate->update($validatedData);
-
-        $delegate->is_verified = $validatedData['is_verified'];
-        $delegate->save();
 
         $delegate->transactions()->latest()->first()
                  ->update($validatedData);
@@ -307,10 +301,7 @@ class DelegatesController extends Controller
         return $delegate;
     }
 
-    public
-    function postSearch(
-        Request $request, Event $event
-    ) {
+    public function postSearch(Request $request, Event $event) {
 
         $input = $request->all();
 
@@ -326,20 +317,14 @@ class DelegatesController extends Controller
         return response()->json($delegates);
     }
 
-    public
-    function export(
-        Event $event
-    ) {
+    public function export(Event $event) {
         $event->load('delegates.transactions.ticket');
         $event->load('delegates.roles');
 
         return Excel::download(new DelegateExport($event), 'delegates.xls');
     }
 
-    public
-    function new(
-        Event $event
-    ) {
+    public function new(Event $event) {
         $delegates = $event->delegates()->whereIsVerified(false)->get();
 
         return view("admin.events.delegates.new.index",

@@ -11,8 +11,8 @@
 |
 */
 
-use Adldap\AdldapInterface;
 use App\Event;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DelegateRolesController;
 use App\Http\Controllers\InstitutionsController;
@@ -22,7 +22,7 @@ use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\SettingsControllers;
 use App\Http\Controllers\TalksController;
 use App\Http\Controllers\TemplatesController;
-use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UploadFilesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -42,18 +42,8 @@ Route::get('reg', function (Request $request) {
     return view("welcome", compact('event'));
 });
 
-Route::get('ldap', function (Request $request, AdldapInterface $adldap) {
-
-    try {
-        $adldap->search()->users()->first();
-
-        return "Okay";
-
-    } catch (Exception $e) {
-        return $e->getMessage();
-    }
-});
-
+Route::view('admin/login', 'admin_login');
+Route::post('admin/login', LoginController::class . "@adminLogin");
 
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Auth::routes(['verify' => true]);
@@ -65,7 +55,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
 Route::post('delegates', PaymentController::class . "@pay");
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(/**
+ *
+ */
+    ['middleware' => 'auth'], function () {
 
     // Users
     @include('routes/users.php');
@@ -126,5 +119,8 @@ Route::group(['middleware' => 'auth'], function () {
         return response()->json(['path' => $path]);
 
     });
+
+    Route::resource('events.uploadFiles',
+        UploadFilesController::class);
 
 });

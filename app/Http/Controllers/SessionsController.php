@@ -67,7 +67,6 @@ class SessionsController extends Controller
         $validatedData = $this->validate($request, Session::StoreRules,
             Session::ErrorMessages);
 
-
         DB::beginTransaction();
 
         try {

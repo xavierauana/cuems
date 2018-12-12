@@ -34,6 +34,7 @@ class Delegate extends Model
         'address_2',
         'address_3',
         'is_duplicated',
+        'is_verified',
     ];
 
     protected $casts = [

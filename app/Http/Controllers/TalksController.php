@@ -41,6 +41,7 @@ class TalksController extends Controller
      *
      * @param Event   $event
      * @param Session $session
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create(Event $event, Session $session) {
 
@@ -144,7 +145,7 @@ class TalksController extends Controller
      */
     private function getDelegates(): array {
         return Delegate::excludeRole('default')
-                       ->get(['delegate_id', 'first_name', 'last_name'])
+                       ->get(['id as delegate_id', 'first_name', 'last_name'])
                        ->reduce(function ($carry, $delegate) {
                            $carry[$delegate->delegate_id] = $delegate->name;
 

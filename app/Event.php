@@ -64,4 +64,16 @@ class Event extends Model
         return $this->hasMany(Sponsor::class);
     }
 
+    public function uploadFiles(): Relation {
+        return $this->hasMany(UploadFile::class);
+    }
+
+    // Helpers
+
+    public function getTotalExpense(): float {
+        $total = $this->expenses()->sum('amount');
+
+        return (float)($total ?? 0);
+    }
+
 }

@@ -11,6 +11,7 @@ $factory->define(App\Ticket::class, function (Faker $faker) {
     return [
         'price'    => random_int(100, 10000),
         'name'     => $faker->word,
+        'code'     => $faker->uuid,
         'start_at' => $startAt,
         'end_at'   => $endAt,
         'event_id' => factory(\App\Event::class)->create()->id

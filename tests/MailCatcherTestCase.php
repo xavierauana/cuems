@@ -41,7 +41,9 @@ class MailCatcherTestCase extends TestCase
     }
 
     protected function getLastEmail() {
-        $emailId = $this->getAllEmail()[0]['id'];
+        $emails = $this->getAllEmail();
+        $emails[count($emails) - 1];
+        $emailId = $emails[count($emails) - 1]['id'];
 
         return $this->mailCatcher->get("/messages/{$emailId}.json");
     }
@@ -78,6 +80,7 @@ class MailCatcherTestCase extends TestCase
             true)['sender'];
         $this->assertNotContains("{$sender}", $data);
     }
+
     protected function assertEmailSubjectContains($subject, $email) {
         $data = json_decode(((string)$email->getBody()),
             true)['subject'];
@@ -88,6 +91,20 @@ class MailCatcherTestCase extends TestCase
         $data = json_decode(((string)$email->getBody()),
             true)['subject'];
         $this->assertNotContains("{$subject}", $data);
+    }
+
+    protected function assertEmailHasAttachment($attachmentFileName, $email) {
+
+        $attachments = $name = json_decode((string)$email->getBody(),
+            true)['attachments'];
+
+
+        if (count($attachments) === 0) {
+            $this->assertTrue(false, "No attachment find in email");
+        }
+        $name = $attachments[0]['filename'];
+
+        $this->assertEquals($attachmentFileName, $name);
     }
 
 

@@ -115,11 +115,13 @@ class SystemNotificationsTest extends MailCatcherTestCase
      */
     public function test_notification_email_sent() {
 
+        $from = "xavier";
         $fromEmail = "xavier.au@anacreation.com";
         $subject = "Transaction Created";
+
         factory(Notification::class)->create([
-            'template'   => 'test',
-            'from_name'  => "xavier",
+            'template'   => 'test_transaction',
+            'from_name'  => $from,
             'from_email' => $fromEmail,
             'subject'    => $subject,
             'event'      => SystemEvents::TRANSACTION_COMPLETED
@@ -136,7 +138,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
         ]);
 
         $email = $this->getLastEmail();
-        $this->assertEmailBodyContains("testing", $email);
+        $this->assertEmailBodyContains("testing transaction", $email);
         $this->assertEmailWasSentTo($delegate->email, $email);
         $this->assertEmailWasSentFrom($fromEmail, $email);
         $this->assertEmailSubjectContains($subject, $email);

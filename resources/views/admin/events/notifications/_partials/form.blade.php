@@ -53,6 +53,17 @@
         </span>
 	@endif
 </div>
+
+<div class="form-group">
+    {!!  Form::label('files[]', 'Attachments'); !!}
+	{!!  Form::select('files[]',$files,null,['class'=>'form-control select2','multiple']); !!}
+	@if ($errors->has('files[]'))
+		<span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('files[]') }}</strong>
+        </span>
+	@endif
+</div>
+
 <div class="form-group">
     {!!  Form::label('role_id', 'Role'); !!}
 	{!!  Form::select('role_id',array_merge([0=>"-- Pick One --"], \App\DelegateRole::pluck('label', 'id')->toArray()),null,['class'=>'form-control', 'step'=>"0.1"]); !!}

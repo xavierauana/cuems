@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Enums\SystemEvents;
 use App\Event;
+use App\Http\Requests\NotificationStoreRequest;
+use App\Http\Requests\NotificationUpdateRequest;
 use App\Notification;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -48,8 +49,10 @@ class NotificationsController extends Controller
 
         $events = $this->getFormattedEvents();
 
+        $files = $event->uploadFiles()->pluck('name', 'id');
+
         return view("admin.events.notifications.create",
-            compact('event', 'events'));
+            compact('event', 'events', 'files'));
     }
 
     /**
@@ -59,20 +62,16 @@ class NotificationsController extends Controller
      * @param \App\Event                $event
      * @return void
      */
-    public function store(Request $request, Event $event) {
-        $rules = $this->repo->getStoreRules();
-        $validatedData = $this->validate($request, $rules);
-
-        $validatedData['include_ticket'] = isset($validatedData['include_ticket']) ? $validatedData['include_ticket'] : false;
-        $validatedData['verified_only'] = isset($validatedData['verified_only']) ? $validatedData['verified_only'] : false;
-        $validatedData['include_duplicated'] = isset($validatedData['include_duplicated']) ? $validatedData['include_duplicated'] : false;
-
-        if ($validatedData['schedule']) {
-            $validatedData['schedule'] = Carbon::createFromFormat('d M Y h:m',
-                $validatedData['schedule']);
-        }
+    public function store(NotificationStoreRequest $request, Event $event) {
+        $validatedData = $request->validated();
 
         $newNotification = $event->notifications()->create($validatedData);
+        if (isset($validatedData['files'])) {
+            $newNotification->uploadFiles()->sync($validatedData['files']);
+        } else {
+            $newNotification->uploadFiles()->sync([]);
+        }
+
 
         return redirect()->route("events.notifications.index", $event)
                          ->withStatus("Notification: {$newNotification->name} is created!");
@@ -98,9 +97,10 @@ class NotificationsController extends Controller
      */
     public function edit(Event $event, Notification $notification) {
         $events = $this->getFormattedEvents();
+        $files = $event->uploadFiles()->pluck('name', 'id');
 
         return view("admin.events.notifications.edit",
-            compact("event", "events", "notification"));
+            compact("event", "events", "notification", "files"));
     }
 
     /**
@@ -112,20 +112,20 @@ class NotificationsController extends Controller
      * @return void
      */
     public function update(
-        Request $request, Event $event, Notification $notification
+        NotificationUpdateRequest $request, Event $event,
+        Notification $notification
     ) {
-        $validatedData = $this->validate($request,
-            $this->repo->getStoreRules());
 
-        $validatedData['include_ticket'] = isset($validatedData['include_ticket']) ? $validatedData['include_ticket'] : false;
-        $validatedData['verified_only'] = isset($validatedData['verified_only']) ? $validatedData['verified_only'] : false;
-        $validatedData['include_duplicated'] = isset($validatedData['include_duplicated']) ? $validatedData['include_duplicated'] : false;
+        $validatedData = $request->validated();
 
-        if ($validatedData['schedule']) {
-            $validatedData['schedule'] = Carbon::createFromFormat('d M Y h:m',
-                $validatedData['schedule']);
-        }
         $notification->update($validatedData);
+
+        if (isset($validatedData['files'])) {
+            $notification->uploadFiles()->sync($validatedData['files']);
+        } else {
+            $notification->uploadFiles()->sync([]);
+        }
+
 
         return redirect()->route("events.notifications.index", $event)
                          ->withStatus("Notification: {$notification->name} is updated!");

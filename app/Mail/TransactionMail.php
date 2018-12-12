@@ -4,7 +4,6 @@ namespace App\Mail;
 
 use App\Event;
 use App\Notification;
-use App\Transaction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 
@@ -26,7 +25,7 @@ class TransactionMail extends Mailable
     /**
      * @var \App\Notification
      */
-    private $notification;
+    protected $notification;
 
     /**
      * Create a new message instance.
@@ -36,7 +35,7 @@ class TransactionMail extends Mailable
      * @param \App\Event        $event
      */
     public function __construct(
-        Notification $notification, Transaction $transaction, Event $event
+        Notification $notification, $transaction, Event $event
     ) {
         //
         $this->transaction = $transaction;
@@ -49,12 +48,36 @@ class TransactionMail extends Mailable
      *
      * @return $this
      */
-    public function build() {
-        return $this->view("notifications." . $this->notification->template, [
-            'event'       => $this->event,
-            'transaction' => $this->transaction,
-        ])->from($this->notification->from_email,
+    public
+    function build() {
+        $builder = $this->view("notifications." . $this->notification->template,
+            [
+                'event'       => $this->event,
+                'transaction' => $this->transaction,
+            ])->from($this->notification->from_email,
             $this->notification->from_name)
-                    ->subject($this->notification->subject);
+                        ->subject($this->notification->subject);
+
+        $builder = $this->addAttachments($builder);
+
+        return $builder;
+    }
+
+    protected function addAttachments($builder) {
+
+        $files = $this->notification->uploadFiles;
+
+        $this->notification->uploadFiles->each(function ($storedFile) use (
+            &$builder
+        ) {
+            if ($storedFile->disk === 'local') {
+                $path = storage_path("app/" . $storedFile->path);
+                $builder->attach($path);
+            } else {
+                throw new \Exception("No implementation other than local drive");
+            }
+        });
+
+        return $builder;
     }
 }

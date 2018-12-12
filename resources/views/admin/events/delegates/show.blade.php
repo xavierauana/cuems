@@ -72,7 +72,7 @@
 					                  <td>{{$duplicate->email}}</td>
 					                  <td>{{$duplicate->mobile}}</td>
 					                  <td>{{$duplicate->institution}}</td>
-					                  <td>{{$duplicate->is_duplicated}}</td>
+					                  <td>{{$duplicate->is_duplicated=== \App\Enums\DelegateDuplicationStatus::DUPLICATED?"DUPLICATED":"NO"}}</td>
 					                  <td>{{$duplicate->roles->implode('label',', ')}}</td>
 				                  </tr>
 			                  @endforeach

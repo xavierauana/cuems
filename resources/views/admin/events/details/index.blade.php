@@ -38,6 +38,15 @@
 					    </div>
 				    </div>
 			    </div>
+			    <div class="mb-3 col-sm-6 col-md-4">
+				    <div class="card">
+					    <a href="{{route("events.expenses.index", $event)}}"><h4
+								    class="card-header">Total Expenses</h4></a>
+					    <div class="card-body">
+						    <h5>$ {{number_format($event->getTotalExpense())}}</h5>
+					    </div>
+				    </div>
+			    </div>
 			    
 		    </div>
 		    

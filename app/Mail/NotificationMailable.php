@@ -2,19 +2,14 @@
 
 namespace App\Mail;
 
-use App\Delegate;
 use App\Enums\TransactionStatus;
 use App\Event;
 use App\Notification;
 use App\Services\CreateTicketService;
 use App\Transaction;
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 
-class NotificationMailable extends Mailable
+class NotificationMailable extends AbstractEventNotificationMail
 {
-    use Queueable;
-
     /**
      * @var \App\Delegate
      */
@@ -27,28 +22,23 @@ class NotificationMailable extends Mailable
      * @var \App\Notification
      */
     private $notification;
-    /**
-     * @var bool
-     */
-    private $includeTicket;
 
     /**
      * Create a new message instance.
      *
-     * @param \App\Notification $notification
-     * @param \App\Delegate     $delegate
-     * @param \App\Event        $event
-     * @param bool              $includeTicket
+     * @param \App\Notification                   $notification
+     * @param \App\Delegate                       $delegate
+     * @param \App\Event                          $event
+     * @param \Illuminate\Support\Collection|null $attachments
      */
     public function __construct(
-        Notification $notification, Delegate $delegate, Event $event,
-        bool $includeTicket = false
+        Notification $notification, $delegate, Event $event
     ) {
         //
         $this->delegate = $delegate;
         $this->event = $event;
         $this->notification = $notification;
-        $this->includeTicket = $includeTicket;
+        $this->includeTicket = $notification->include_ticket;
     }
 
     /**
@@ -60,15 +50,15 @@ class NotificationMailable extends Mailable
      * @return void
      */
     public function build() {
-        $builder = $this->view("notifications." . $this->notification->template,
+        $this->view("notifications." . $this->notification->template,
             [
                 'delegate' => $this->delegate,
                 'event'    => $this->event
             ])->from($this->notification->from_email,
             $this->notification->from_name)
-                        ->subject($this->notification->subject);
+             ->subject($this->notification->subject);
 
-        if ($this->includeTicket) {
+        if ($this->notification->include_ticket) {
 
             /** @var CreateTicketService $service */
             $service = app()->make(CreateTicketService::class);
@@ -89,6 +79,8 @@ class NotificationMailable extends Mailable
             });
         }
 
-        return $builder;
+        $this->addAttachments();
+
+        return $this;
     }
 }
