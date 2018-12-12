@@ -5,9 +5,8 @@ namespace App\Mail;
 use App\Event;
 use App\Notification;
 use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 
-class TransactionMail extends Mailable
+class TransactionMail extends AbstractEventNotificationMail
 {
     use Queueable;
     /**
@@ -59,24 +58,6 @@ class TransactionMail extends Mailable
                         ->subject($this->notification->subject);
 
         $builder = $this->addAttachments($builder);
-
-        return $builder;
-    }
-
-    protected function addAttachments($builder) {
-
-        $files = $this->notification->uploadFiles;
-
-        $this->notification->uploadFiles->each(function ($storedFile) use (
-            &$builder
-        ) {
-            if ($storedFile->disk === 'local') {
-                $path = storage_path("app/" . $storedFile->path);
-                $builder->attach($path);
-            } else {
-                throw new \Exception("No implementation other than local drive");
-            }
-        });
 
         return $builder;
     }

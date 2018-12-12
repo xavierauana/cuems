@@ -72,10 +72,11 @@ class NotificationMailable extends AbstractEventNotificationMail
             (
                 &$builder, $service
             ) {
-                $data = $service->createPDF($transaction);
-                $builder->attachData($data, "ticket.pdf", [
-                    'mime' => "application/pdf"
-                ]);
+                if($data = $service->createPDF($transaction)){
+                    $builder->attachData($data, "ticket.pdf", [
+                        'mime' => "application/pdf"
+                    ]);
+                }
             });
         }
 
