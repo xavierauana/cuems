@@ -11,9 +11,9 @@ namespace App\Mail;
 use App\Event;
 use App\Notification;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Mail\Mailable;
 
-abstract class AbstractEventNotificationMail extends Mail
+abstract class AbstractEventNotificationMail extends Mailable
 {
     use Queueable;
 
