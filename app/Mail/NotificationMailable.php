@@ -7,8 +7,9 @@ use App\Event;
 use App\Notification;
 use App\Services\CreateTicketService;
 use App\Transaction;
+use Illuminate\Support\Facades\Mail;
 
-class NotificationMailable extends AbstractEventNotificationMail
+class NotificationMailable extends Mail
 {
     /**
      * @var \App\Delegate
@@ -82,5 +83,16 @@ class NotificationMailable extends AbstractEventNotificationMail
         $this->addAttachments();
 
         return $this;
+    }
+
+    protected function addAttachments(): void {
+        $this->notification->uploadFiles->each(function ($storedFile) {
+            if ($storedFile->disk === 'local') {
+                $this->attach(storage_path("app/" . $storedFile->path));
+            } else {
+                throw new \Exception("No implementation other than local drive");
+            }
+        });
+
     }
 }
