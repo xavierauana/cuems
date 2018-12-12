@@ -21,7 +21,7 @@ class NotificationMailable extends AbstractEventNotificationMail
     /**
      * @var \App\Notification
      */
-    private $notification;
+    protected $notification;
 
     /**
      * Create a new message instance.
