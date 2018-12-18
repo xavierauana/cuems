@@ -21,11 +21,16 @@ class Vendor extends Model
         return $this->hasMany(Expense::class);
     }
 
+    public function contacts(): Relation {
+        return $this->hasMany(VendorContact::class);
+    }
+
     // Accessor
     public function getUrlsAttribute() {
         return [
-            'edit'   => route('vendors.edit', $this),
-            'delete' => route('vendors.destroy', $this),
+            'edit'     => route('vendors.edit', $this),
+            'delete'   => route('vendors.destroy', $this),
+            'contacts' => route('vendors.vendorContacts.index', $this),
         ];
     }
 }

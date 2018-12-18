@@ -20,6 +20,8 @@
 	                         all-url="{{route('vendors.index')}}"
 	                >
 		                <template name="action" slot-scope="{item, deleteItem}">
+			                <a :href="item.urls.contacts"
+			                   class="btn btn-primary btn-sm text-light">Contact</a>
 			                <a :href="item.urls.edit"
 			                   class="btn btn-info btn-sm text-light">Edit</a>
 			                <button :href="item.urls.delete"

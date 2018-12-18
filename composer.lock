@@ -4358,7 +4358,7 @@
             "source": {
                 "type": "git",
                 "url": "/Users/adrianexavier/code/packages/utils/crud",
-                "reference": "a75aec85aadd34c15229f5193b58e955e3d7b7ad"
+                "reference": "a68c09fcbba43653fb0d54a85611e539a23096f4"
             },
             "require": {
                 "laravelcollective/html": "^5.5",
@@ -4392,7 +4392,7 @@
                 "commands",
                 "crud"
             ],
-            "time": "2018-12-07T13:34:47+00:00"
+            "time": "2018-12-17T06:00:36+00:00"
         },
         {
             "name": "beyondcode/laravel-dump-server",

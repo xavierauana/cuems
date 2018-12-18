@@ -10,6 +10,7 @@ use App\Expense;
 use App\ExpenseMedium;
 use App\Http\Controllers\ExpenseCategoriesController;
 use App\Http\Controllers\ExpensesController;
+use App\Http\Controllers\VendorContactsController;
 use App\Http\Controllers\VendorsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -45,4 +46,5 @@ Route::delete("events/{event}/expenses/{expense}/files/{file}",
      ->name('expenses.media.destroy');
 
 Route::resource('vendors', VendorsController::class);
+Route::resource('vendors.vendorContacts', VendorContactsController::class);
 Route::resource('expense_categories', ExpenseCategoriesController::class);
