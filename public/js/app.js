@@ -13795,7 +13795,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   data: function data() {
     return {
-      url: window.origin + window.pathname
+      url: window.origin + window.location.pathname
     };
   },
 

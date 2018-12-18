@@ -39,7 +39,7 @@ export default {
   },
   data() {
     return {
-      url: window.origin + window.pathname
+      url: window.origin + window.location.pathname
     }
   },
   methods: {
