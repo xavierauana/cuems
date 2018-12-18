@@ -13743,7 +13743,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -13754,7 +13754,6 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
 //
 //
 //
@@ -13794,6 +13793,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     nextLink: String,
     totalPages: Number
   },
+  data: function data() {
+    return {
+      url: window.origin + window.pathname
+    };
+  },
+
   methods: {
     getUrl: function getUrl(index) {
       return this.baseUrl + 'page=' + index;
@@ -13841,7 +13846,7 @@ var render = function() {
                   "a",
                   {
                     staticClass: "page-link",
-                    attrs: { href: "#" },
+                    attrs: { href: _vm.url + "?page=" + n },
                     on: {
                       click: function($event) {
                         $event.preventDefault()

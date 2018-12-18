@@ -9,12 +9,11 @@
         <li class="page-item" v-for="n in totalPages"
             :class="{'active': currentPage === n }">
             <a v-if="currentPage !== n"
-               href="#"
+               :href="url+'?page='+n"
                class="page-link"
                @click.prevent="$emit('go', n)"
             >{{n}}</a>
             <span v-else class="page-link">{{n}}</span>
-        </li>
         </li>
         <li class="page-item">
         <a :href="nextLink"
@@ -37,6 +36,11 @@ export default {
     prevLink   : String,
     nextLink   : String,
     totalPages : Number
+  },
+  data() {
+    return {
+      url: window.origin + window.pathname
+    }
   },
   methods: {
     getUrl(index) {
