@@ -5,12 +5,12 @@
               <label class="btn btn-outline-primary"
                      :class="{'active':selectType==='practitioner'}"
                      @click="changeType('practitioner')">
-                <input type="radio" value="practitioner" v-model="selectType"> Practitioner
+                <input type="radio" value="practitioner" v-model="selectType"> Medical Practitioners
               </label>
               <label class="btn btn-outline-primary"
                      :class="{'active':selectType==='trainee'}"
                      @click="changeType('trainee')">
-                <input type="radio" value="trainee" v-model="selectType"> Trainee
+                <input type="radio" value="trainee" v-model="selectType"> Para-medics / Trainees
               </label>
             </div>
         </div>

@@ -6212,7 +6212,7 @@ var render = function() {
                     }
                   }
                 }),
-                _vm._v(" Practitioner\n              ")
+                _vm._v(" Medical Practitioners\n              ")
               ]
             ),
             _vm._v(" "),
@@ -6245,7 +6245,7 @@ var render = function() {
                     }
                   }
                 }),
-                _vm._v(" Trainee\n              ")
+                _vm._v(" Para-medics / Trainees\n              ")
               ]
             )
           ]
