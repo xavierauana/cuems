@@ -91,13 +91,10 @@ class LoginController extends Controller
     }
 
     private function attemptAdminLogin($request) {
-        if (User::whereEmail($request->get("email"))
-                ->whereIsLdapUser(false)->count()) {
-            return false;
-        }
+
         $credentials = $this->credentials($request);
 
-        $credentials['is_ladp_user'] = false;
+        $credentials['is_ldap_user'] = false;
 
         return $this->guard()
                     ->attempt($credentials, $request->filled('remember')
