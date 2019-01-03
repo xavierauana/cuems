@@ -58,6 +58,8 @@ Route::post('delegates', PaymentController::class . "@pay");
 Route::group(
     ['middleware' => 'auth'], function () {
 
+    Route::redirect('/home', '/dashboard');
+
     // Users
     @include('routes/users.php');
 
