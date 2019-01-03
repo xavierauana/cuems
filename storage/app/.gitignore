@@ -1,4 +1,5 @@
 *
+!templates
 !public/
 !countries.json
 !names_female.json

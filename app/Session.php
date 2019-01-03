@@ -19,6 +19,7 @@ class Session extends Model
         'start_at',
         'end_at',
         'sponsor',
+        'venue',
         'moderation_type',
     ];
 
@@ -29,6 +30,7 @@ class Session extends Model
 
     const StoreRules    = [
         'title'           => 'required',
+        'venue'           => 'required',
         'subtitle'        => 'nullable',
         'sponsor'         => 'nullable',
         'moderation_type' => 'nullable|numeric',
@@ -58,6 +60,14 @@ class Session extends Model
         return DB::table('moderators')
                  ->where('session_id', $this->id)
                  ->pluck('delegate_id');
+    }
+
+    public function getModeratorDelegatesAttribute(): Collection {
+        return Delegate::whereIn('id', function ($q) {
+            return $q->select('delegate_id')
+                     ->from('moderators')
+                     ->where('session_id', $this->id);
+        })->get();
     }
 
     public function getStartAtAttribute($value): string {

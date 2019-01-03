@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\DelegateRole;
+use App\Enums\DelegateDuplicationStatus;
 use App\Enums\TransactionStatus;
 use App\Event;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -16,14 +17,19 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
      */
     private $event;
     private $transactionStatus;
+    /**
+     * @var string
+     */
+    private $delegateType;
 
     /**
      * DelegateExport constructor.
      * @param \App\Event $event
      */
-    public function __construct(Event $event) {
+    public function __construct(Event $event, $delegateType = 'default') {
         $this->event = $event;
         $this->transactionStatus = array_flip(TransactionStatus::getStatus());
+        $this->delegateType = $delegateType;
     }
 
     /**
@@ -32,14 +38,30 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
      */
     public function headings(): array {
         return [
-            'first_name',
-            'last_name',
-            'email',
-            'mobile',
-            'fax',
-            'roles',
-            'ticket',
-            'transaction_status',
+            'Title',
+            'Gender',
+            'Surname',
+            'Given Name',
+            'Position',
+            'Department',
+            'Institution / Hospital',
+            'Address Line 1',
+            'Address Line 2',
+            'Address Line 3',
+            'Country',
+            'Email',
+            'Tel',
+            'Fax',
+            'Transaction Status',
+            'Role',
+            'Ticket',
+            'Transaction Status',
+            'Is Duplicated',
+            'Sponsor Company',
+            'Sponsor Correspondent Name',
+            'Sponsor Correspondent Email',
+            'Sponsor Correspondent Tel',
+            'Sponsor Correspondent Address',
         ];
     }
 
@@ -48,7 +70,16 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
      */
 
     public function collection() {
-        return $this->event->delegates;
+        $query = $this->event->delegates();
+
+        switch ($this->delegateType) {
+            case 'duplicated':
+                return $query->where('is_duplicated', '=',
+                    DelegateDuplicationStatus::DUPLICATED)->get();
+            default:
+                return $query->where('is_duplicated', '<>',
+                    DelegateDuplicationStatus::DUPLICATED)->get();
+        }
     }
 
     /**
@@ -58,9 +89,20 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
      */
     public function map($delegate): array {
 
+        $sponsorRecord = $delegate->sponsorRecord;
+
         return [
-            $delegate->first_name,
+            $delegate->prefix,
+            $delegate->is_male ? "male" : "female",
             $delegate->last_name,
+            $delegate->first_name,
+            $delegate->position,
+            $delegate->department,
+            $delegate->institution,
+            $delegate->address_1,
+            $delegate->address_2,
+            $delegate->address_3,
+            $delegate->country,
             $delegate->email,
             $delegate->mobile,
             $delegate->fax,
@@ -69,7 +111,15 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
                 return $carry . $role->label . ", ";
             }, ""),
             $delegate->transactions->first()->ticket->name,
+            TransactionStatus::getStatusKey($delegate->transactions->first()->status),
             $this->transactionStatus[$delegate->transactions->first()->status],
+            $delegate->is_duplicated ,
+            $sponsorRecord ? $sponsorRecord->sponsor->name : null,
+            optional($sponsorRecord)->name,
+            optional($sponsorRecord)->email,
+            optional($sponsorRecord)->tel,
+            optional($sponsorRecord)->address,
+
         ];
     }
 }

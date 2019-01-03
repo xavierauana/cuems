@@ -8,6 +8,9 @@
 			           class="btn btn-sm btn-success pull-right">New</a>
 			        <a href="{{route('events.tickets.import', $event)}}"
 			           class="btn btn-sm btn-outline-success pull-right mr-1">Import</a>
+			        <a href="{{route('tickets.download_template')}}"
+			           target="_blank"
+			           class="btn btn-sm btn-outline-primary pull-right mr-1">Download Ticket Template</a>
                 </div>
                 
                 <div class="table-responsive">

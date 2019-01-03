@@ -13,14 +13,18 @@ class EventsTableSeeder extends Seeder
     public function run() {
         $events = [
             [
-                'title'    => "2018 Event",
-                'start_at' => new \Carbon\Carbon("1 Dec 2018"),
-                'end_at'   => new \Carbon\Carbon("3 Dec 2018"),
+                'title'    => "2019 Event",
+                'start_at' => new \Carbon\Carbon("01 May 2019"),
+                'end_at'   => new \Carbon\Carbon("03 May 2019"),
             ]
         ];
 
         foreach ($events as $event) {
-            Event::create($event);
+            $newEvent = Event::create($event);
+
+            foreach (config('event.settings', []) as $key) {
+                $newEvent->settings()->create(compact('key'));
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Event;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EventsController extends Controller
 {
@@ -24,7 +25,7 @@ class EventsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index(Request $request) {
 
         $events = $this->repo->get();
 
@@ -49,9 +50,27 @@ class EventsController extends Controller
      */
     public function store(Request $request): RedirectResponse {
 
+
         $this->validate($request, Event::StoreRules, Event::ValidationMessages);
 
-        $this->repo->create($request->all());
+        DB::beginTransaction();
+
+        try {
+
+            $newEvent = $this->repo->create($request->all());
+
+            $keys = config('event.settings', []);
+            
+            foreach ($keys as $key) {
+                $newEvent->settings()->create(compact('key'));
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
 
         return redirect()->route("events.index");
     }
@@ -73,7 +92,7 @@ class EventsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(Event $event) {
-        //
+        return view("admin.events.edit", compact('event'));
     }
 
     /**
@@ -84,7 +103,13 @@ class EventsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Event $event) {
-        //
+        $validatedData = $this->validate($request, Event::StoreRules,
+            Event::ValidationMessages);
+
+        $event->update($validatedData);
+
+        return redirect()->route("events.index")->withStatus("Event updated!");
+
     }
 
     /**

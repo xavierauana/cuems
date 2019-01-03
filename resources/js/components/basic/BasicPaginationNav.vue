@@ -3,6 +3,7 @@
         <li class="page-item">
             <a :href="prevLink"
                rel="prev"
+               @click.prevent="$emit('go', currentPage>1?currentPage-1:currentPage)"
                aria-label="« Previous"
                class="page-link">‹</a>
         </li>
@@ -17,6 +18,7 @@
         </li>
         <li class="page-item">
         <a :href="nextLink"
+           @click.prevent="$emit('go', currentPage<totalPages?currentPage+1:currentPage)"
            rel="next"
            aria-label="Next »"
            class="page-link">›</a>

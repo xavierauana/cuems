@@ -55,9 +55,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
 Route::post('delegates', PaymentController::class . "@pay");
 
-Route::group(/**
- *
- */
+Route::group(
     ['middleware' => 'auth'], function () {
 
     // Users
@@ -90,11 +88,22 @@ Route::group(/**
     Route::resource('roles', DelegateRolesController::class);
 
     // Institution
+    Route::get('institutions/import', InstitutionsController::class . '@import')
+         ->name('institutions.import');
+    Route::post('institutions/import',
+        InstitutionsController::class . '@postImport');
+    Route::get('institutions/export', InstitutionsController::class . '@export')
+         ->name('institutions.export');
     Route::get('institutions/search', InstitutionsController::class . "@search")
          ->name('institutions.search');
     Route::resource('institutions', InstitutionsController::class);
 
     // Position
+    Route::get('positions/import', PositionsController::class . '@import')
+         ->name('positions.import');
+    Route::post('positions/import', PositionsController::class . '@postImport');
+    Route::get('positions/export', PositionsController::class . '@export')
+         ->name('positions.export');
     Route::get('positions/search', PositionsController::class . "@search")
          ->name('positions.search');
     Route::resource('positions', PositionsController::class);

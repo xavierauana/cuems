@@ -34,6 +34,15 @@ class Talk extends Model
                  ->pluck('delegate_id');
     }
 
+    public function getSpeakerDelegatesAttribute(): Collection {
+        return Delegate::whereIn('id', function ($query) {
+            return $query->select('id')
+                        ->from('speakers')
+                        ->whereTalkId($this->id);
+
+        })->get();
+    }
+
     // Helpers
     public function setSpeakers(array $speakerIds): void {
         array_walk($speakerIds, function ($speakerId) {

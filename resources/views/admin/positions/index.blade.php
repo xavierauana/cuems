@@ -9,6 +9,11 @@
                 <div class="card-header">Positions
                 <a href="{{route('positions.create')}}"
                    class="btn btn-sm btn-success pull-right">New</a>
+                <a href="{{route('positions.export')}}"
+                   target="_blank"
+                   class="btn btn-sm btn-primary pull-right mr-2">Export</a>
+                <a href="{{route('positions.import')}}"
+                   class="btn btn-sm btn-success pull-right mr-2">Import</a>
                 </div>
                 
                 <div class="table-responsive">

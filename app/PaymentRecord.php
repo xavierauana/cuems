@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class PaymentRecord extends Model
@@ -20,6 +21,11 @@ class PaymentRecord extends Model
     ];
 
     protected static $logOnlyDirty = true;
+
+    // Relation
+    public function event(): Relation {
+        return $this->belongsTo(Event::class);
+    }
 
     public function setFormDataAttribute($value) {
         $this->attributes['form_data'] = encrypt($value);

@@ -11,11 +11,11 @@
         <div class="col-md-10">
              @include("admin._partials.alert")
 	        <div class="card">
-                <div class="card-header">Create New Event</div>
+                <div class="card-header">Edit Event: {{$event->name}}</div>
                 
                 <div class="card-body">
 	                
-	                {!! Form::open(['url' => route("events.store"), 'method'=>"POST", 'class'=>"needs-validation", "novalidate"]) !!}
+	                {!! Form::model($event,['url' => route("events.update", $event), 'method'=>"PUT", 'class'=>"needs-validation", "novalidate"]) !!}
 	                <div class="form-group">
 		                {!!  Form::label('title', 'Title'); !!}
 		                {!!  Form::text('title',null,['class'=>'form-control']); !!}

@@ -35,10 +35,6 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link"
-					   href="{{route('events.templates.index', $event)}}">Templates</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
 					   href="{{route('events.expenses.index', $event)}}">Expenses</a>
 				</li>
 				<li class="nav-item">

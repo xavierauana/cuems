@@ -16,6 +16,8 @@ class CreatePaymentRecordsTable extends Migration
             $table->increments('id');
             $table->string('invoice_id');
             $table->string('status');
+            $table->unsignedInteger('event_id');
+            $table->foreign('event_id')->references('id')->on('events');
             $table->longText('form_data')->nullable();
             $table->timestamps();
         });

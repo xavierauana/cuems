@@ -6,6 +6,9 @@
 		        <div class="card-header">Delegates for Event: {{$event->title}}
 			        <a href="{{route('events.delegates.create', $event)}}"
 			           class="btn btn-sm btn-success pull-right">New</a>
+			        <a href="{{route('delegates.import_template')}}"
+			           target="_blank"
+			           class="btn btn-sm btn-outline-primary pull-right mr-1">Download Import Template</a>
 			        <a href="{{route('events.delegates.import', $event)}}"
 			           class="btn btn-sm btn-outline-success pull-right mr-1">Import</a>
 			        <a href="{{route('events.delegates.export', $event)}}"
@@ -14,12 +17,44 @@
 			           class="btn btn-sm btn-warning pull-right mr-1">Duplicates</a>
                 </div>
                 
+		        <div class="card-body">
+			        <div class="row">
+				        <div class="col-6">
+					        <form class="form"
+					              action="{{route('events.delegates.index', $event)}}">
+						        <div class="input-group">
+								    <input class="form-control"
+								           name="keyword"
+								           value="{{request()->query('keyword')}}"
+								           placeholder="search" />
+								        <div class="">
+									        <button class="btn btn-success">Search</button>
+								        </div>
+							        </div>
+					        </form>
+					      
+					        
+				        </div>
+			        </div>
+		        </div>
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Institution</th>
+                        <th>
+	                        <a href="{{request()->fullUrlWithQuery(['first_name'=>(request()->has('first_name') and request()->query('first_name') === 'asc')?"desc": 'asc'])}}">
+	                        Name
+	                        </a>
+                        </th>
+                        <th>
+	                        <a href="{{request()->fullUrlWithQuery(['email'=>(request()->has('email') and request()->query('email') === 'asc')?"desc": 'asc'])}}">
+		                        Email
+	                        </a>
+                        </th>
+                        <th>
+	                        <a href="{{request()->fullUrlWithQuery(['institution'=>(request()->has('institution') and request()->query('institution') === 'asc')?"desc": 'asc'])}}">
+		                        Institution
+	                        </a>
+                        </th>
                         <th>Role</th>
                         <th>Actions</th>
                     </thead>

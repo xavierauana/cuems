@@ -4,12 +4,11 @@ namespace App\Jobs;
 
 use App\Delegate;
 use App\DelegateRole;
-use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
 use App\Event;
 use App\Events\SystemEvent;
-use App\Services\DelegateDuplicateChecker;
+use App\Services\DelegateCreationService;
 use App\Ticket;
 use App\Transaction;
 use App\User;
@@ -19,7 +18,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
@@ -43,10 +41,13 @@ class ImportDelegates implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \App\Event                     $event
-     * @param \Illuminate\Support\Collection $collection
+     * @param \App\Event                            $event
+     * @param \Illuminate\Support\Collection        $collection
+     * @param \App\User                             $user
+     * @param \App\Services\DelegateCreationService $service
      */
-    public function __construct(Event $event, Collection $collection, User $user
+    public function __construct(
+        Event $event, Collection $collection, User $user
     ) {
         //
         $this->event = $event;
@@ -58,12 +59,16 @@ class ImportDelegates implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param \App\Transaction $transaction
+     * @param \App\Transaction                      $transaction
+     * @param \App\Delegate                         $delegate
+     * @param \App\DelegateRole                     $role
+     * @param \App\Services\DelegateCreationService $service
      * @return void
      * @throws \ReflectionException
      */
     public function handle(
-        Transaction $transaction, Delegate $delegate, DelegateRole $role
+        Transaction $transaction, Delegate $delegate, DelegateRole $role,
+        DelegateCreationService $service
     ) {
 
         $rules = $this->getValidationRules($transaction, $delegate, $role);
@@ -71,75 +76,20 @@ class ImportDelegates implements ShouldQueue
 
         $this->conversion();
 
-        $collection = $this->collection->filter(function ($item) use ($rules) {
+        $this->collection->filter(function ($item) use ($rules) {
             return !!$this->validateData($item, $rules);
-        });
+        })
+                         ->each(function ($data) use ($service) {
+                             
+                             $newDelegate = $service->create($this->event,
+                                 $data, true);
 
-        $collection->each(function ($data) use ($role) {
+                             Log::info('fire event: ' . $newDelegate->name);
 
-            DB::beginTransaction();
+                             event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
+                                 $newDelegate));
+                         });
 
-            try {
-                $newDelegate = $this->event->delegates()
-                                           ->create($data);
-
-                $newDelegate->roles()->save($role->where('code',
-                    $data['role'])->first());
-
-                $newDelegate->transactions()->create($data);
-
-                $newDelegate->transactions()->create($data);
-
-                if (isset($data['sponsor']['sponsor_id'])) {
-                    $sponsorData = $data['sponsor'];
-
-                    $newDelegate->sponsorRecord()->create($sponsorData);
-                }
-
-                DB::table('delegate_creations')->insert([
-                    'delegate_id' => $newDelegate->id,
-                    'user_id'     => $this->user->id
-                ]);
-
-                DB::commit();
-
-                $this->checkDuplicated($newDelegate);
-
-                Log::info('fire event: ' . $newDelegate->name);
-
-                sleep(0.5);
-                event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
-                    $newDelegate));
-
-            } catch (\Exception $exception) {
-
-                DB::rollBack();
-
-                throw $exception;
-
-            }
-        });
-
-    }
-
-    /**
-     * @param $this
-     * @param $newDelegate
-     */
-    function checkDuplicated($newDelegate): void {
-        $checker = new DelegateDuplicateChecker($this->event);
-
-        if ($checker->isDuplicated('email',
-                $newDelegate->email) or $checker->isDuplicated('mobile',
-                $newDelegate->mobile)) {
-            $newDelegate->is_duplicated = DelegateDuplicationStatus::DUPLICATED;
-        } else {
-            $newDelegate->is_duplicated = DelegateDuplicationStatus::NO;
-        }
-
-        $newDelegate->is_verified = true;
-
-        $newDelegate->save();
     }
 
     private function validateData(array $data, array $rules): ?array {

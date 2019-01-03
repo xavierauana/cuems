@@ -21,4 +21,8 @@ class TransactionStatus
 
         return $reflection->getConstants();
     }
+
+    public static function getStatusKey($val): ?string {
+        return array_flip(static::getStatus())[$val] ?? null;
+    }
 }

@@ -2,13 +2,15 @@
 
 namespace App;
 
+use Carbon\Carbon;
+use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Event extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, FormAccessible;
 
     protected $fillable = [
         'title',
@@ -74,6 +76,36 @@ class Event extends Model
         $total = $this->expenses()->sum('amount');
 
         return (float)($total ?? 0);
+    }
+
+    // Accessor
+    public function formEndAtAttribute($value) {
+        return (new Carbon($value))->format("d M Y");
+    }
+
+    public function formStartAtAttribute($value) {
+        return (new Carbon($value))->format("d M Y");
+    }
+
+    // Mutation
+    public function setEndAtAttribute($value) {
+        if (!$value instanceof Carbon) {
+            $this->attributes['end_at'] = Carbon::createFromFormat('d M Y',
+                $value);
+        } else {
+            $this->attributes['end_at'] = $value;
+        }
+
+    }
+
+    public function setStartAtAttribute($value) {
+        if (!$value instanceof Carbon) {
+            $this->attributes['start_at'] = Carbon::createFromFormat('d M Y',
+                $value);
+        } else {
+            $this->attributes['start_at'] = $value;
+        }
+
     }
 
 }

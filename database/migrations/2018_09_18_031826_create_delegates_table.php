@@ -28,6 +28,7 @@ class CreateDelegatesTable extends Migration
             $table->text('address_2')->nullable();
             $table->text('address_3')->nullable();
             $table->text('country');
+            $table->unsignedInteger('registration_id');
             $table->string('training_organisation')->nullable();
             $table->string('training_organisation_address')->nullable();
             $table->string('supervisor')->nullable();

@@ -11,6 +11,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
+Route::get("delegates/import_template",
+    DelegatesController::class . "@template")
+     ->name("delegates.import_template");
+
 Route::get("events/{event}/delegates/import",
     DelegatesController::class . "@getImport")
      ->name("events.delegates.import");
@@ -62,7 +66,7 @@ Route::get("events/{event}/delegates/export",
     DelegatesController::class . "@export")
      ->name("events.delegates.export");
 
-//Route::post("events/{event}/delegates/search",
-//    DelegatesController::class . "@postSearch")
-//     ->name("events.delegates.import");
+Route::get("events/{event}/delegates/search",
+    DelegatesController::class . "@search")
+     ->name("events.delegates.search");
 Route::resource("events.delegates", DelegatesController::class);

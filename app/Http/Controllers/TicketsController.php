@@ -147,4 +147,8 @@ class TicketsController extends Controller
 
         return redirect()->route('events.tickets.index', $event);
     }
+
+    public function template() {
+        return response()->download(storage_path('app/templates/tickets_template.csv'));
+    }
 }

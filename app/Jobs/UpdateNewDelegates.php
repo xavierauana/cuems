@@ -74,12 +74,13 @@ class UpdateNewDelegates implements ShouldQueue
             ]);
 
 
-            return !$validator->fails();
+            return $validator->passes();
         };
 
         $update = function ($item) use (&$count) {
             $item = $item->toArray();
-            if ($delegate = $this->event->delegates()->whereIsVerified(false)
+            if ($delegate = $this->event->delegates()
+                                        ->whereIsVerified(false)
                                         ->find($item['id'])) {
                 $delegate->update($item);
 

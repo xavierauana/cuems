@@ -33,7 +33,8 @@
 					                        aria-label="First group">
 						                   <a href="{{route('events.details', $event)}}"
 						                      class="btn btn-primary">Details</a>
-						                   <a class="btn btn-info text-light">Edit</a>
+						                   <a href="{{route('events.edit', $event)}}"
+						                      class="btn btn-info text-light">Edit</a>
 									  </div>
 					                   <div class="btn-group btn-group-sm mr-2"
 					                        role="group"

@@ -17,4 +17,8 @@ class SessionModerationType
     public static function getTypes(): array {
         return (new \ReflectionClass(static::class))->getConstants();
     }
+
+    public static function getType($key) {
+        return array_flip((new \ReflectionClass(static::class))->getConstants())[$key] ?? null;
+    }
 }

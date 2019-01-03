@@ -15,11 +15,13 @@ use App\Imports\DelegatesImport;
 use App\Imports\NewDelegateImport;
 use App\Jobs\ImportDelegates;
 use App\Jobs\UpdateNewDelegates;
+use App\Services\DelegateCreationService;
 use App\Services\DelegateDuplicateChecker;
 use App\Transaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DelegatesController extends Controller
@@ -40,15 +42,29 @@ class DelegatesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \App\Event $event
+     * @param \App\Event               $event
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Event $event) {
-        $delegates = $event->delegates()
-                           ->where("is_duplicated",
-                               "<>", DelegateDuplicationStatus::DUPLICATED)
-                           ->orderBy('last_name')
-                           ->paginate();
+    public function index(Event $event, Request $request) {
+        $query = $event->delegates()
+                       ->where("is_duplicated",
+                           "<>", DelegateDuplicationStatus::DUPLICATED);
+
+        $queries = $request->query();
+
+        if ($keyword = ($queries['keyword'] ?? null)) {
+            $query = $this->searchQuery($query, $queries['keyword']);
+        }
+        unset($queries['keyword']);
+
+
+        foreach ($queries as $key => $oder) {
+
+            $query = $query->orderBy($key, $oder);
+        }
+
+        $delegates = $query->paginate();
 
         return view('admin.events.delegates.index',
             compact('event', 'delegates'));
@@ -81,7 +97,8 @@ class DelegatesController extends Controller
      * @throws \Exception
      */
     public function store(
-        Event $event, Request $request, Transaction $transaction
+        Event $event, Request $request, Transaction $transaction,
+        DelegateCreationService $service
     ): RedirectResponse {
 
         $rules = array_merge($this->repo->getStoreRules(),
@@ -89,29 +106,12 @@ class DelegatesController extends Controller
 
         $validatedData = $this->validate($request, $rules);
 
-        DB::beginTransaction();
+        $newDelegate = $service->create($event, $validatedData);
 
-        try {
+        Log::info('fire event: ' . $newDelegate->name);
 
-            $newDelegate = $this->createDelegate($event, $request,
-                $validatedData);
-
-            $newDelegate->is_verified = true;
-            $newDelegate->is_duplicated = DelegateDuplicationStatus::NO;
-
-            $newDelegate->save();
-
-            DB::commit();
-
-            event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
-                $newDelegate));
-
-        } catch (\Exception $exception) {
-
-            DB::rollBack();
-
-            throw $exception;
-        }
+        event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
+            $newDelegate));
 
         return redirect()->route("events.delegates.index", $event);
 
@@ -217,12 +217,14 @@ class DelegatesController extends Controller
     /**
      *  Mass import delegates
      *
-     * @param \App\Event               $event
-     * @param \Illuminate\Http\Request $request
+     * @param \App\Event                            $event
+     * @param \Illuminate\Http\Request              $request
+     * @param \App\Services\DelegateCreationService $service
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function postImport(Event $event, Request $request
+    public function postImport(
+        Event $event, Request $request, DelegateCreationService $service
     ): RedirectResponse {
         $this->validate($request, [
             'file' => 'required|file|min:0'
@@ -253,6 +255,9 @@ class DelegatesController extends Controller
     private function createDelegate(
         Event $event, Request $request, $validatedData
     ) {
+        $registrationId = ($event->delegates()
+                                 ->max('registration_id') ?? 0) + 1;
+        $validatedData['registration_id'] = $registrationId;
         $newDelegate = $event->delegates()->create($validatedData);
 
         $newDelegate->transactions()->create($validatedData);
@@ -301,27 +306,31 @@ class DelegatesController extends Controller
         return $delegate;
     }
 
-    public function postSearch(Request $request, Event $event) {
+    public function search(Request $request, Event $event) {
 
-        $input = $request->all();
+        if ($keyword = $request->query('keyword')) {
+            $delegates = $event->delegates()
+                               ->paginate();
 
-        $delegates = collect([]);
-
-        if (array_keys($input)[0] and array_values($input)[0]) {
-            $checker = new DelegateDuplicateChecker($event);
-            $delegates = $checker->find(array_keys($input)[0],
-                array_values($input)[0]);
+            return view("admin.events.delegates.index",
+                compact('delegates', 'event'));
         }
 
+        return redirect()->route('events.delegates.index', $event);
 
-        return response()->json($delegates);
     }
 
-    public function export(Event $event) {
+    public function export(Request $request, Event $event) {
         $event->load('delegates.transactions.ticket');
         $event->load('delegates.roles');
 
-        return Excel::download(new DelegateExport($event), 'delegates.xls');
+        if ($request->query('duplicated')) {
+            return Excel::download(new DelegateExport($event, 'duplicated'),
+                'delegates.xls');
+        } else {
+            return Excel::download(new DelegateExport($event),
+                'delegates.xls');
+        }
     }
 
     public function new(Event $event) {
@@ -369,5 +378,22 @@ class DelegatesController extends Controller
 
         return redirect()->route("events.delegates.new", $event)
                          ->withStatus("delegates verified!");
+    }
+
+    private function searchQuery($query, string $keyword) {
+        return $query->where('first_name', 'like',
+            '%' . $keyword . '%')
+                     ->orWhere('last_name', 'like',
+                         '%' . $keyword . '%')
+                     ->orWhere('email', 'like',
+                         '%' . $keyword . '%')
+                     ->orWhere('id', 'like',
+                         '%' . $keyword . '%')
+                     ->orWhere('institution', 'like',
+                         '%' . $keyword . '%');
+    }
+
+    public function template() {
+        return response()->download(storage_path('app/templates/delegates_template.xlsx'));
     }
 }

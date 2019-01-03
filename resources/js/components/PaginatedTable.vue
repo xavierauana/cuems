@@ -131,8 +131,7 @@
           let url = window.location.origin + window.location.pathname + this.constructQueryString()
           axios.get(url)
                .then(({data}) => {
-                 console.log(data)
-                 this.iPaginator = data.institutions
+                 this.iPaginator = data
                })
         },
         createQueries() {

@@ -9,8 +9,14 @@
                 <div class="card-header">Institutions
                 <a href="{{route('institutions.create')}}"
                    class="btn btn-sm btn-success pull-right">New</a>
-                </div>
+	                 <a href="{{route('institutions.export')}}"
+	                    target="_blank"
+	                    class="btn btn-sm btn-primary pull-right mr-2">Export</a>
+                <a href="{{route('institutions.import')}}"
+                   class="btn btn-sm btn-success pull-right mr-2">Import</a>
                 
+                </div>
+               
                 <div class="table-responsive">
 	                <p-table :headers="['Name','Actions']"
 	                         :keys="['name']"

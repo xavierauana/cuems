@@ -1,7 +1,4 @@
-@extends("layouts.app")
-
-@section("content")
-	<div class="container">
+@component('admin._components.eventContainer', ['event'=>$event])
 	    <div class="row justify-content-center">
 	        <div class="col-md-10">
                 @if (session('status'))
@@ -50,11 +47,6 @@
 	                                <tr>
 		                                <td>{{$uploadFile->name}}</td>
                                         <td>
-                                            <div class="btn-group btn-group-sm">
-                                                <a class="btn btn-info btn-sm text-light"
-                                                   href="{{route('events.uploadFiles.edit',[$event,$uploadFile])}}">Edit</a>
-                                            </div>
-	
 	                                        {{Form::open(['url'=>route('events.uploadFiles.destroy',[$event,$uploadFile]),'method'=>"DELETE",'style'=>'display:inline','@submit.prevent'=>"confirmDelete"])}}
 	                                        <button class="btn btn-danger btn-sm"
 	                                                type="submit">Delete</button>
@@ -69,5 +61,4 @@
 	            </div>
 	        </div>
 	    </div>
-	</div>
-@endsection
+@endcomponent

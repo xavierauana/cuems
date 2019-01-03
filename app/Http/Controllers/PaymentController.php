@@ -51,16 +51,17 @@ class PaymentController extends Controller
 
         if ($service->checkPaymentGatewayStatus()) {
 
-            if (!$prefix = env('JETCO_PREFIX', null)) {
+            if (!$prefix = config('event.payment_prefix', null)) {
                 throw new \Exception("JETCO PREFIX setting error.");
             }
 
-            $invoiceId = "test_" . str_random(5);
+            $invoiceId = config('event.invoice_prefix') . str_random(5);
 
             $invoiceNumber = $prefix . $invoiceId;
 
             $record = PaymentRecord::updateOrCreate([
-                'invoice_id' => $invoiceNumber
+                'invoice_id' => $invoiceNumber,
+                'event_id'   => $request->get('event')
             ], [
                 'status'    => PaymentRecordStatus::CREATED,
                 'form_data' => json_encode($validatedData)
@@ -99,6 +100,7 @@ class PaymentController extends Controller
         if ((string)$response->Status === "AP") {
 
             $record = PaymentRecord::findOrFail($request->get('ref_id'));
+            $event = $record->event;
             $formData = json_decode($record->form_data, true);
 
             $ticket = Ticket::findOrFail($formData['ticket_id']);
@@ -109,16 +111,16 @@ class PaymentController extends Controller
             DB::beginTransaction();
 
             try {
-                $event = Event::first();
 
                 $newDelegate = $this->createDelegate($event, $formData,
                     $chargeResponse, $ticket);
 
                 $this->checkIsNewDelegateIsDuplicated($event, $newDelegate);
 
+                $record->update(['status' => PaymentRecordStatus::AUTHORIZED]);
+
                 DB::commit();
 
-                $record->update(['status' => PaymentRecordStatus::AUTHORIZED]);
 
                 event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
                     $newDelegate));
@@ -144,15 +146,17 @@ class PaymentController extends Controller
      * @return mixed
      */
     private function createDelegate(
-        $event, $validatedData, $chargeResponse, $ticket
+        Event $event, $validatedData, $chargeResponse, $ticket
     ) {
 
+        $validatedData['registration_id'] = ($event->delegates()
+                                                   ->max('registration_id') ?? 0) + 1;
+
+        /** @var \App\Delegate $newDelegate */
         $newDelegate = $event->delegates()->create($validatedData);
 
-        $defaultRole = DelegateRole::whereIsDefault(true)
-                                   ->firstOrFail();
-
-        $newDelegate->roles()->save($defaultRole);
+        $newDelegate->roles()->save(DelegateRole::whereIsDefault(true)
+                                                ->firstOrFail());
 
         $newDelegate->transactions()->create([
             'charge_id'  => $chargeResponse->chargeID,
@@ -178,7 +182,6 @@ class PaymentController extends Controller
         }
 
         return $validatedData;
-
     }
 
     /**

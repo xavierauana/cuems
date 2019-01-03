@@ -18,7 +18,7 @@
                             <div class="col-md-6">
                                 <input id="email" type="text"
                                        class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
-                                       name="username"
+                                       name="email"
                                        value="{{ old('email') }}"
                                        required autofocus>
 	
@@ -67,11 +67,11 @@
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Login') }}
                                 </button>
-
-                                {{--<a class="btn btn-link"--}}
-                                   {{--href="{{ route('password.request') }}">--}}
-                                    {{--{{ __('Forgot Your Password?') }}--}}
-                                {{--</a>--}}
+	
+	                            {{--<a class="btn btn-link"--}}
+	                            {{--href="{{ route('password.request') }}">--}}
+	                            {{--{{ __('Forgot Your Password?') }}--}}
+	                            {{--</a>--}}
                             </div>
                         </div>
                     </form>

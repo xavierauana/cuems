@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\InstitutionExport;
+use App\Imports\InstitutionImport;
 use App\Institution;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InstitutionsController extends Controller
 {
@@ -142,5 +145,30 @@ class InstitutionsController extends Controller
         }
 
         return view('admin.institutions.index', compact('institutions'));
+    }
+
+    public function export() {
+        return (new InstitutionExport())->download('institutions.xlsx');
+    }
+
+    public function import() {
+        return view('admin.institutions.import');
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function postImport(Request $request) {
+
+        $this->validate($request, [
+            'file' => 'required|file|min:0.1'
+        ]);
+
+        Excel::import(new InstitutionImport(), request()->file('file'));
+
+        return redirect()->route('institutions.index')
+                         ->withStatus('Institutions imported!');
     }
 }

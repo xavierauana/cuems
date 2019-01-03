@@ -13,6 +13,7 @@ class Delegate extends Model
 {
     use Notifiable, SoftDeletes;
 
+
     protected $fillable = [
         'prefix',
         'first_name',
@@ -35,6 +36,7 @@ class Delegate extends Model
         'address_3',
         'is_duplicated',
         'is_verified',
+        'registration_id',
     ];
 
     protected $casts = [

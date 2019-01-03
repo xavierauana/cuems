@@ -15,12 +15,19 @@
                   <table class="table">
                     <thead>
                         <th>Title</th>
+                        <th>Speakers</th>
                         <th>Actions</th>
                     </thead>
 	                  <tbody>
 	                  @foreach($session->talks as $talk)
 		                  <tr>
 			                  <td>{{$talk->title}}</td>
+			                  <td>
+				                  @foreach($talk->speakerDelegates as $delegate)
+					                  <a href="{{route('events.delegates.show',[$event, $delegate])}}"><span
+								                  class="badge badge-success">{{$delegate->name}}</span></a>
+				                  @endforeach
+			                  </td>
 			                  <td>
 				                  <div class="btn-toolbar" role="toolbar"
 				                       aria-label="Toolbar with button groups">

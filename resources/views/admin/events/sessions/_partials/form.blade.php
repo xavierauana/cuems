@@ -17,6 +17,15 @@
 	@endif
 </div>
 <div class="form-group">
+    {!!  Form::label('venue', 'Venue'); !!}
+	{!!  Form::text('venue',null,['class'=>'form-control','required']); !!}
+	@if ($errors->has('venue'))
+		<span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('venue') }}</strong>
+        </span>
+	@endif
+</div>
+<div class="form-group">
     {!!  Form::label('sponsor', 'Sponsor'); !!}
 	{!!  Form::text('sponsor', null,['class'=>'form-control']); !!}
 	@if ($errors->has('sponsor'))

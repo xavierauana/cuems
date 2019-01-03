@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PositionExport;
+use App\Imports\PositionImport;
 use App\Position;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PositionsController extends Controller
 {
@@ -25,15 +28,14 @@ class PositionsController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
         $positions = ($keyword = $request->query("keywords")) ?
-            $this->repo
-                ->where('name', 'like', "%{$keyword}%")
-                ->paginate($this->paginateNumber) :
-            $this->repo
-                ->paginate($this->paginateNumber);
+            $this->repo->where('name', 'like', "%{$keyword}%")
+                       ->paginate($this->paginateNumber) :
+            $this->repo->paginate($this->paginateNumber);
 
         if ($request->ajax()) {
             return response()->json($positions);
@@ -138,5 +140,30 @@ class PositionsController extends Controller
         }
 
         return view('admin.positions.index', compact('institutions'));
+    }
+
+    public function export() {
+        return (new PositionExport())->download('position.xlsx');
+    }
+
+    public function import() {
+        return view('admin.positions.import');
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function postImport(Request $request) {
+
+        $this->validate($request, [
+            'file' => 'required|file|min:0.1'
+        ]);
+
+        Excel::import(new PositionImport(), request()->file('file'));
+
+        return redirect()->route('positions.index')
+                         ->withStatus('Position imported!');
     }
 }
