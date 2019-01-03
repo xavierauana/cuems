@@ -53,16 +53,10 @@ class LoginController extends Controller
             try {
                 $provider = app(AdldapInterface::class);
                 if ($provider->auth()->attempt(
-                    $request->get('email'),
+                    $email,
                     $request->get('password'))) {
-
-                    Log::info('ldap user login successfully');
-
                     Auth::login($user);
-
                 } else {
-                    Log::info('ldap user login failed');
-
                     return false;
                 }
             } catch (\Exception $e) {
