@@ -8,11 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
 
 class Delegate extends Model
 {
     use Notifiable, SoftDeletes;
+
+    protected $searchableColumns = [
+        'first_name',
+        'last_name',
+        'mobile',
+        'email',
+        'institution',
+    ];
 
 
     protected $fillable = [
@@ -38,6 +45,7 @@ class Delegate extends Model
         'is_duplicated',
         'is_verified',
         'registration_id',
+        'duplicated_with'
     ];
 
     protected $casts = [
@@ -154,6 +162,7 @@ class Delegate extends Model
             'is_duplicated'                 => 'nullable|in:' . DelegateDuplicationStatus::DUPLICATED,
             'is_verified'                   => 'nullable|boolean',
             'roles_id.*'                    => 'nullable|exists:delegate_roles,id',
+            'duplicated_with'               => 'nullable',
 
             'sponsor'            => 'nullable',
             'sponsor.email'      => 'nullable|email',
@@ -180,14 +189,16 @@ class Delegate extends Model
 
         $prefix = setting($this->event, 'registration_id_prefix') ?? "";
 
-        $index = DB::table('delegates')
-                   ->where('event_id', $this->event_id)
-                   ->where('id', '<', $this->id)
-                   ->count();
-
-        $index = str_pad($index, 4, "0", STR_PAD_LEFT);
-
-        return $prefix . $index;
+        return $prefix . str_pad($this->registration_id, 4, 0,
+                STR_PAD_LEFT);
     }
+
+    /**
+     * @return array
+     */
+    public function getSearchableColumns(): array {
+        return $this->searchableColumns;
+    }
+
 
 }

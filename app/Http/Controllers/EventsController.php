@@ -47,9 +47,9 @@ class EventsController extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse {
-
 
         $this->validate($request, Event::StoreRules, Event::ValidationMessages);
 
@@ -60,7 +60,7 @@ class EventsController extends Controller
             $newEvent = $this->repo->create($request->all());
 
             $keys = config('event.settings', []);
-            
+
             foreach ($keys as $key) {
                 $newEvent->settings()->create(compact('key'));
             }

@@ -33,6 +33,7 @@ class CreateDelegatesTable extends Migration
             $table->string('training_organisation_address')->nullable();
             $table->string('supervisor')->nullable();
             $table->string('training_position')->nullable();
+            $table->string('duplicated_with')->nullable();
             $table->unsignedInteger('event_id');
             $table->foreign('event_id')->references('id')->on('events')
                   ->onDelete('cascade');

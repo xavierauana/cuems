@@ -38,6 +38,7 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
      */
     public function headings(): array {
         return [
+            'Registration Id',
             'Title',
             'Gender',
             'Surname',
@@ -57,6 +58,7 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
             'Ticket',
             'Transaction Status',
             'Is Duplicated',
+            'Duplicated With',
             'Sponsor Company',
             'Sponsor Correspondent Name',
             'Sponsor Correspondent Email',
@@ -92,6 +94,7 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
         $sponsorRecord = $delegate->sponsorRecord;
 
         return [
+            $delegate->getRegistrationId(),
             $delegate->prefix,
             $delegate->is_male ? "male" : "female",
             $delegate->last_name,
@@ -113,7 +116,8 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
             $delegate->transactions->first()->ticket->name,
             TransactionStatus::getStatusKey($delegate->transactions->first()->status),
             $this->transactionStatus[$delegate->transactions->first()->status],
-            $delegate->is_duplicated ,
+            $delegate->is_duplicated == DelegateDuplicationStatus::DUPLICATED ? "DUPLICATED" : "NA",
+            $delegate->duplicated_with,
             $sponsorRecord ? $sponsorRecord->sponsor->name : null,
             optional($sponsorRecord)->name,
             optional($sponsorRecord)->email,

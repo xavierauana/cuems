@@ -93,7 +93,7 @@ class DelegateCreationService
         DB::beginTransaction();
 
         try {
-            $data = $this->addRegistrationId($data);
+            $data = $this->addRegistrationId($event, $data);
 
             /** @var \App\Delegate $newDelegate */
             $newDelegate = $this->createDelegate($event, $data);

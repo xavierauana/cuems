@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Delegate;
 use App\Event;
 use App\Transaction;
 use Illuminate\Http\Request;
@@ -14,15 +15,19 @@ class TransactionController extends Controller
      * @param \App\Event $event
      * @return \Illuminate\Http\Response
      */
-    public function index(Event $event) {
+    public function index(Request $request, Event $event) {
 
-        $query = Transaction::whereIn('ticket_id',
+        $query = Transaction::whereIn('transactions.ticket_id',
             function ($query) use ($event) {
                 $query->select('id')
                       ->from("tickets")
                       ->where('event_id', $event->id);
-            })->with(['payee', 'ticket'])->latest();
+            })->with(['payee', 'ticket']);
 
+        $queries = $request->query();
+        $query = $this->joinTables($query);
+        $query = $this->orderQuery($queries, $query);
+        $query = $this->searchQuery($request->query('keyword'), $query);
 
         $transactions = $query->paginate();
 
@@ -53,7 +58,7 @@ class TransactionController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Transaction $transaction
-     * @return \Illuminate\Http\Response
+     * @return void
      */
     public function show(Transaction $transaction) {
         //
@@ -93,22 +98,13 @@ class TransactionController extends Controller
     public function search(
         Request $request, Event $event, Transaction $transaction
     ) {
-        if ($request->has('keyword')) {
+        if ($keyword = $request->query('keyword')) {
 
-            $transactions = $transaction
-                ->join('delegates as d',
-                    'transactions.payee_id', '=', 'd.id')
-                ->join('tickets as t',
-                    'transactions.ticket_id', '=', 't.id')
-                ->where('transactions.charge_id', 'like',
-                    "%" . $request->get('keyword') . "%")
-                ->orWhere('d.first_name', 'like',
-                    "%" . $request->get('keyword') . "%")
-                ->orWhere('d.last_name', 'like',
-                    "%" . $request->get('keyword') . "%")
-                ->orWhere('t.name', 'like',
-                    "%" . $request->get('keyword') . "%")
-                ->paginate();
+            $query = $this->joinTables($transaction);
+            $query = $this->orderQuery($request->query(), $query);
+            $query = $this->searchQuery($keyword, $query);
+
+            $transactions = $query->paginate();
 
             return view("admin.events.transactions.index",
                 compact('event', 'transactions'));
@@ -116,5 +112,72 @@ class TransactionController extends Controller
         }
 
         return redirect()->route('events.transactions.index', $event);
+    }
+
+    /**
+     * @param $queries
+     * @param $query
+     * @return mixed
+     */
+    private function orderQuery($queries, $query) {
+
+        if (in_array('first_name', array_keys($queries))) {
+            $query = $query->orderBy('d.first_name', $queries['first_name']);
+
+            unset($queries['first_name']);
+        }
+
+        if (in_array('registration_id', array_keys($queries))) {
+            $query = $query->orderBy('d.registration_id',
+                $queries['registration_id']);
+
+            unset($queries['registration_id']);
+        }
+
+        if (in_array('ticket', array_keys($queries))) {
+            $query = $query->orderBy('t.name', $queries['ticket']);
+
+            unset($queries['ticket']);
+        }
+
+        if (in_array('keyword', array_keys($queries))) {
+            unset($queries['keyword']);
+        }
+        foreach ($queries as $key => $oder) {
+            $query = $query->orderBy('transactions.' . $key, $oder);
+        }
+
+        return $query;
+    }
+
+    private function searchQuery(string $keyword = null, $query) {
+
+        if (is_null($keyword)) {
+            return $query;
+        }
+        $columns = [
+            'transactions.status',
+            'transactions.charge_id',
+            'd.registration_id',
+            't.name',
+        ];
+
+        foreach ($columns as $index => $column) {
+            $condition = $index === 0 ? 'where' : 'orWhere';
+            $query = $query->$condition($column, 'like', "%{$keyword}%");
+        }
+
+        return $query;
+    }
+
+    private function joinTables($query) {
+        $query = $query->join('delegates as d', 'transactions.payee_id', '=',
+            'd.id')
+                       ->where('transactions.payee_type', Delegate::class)
+                       ->join('tickets as t', 'transactions.ticket_id', '=',
+                           't.id');
+
+
+        return $query;
     }
 }

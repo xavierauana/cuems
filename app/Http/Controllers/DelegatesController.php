@@ -129,7 +129,7 @@ class DelegatesController extends Controller
 
         //        $checker = new DelegateDuplicateChecker($event);
         $checker = app(DuplicateCheckerInterface::class)->setEvent($event);
-        
+
         $duplicates = $checker->find('email', $delegate->email)
                               ->filter(function ($i) use (
                                   $delegate
@@ -207,6 +207,7 @@ class DelegatesController extends Controller
      * @param \App\Event     $event
      * @param  \App\Delegate $delegate
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy(Event $event, Delegate $delegate
     ) {
@@ -289,6 +290,7 @@ class DelegatesController extends Controller
     private function updateDelegate(
         Delegate $delegate, array $validatedData
     ): Delegate {
+        $validatedData['duplicated_with'] = $validatedData['is_duplicated'] ? $validatedData['duplicated_with'] : null;
         $delegate->update($validatedData);
 
         $delegate->transactions()->latest()->first()

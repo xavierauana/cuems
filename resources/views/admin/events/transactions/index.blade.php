@@ -28,16 +28,49 @@ $status = array_flip((new \ReflectionClass(\App\Enums\TransactionStatus::class))
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
-                        <th>Delegate Name</th>
-                        <th>Ticket</th>
-                        <th>Transaction Id</th>
-                        <th>Timestamp</th>
-                        <th>Status</th>
+                        <th>
+	                        <a href="{{request()->url()."?registration_id=".((request()->has('registration_id') and request()->query('registration_id') === 'asc')?"desc":"asc")}}">
+		                        Registration Id
+	                        </a>
+                        </th>
+                        <th>
+	                        <a href="{{request()->url()."?first_name=".((request()->has('first_name') and request()->query('first_name') === 'asc')?"desc":"asc")}}">
+		                        Delegate Name
+	                        </a>
+                        </th>
+                        <th>
+	                         <a href="{{request()->url()."?ticket=".((request()->has('ticket') and request()->query('ticket') === 'asc')?"desc":"asc")}}">
+		                       Ticket
+	                        </a>
+                        </th>
+                        <th>
+	                        <a href="{{request()->url()."?charge_id=".((request()->has('charge_id') and request()->query('charge_id') === 'asc')?"desc":"asc")}}">
+		                       Transaction Id
+	                        </a>
+                        </th>
+                        <th>
+	                        <a href="{{request()->url()."?created_at=".((request()->has('created_at') and request()->query('created_at') === 'asc')?"desc":"asc")}}">
+		                       Timestamp
+	                        </a>
+                        </th>
+                        <th>
+	                        <a href="{{request()->url()."?status=".((request()->has('status') and request()->query('status') === 'asc')?"desc":"asc")}}">
+		                       Status
+	                        </a>
+                        </th>
                     </thead>
 	                  <tbody>
 	                  @foreach($transactions as $transaction)
 		                  <tr>
-			                  <td>@if($delegate = $transaction->payee) <a
+			                  <td>
+				                  @if($delegate = $transaction->payee)
+					                  {{$delegate->getRegistrationId()}}
+				                  @else
+					                  NA
+				                  @endif
+			                  </td>
+			
+			                  <td>@if($delegate) <a
 						                  href="{{route('events.delegates.show',[$event,$delegate])}}">{{$delegate->name}}</a> @else
 					                  NA @endif</td>
 			                  <td>{{$transaction->ticket->name}}</td>

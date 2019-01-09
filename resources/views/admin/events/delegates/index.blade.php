@@ -41,22 +41,22 @@
                   <table class="table">
                     <thead>
                         <th>
-	                        <a href="{{request()->fullUrlWithQuery(['first_name'=>(request()->has('first_name') and request()->query('first_name') === 'asc')?"desc": 'asc'])}}">
+	                        <a href="{{request()->url()."?registration_id=".((request()->has('registration_id') and request()->query('registration_id') === 'asc')?"desc":"asc")}}">
 	                        Registration ID
 	                        </a>
                         </th>
                         <th>
-	                        <a href="{{request()->fullUrlWithQuery(['first_name'=>(request()->has('first_name') and request()->query('first_name') === 'asc')?"desc": 'asc'])}}">
+	                        <a href="{{request()->url()."?first_name=".((request()->has('first_name') and request()->query('first_name') === 'asc')?"desc":"asc")}}">
 	                        Name
 	                        </a>
                         </th>
                         <th>
-	                        <a href="{{request()->fullUrlWithQuery(['email'=>(request()->has('email') and request()->query('email') === 'asc')?"desc": 'asc'])}}">
+	                        <a href="{{request()->url()."?last_name=".((request()->has('last_name') and request()->query('last_name') === 'asc')?"desc":"asc")}}">
 		                        Email
 	                        </a>
                         </th>
                         <th>
-	                        <a href="{{request()->fullUrlWithQuery(['institution'=>(request()->has('institution') and request()->query('institution') === 'asc')?"desc": 'asc'])}}">
+	                        <a href="{{request()->url()."?institution=".((request()->has('institution') and request()->query('institution') === 'asc')?"desc":"asc")}}">
 		                        Institution
 	                        </a>
                         </th>
