@@ -17,6 +17,16 @@
             .invalid-feedback {
 	            display: block;
             }
+
+            body {
+	            font-family: Helvetica, "微軟正黑體", "Microsoft JhengHei", sans-serif;
+	            color: #524632;
+                background-image: url("{{asset('imgs/bg.jpg')}}");
+                background-size:cover ;
+                background-repeat: no-repeat;
+                background-position-x: center;
+                background-position-y: top;
+            }
         </style>
 	
 	    @stack('styles')

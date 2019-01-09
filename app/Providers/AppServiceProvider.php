@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\DuplicateCheckerInterface;
 use App\Contracts\PaymentServiceInterface;
 use App\Observers\TransactionObserver;
+use App\Services\DelegateDuplicateChecker;
 use App\Ticket;
 use App\Transaction;
 use Illuminate\Support\Facades\Validator;
@@ -48,6 +50,10 @@ class AppServiceProvider extends ServiceProvider
 
         app()->bind(PaymentServiceInterface::class,
             config('app.payment_service'));
+
+
+        app()->bind(DuplicateCheckerInterface::class,
+            DelegateDuplicateChecker::class);
 
         Transaction::observe(TransactionObserver::class);
     }

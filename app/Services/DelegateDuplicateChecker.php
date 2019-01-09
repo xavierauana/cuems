@@ -8,23 +8,16 @@
 namespace App\Services;
 
 
+use App\Contracts\DuplicateCheckerInterface;
 use App\Event;
 use Illuminate\Support\Collection;
 
-class DelegateDuplicateChecker
+class DelegateDuplicateChecker implements DuplicateCheckerInterface
 {
     /**
      * @var \App\Event
      */
     private $event;
-
-    /**
-     * DelegateDuplicateChecker constructor.
-     */
-    public function __construct(Event $event) {
-
-        $this->event = $event;
-    }
 
     public function find($field, $value): Collection {
         $predicates = $this->fetchPredicates($field, $value);
@@ -59,6 +52,7 @@ class DelegateDuplicateChecker
     /**
      * @param $field
      * @param $value
+     * @return array|null
      */
     private function fetchPredicates($field, $value): ?array {
         $predicates = ((is_array($field) and is_array($value))) ?
@@ -69,5 +63,11 @@ class DelegateDuplicateChecker
         }
 
         return $predicates;
+    }
+
+    public function setEvent(Event $event): DuplicateCheckerInterface {
+        $this->event = $event;
+
+        return $this;
     }
 }

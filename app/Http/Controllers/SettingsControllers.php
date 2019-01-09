@@ -9,20 +9,31 @@ use Illuminate\Http\Request;
 class SettingsControllers extends Controller
 {
     /**
+     * @var \App\Setting
+     */
+    private $repo;
+
+    /**
+     * SettingsControllers constructor.
+     * @param \App\Setting $setting
+     */
+    public function __construct(Setting $setting) {
+        $this->repo = $setting;
+    }
+
+
+    /**
      * Display a listing of the resource.
      *
      * @param  \App\Event $event
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, Event $event) {
-
+        $query = $event->settings();
         if ($keyword = $request->query('keyword')) {
-            $settings = $event->settings()->where("key", "like",
-                "%{$request->get('keyword')}%")->paginate(100);
-        } else {
-            $settings = $event->settings()->paginate(100);
+            $query = $this->constructSearchQuery($this->repo, $request, $query);
         }
-
+        $settings = $query->paginate(100);
 
         return view("admin.events.settings.index",
             compact('event', 'settings'));
@@ -112,10 +123,8 @@ class SettingsControllers extends Controller
     }
 
     public function search(Request $request, Event $event) {
-
-        $settings = $event->settings()
-                          ->where("key", "like", "%{$request->get('keyword')}%")
-                          ->paginate(100);
+        $settings = $this->constructSearchQuery($this->repo, $request,
+            $event->settings(), 'keywords')->paginate(100);
 
         if ($request->ajax()) {
             return response()->json($settings);

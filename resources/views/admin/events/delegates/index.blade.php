@@ -42,6 +42,11 @@
                     <thead>
                         <th>
 	                        <a href="{{request()->fullUrlWithQuery(['first_name'=>(request()->has('first_name') and request()->query('first_name') === 'asc')?"desc": 'asc'])}}">
+	                        Registration ID
+	                        </a>
+                        </th>
+                        <th>
+	                        <a href="{{request()->fullUrlWithQuery(['first_name'=>(request()->has('first_name') and request()->query('first_name') === 'asc')?"desc": 'asc'])}}">
 	                        Name
 	                        </a>
                         </th>
@@ -61,6 +66,7 @@
 	                  <tbody>
 	                  @foreach($delegates as $delegate)
 		                  <tr>
+			                  <td>{{$delegate->getRegistrationId()}}</td>
 			                  <td><a href="{{route('events.delegates.show',[$event,$delegate])}}">{{$delegate->name}}</a></td>
 			                  <td>{{$delegate->email}}</td>
 			                  <td>{{$delegate->institution}}</td>

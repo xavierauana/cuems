@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
 class Delegate extends Model
 {
@@ -173,6 +174,20 @@ class Delegate extends Model
 
     public function isDuplicated(): bool {
         return $this->is_duplicated === DelegateDuplicationStatus::DUPLICATED;
+    }
+
+    public function getRegistrationId(): string {
+
+        $prefix = setting($this->event, 'registration_id_prefix') ?? "";
+
+        $index = DB::table('delegates')
+                   ->where('event_id', $this->event_id)
+                   ->where('id', '<', $this->id)
+                   ->count();
+
+        $index = str_pad($index, 4, "0", STR_PAD_LEFT);
+
+        return $prefix . $index;
     }
 
 }

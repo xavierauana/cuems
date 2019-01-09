@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\DuplicateCheckerInterface;
 use App\Delegate;
 use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
@@ -16,7 +17,6 @@ use App\Imports\NewDelegateImport;
 use App\Jobs\ImportDelegates;
 use App\Jobs\UpdateNewDelegates;
 use App\Services\DelegateCreationService;
-use App\Services\DelegateDuplicateChecker;
 use App\Transaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -48,19 +48,18 @@ class DelegatesController extends Controller
      */
     public function index(Event $event, Request $request) {
         $query = $event->delegates()
+                       ->with('event')
                        ->where("is_duplicated",
                            "<>", DelegateDuplicationStatus::DUPLICATED);
 
         $queries = $request->query();
 
-        if ($keyword = ($queries['keyword'] ?? null)) {
-            $query = $this->searchQuery($query, $queries['keyword']);
-        }
+        $query = $this->constructSearchQuery($this->repo, $request, $query,
+            'keyword');
+
         unset($queries['keyword']);
 
-
         foreach ($queries as $key => $oder) {
-
             $query = $query->orderBy($key, $oder);
         }
 
@@ -90,11 +89,13 @@ class DelegatesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Event                $event
-     * @param  \Illuminate\Http\Request $request
-     * @param \App\Transaction          $transaction
+     * @param \App\Event                            $event
+     * @param  \Illuminate\Http\Request             $request
+     * @param \App\Transaction                      $transaction
+     * @param \App\Services\DelegateCreationService $service
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Exception
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws \ReflectionException
      */
     public function store(
         Event $event, Request $request, Transaction $transaction,
@@ -126,7 +127,9 @@ class DelegatesController extends Controller
      */
     public function show(Event $event, Delegate $delegate) {
 
-        $checker = new DelegateDuplicateChecker($event);
+        //        $checker = new DelegateDuplicateChecker($event);
+        $checker = app(DuplicateCheckerInterface::class)->setEvent($event);
+        
         $duplicates = $checker->find('email', $delegate->email)
                               ->filter(function ($i) use (
                                   $delegate
@@ -378,19 +381,6 @@ class DelegatesController extends Controller
 
         return redirect()->route("events.delegates.new", $event)
                          ->withStatus("delegates verified!");
-    }
-
-    private function searchQuery($query, string $keyword) {
-        return $query->where('first_name', 'like',
-            '%' . $keyword . '%')
-                     ->orWhere('last_name', 'like',
-                         '%' . $keyword . '%')
-                     ->orWhere('email', 'like',
-                         '%' . $keyword . '%')
-                     ->orWhere('id', 'like',
-                         '%' . $keyword . '%')
-                     ->orWhere('institution', 'like',
-                         '%' . $keyword . '%');
     }
 
     public function template() {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\DuplicateCheckerInterface;
 use App\Delegate;
 use App\DelegateRole;
 use App\Entities\DigitalOrderRequest;
@@ -13,11 +14,10 @@ use App\Enums\TransactionStatus;
 use App\Event;
 use App\Events\SystemEvent;
 use App\PaymentRecord;
-use App\Services\DelegateDuplicateChecker;
+use App\Services\DelegateCreationService;
 use App\Services\JETCOPaymentService;
 use App\Ticket;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
@@ -93,14 +93,19 @@ class PaymentController extends Controller
         }
     }
 
-    public function paid(Request $request, JETCOPaymentService $service) {
+    public function paid(
+        Request $request, JETCOPaymentService $service,
+        DelegateCreationService $creationService
+    ) {
 
         $response = simplexml_load_string($service->checkPaymentStatus(["DR" => $request->get('String1')]));
 
         if ((string)$response->Status === "AP") {
 
             $record = PaymentRecord::findOrFail($request->get('ref_id'));
+
             $event = $record->event;
+
             $formData = json_decode($record->form_data, true);
 
             $ticket = Ticket::findOrFail($formData['ticket_id']);
@@ -108,29 +113,35 @@ class PaymentController extends Controller
             $chargeResponse = $service->charge((string)$response->InvoiceNo,
                 $ticket->price);
 
-            DB::beginTransaction();
+            $newDelegate = $creationService->selfCreate($event, $formData,
+                $chargeResponse, $request->get('ref_id'));
 
-            try {
+            event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
+                $newDelegate));
 
-                $newDelegate = $this->createDelegate($event, $formData,
-                    $chargeResponse, $ticket);
+            //            DB::beginTransaction();
+            //
+            //            try {
+            //
+            //                $newDelegate = $this->createDelegate($event, $formData,
+            //                    $chargeResponse, $ticket);
+            //
+            //                $this->checkIsNewDelegateIsDuplicated($event, $newDelegate);
+            //
+            //                $record->update(['status' => PaymentRecordStatus::AUTHORIZED]);
+            //
+            //                DB::commit();
+            //
+            //
+            //                event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
+            //                    $newDelegate));
+            //
+            //            } catch (\Exception $e) {
+            //                DB::rollBack();
+            //                throw $e;
+            //            }
 
-                $this->checkIsNewDelegateIsDuplicated($event, $newDelegate);
-
-                $record->update(['status' => PaymentRecordStatus::AUTHORIZED]);
-
-                DB::commit();
-
-
-                event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
-                    $newDelegate));
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
-            }
-
-            return redirect("/?event=1" . $request->get('event'))->withAlert("Thank you. You payment have been confirmed.");
+            return redirect("/?event=" . $event->id)->withAlert("Thank you. You payment have been confirmed.");
         }
 
 
@@ -203,7 +214,7 @@ class PaymentController extends Controller
     private function checkIsNewDelegateIsDuplicated($event, $newDelegate
     ): void {
 
-        $checker = new DelegateDuplicateChecker($event);
+        $checker = app(DuplicateCheckerInterface::class)->setEvent($event);
 
         $emailDuplications = $checker->isDuplicated('email',
             $newDelegate->email);
