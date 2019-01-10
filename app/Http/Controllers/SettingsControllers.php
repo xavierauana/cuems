@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Event;
 use App\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SettingsControllers extends Controller
 {
@@ -58,7 +59,12 @@ class SettingsControllers extends Controller
      */
     public function store(Request $request, Event $event) {
         $validatedData = $this->validate($request, [
-            'key'   => "required|unique:settings",
+            'key'   => [
+                "required",
+                Rule::unique('settings')->where(function ($query) use ($event) {
+                    return $query->where('event_id', $event->id);
+                })
+            ],
             'value' => "required",
         ]);
         $event->settings()->create($validatedData);
@@ -100,7 +106,12 @@ class SettingsControllers extends Controller
      */
     public function update(Request $request, Event $event, Setting $setting) {
         $validatedData = $this->validate($request, [
-            'key'   => "required|unique:settings,key," . $setting->id,
+            'key'   => [
+                "required",
+                Rule::unique('settings')->where(function ($query) use ($event) {
+                    return $query->where('event_id', $event->id);
+                })
+            ],
             'value' => "required",
         ]);
         $setting->update($validatedData);

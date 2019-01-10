@@ -122,28 +122,6 @@ class PaymentController extends Controller
             event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
                 $newDelegate));
 
-            //            DB::beginTransaction();
-            //
-            //            try {
-            //
-            //                $newDelegate = $this->createDelegate($event, $formData,
-            //                    $chargeResponse, $ticket);
-            //
-            //                $this->checkIsNewDelegateIsDuplicated($event, $newDelegate);
-            //
-            //                $record->update(['status' => PaymentRecordStatus::AUTHORIZED]);
-            //
-            //                DB::commit();
-            //
-            //
-            //                event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
-            //                    $newDelegate));
-            //
-            //            } catch (\Exception $e) {
-            //                DB::rollBack();
-            //                throw $e;
-            //            }
-
             return redirect(url("/?event=" . $event->id))->withAlert("Thank you. You payment have been confirmed.");
         }
 
