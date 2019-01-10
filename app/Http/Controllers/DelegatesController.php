@@ -147,9 +147,10 @@ class DelegatesController extends Controller
 
 
         if ($delegate->duplicated_with) {
-            $duplicate = $this->repo->where('registration_id',
-                $checker->convertRegistrationIdToInt($delegate->duplicated_with))
-                                    ->first();
+            $duplicate = $event->delegates()
+                               ->where('registration_id',
+                                   $checker->convertRegistrationIdToInt($delegate->duplicated_with))
+                               ->first();
             $duplicates->push($duplicate);
         }
 
