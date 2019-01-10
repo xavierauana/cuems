@@ -82,14 +82,10 @@
 		                
 		                <a class="btn btn-primary"
 		                   href="{{route('events.delegates.edit', [$event, $delegate])}}">Edit</a>
-		                <a class="btn btn-info"
+		                <a class="btn btn-info text-light"
 		                   href="{{route('events.delegates.index', $event)}}">Back</a>
 	                </section>
 		        </div>
-		        
-		        
-            
-                
             </div>
         </div>
     </div>

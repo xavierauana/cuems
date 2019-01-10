@@ -49,13 +49,15 @@ class ExpensesController extends Controller
      */
     public function store(Request $request, Event $event) {
         $validatedData = $this->validate($request, [
-            "amount"      => "required",
-            "vendor_id"   => "required",
-            "category_id" => "required",
-            "note"        => "nullable",
-            "date"        => "nullable|date",
-            "files"       => "nullable",
-            "files.*"     => "required",
+            "amount"                => "required",
+            "vendor_id"             => "required",
+            "vendor_contact_person" => "nullable",
+            "vendor_contact_number" => "nullable",
+            "category_id"           => "required",
+            "note"                  => "nullable",
+            "date"                  => "nullable|date",
+            "files"                 => "nullable",
+            "files.*"               => "required",
         ]);
 
         if (!Vendor::find($validatedData['vendor_id'])) {
@@ -120,19 +122,22 @@ class ExpensesController extends Controller
      * @param \App\Event                $event
      * @param \App\Expense              $expense
      * @return void
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, Event $event, Expense $expense
     ) {
         $expense = $event->expenses()->findOrFail($expense->id);
 
         $validatedData = $this->validate($request, [
-            "amount"      => "required",
-            "vendor_id"   => "required",
-            "category_id" => "required",
-            "note"        => "nullable",
-            "date"        => "nullable|date",
-            "files"       => "nullable",
-            "files.*"     => "file|min:0",
+            "amount"                => "required",
+            "vendor_id"             => "required",
+            "vendor_contact_person" => "nullable",
+            "vendor_contact_number" => "nullable",
+            "category_id"           => "required",
+            "note"                  => "nullable",
+            "date"                  => "nullable|date",
+            "files"                 => "nullable",
+            "files.*"               => "file|min:0",
         ]);
 
         if (!Vendor::find($validatedData['vendor_id'])) {
@@ -169,6 +174,7 @@ class ExpensesController extends Controller
      * @param  \App\Event              $event
      * @param \App\Expense             $expense
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function destroy(Request $request, Event $event, Expense $expense) {
         if ($expense = $event->expenses()->find($expense->id)) {

@@ -17,6 +17,8 @@ class Expense extends Model implements HasMedia
         'note',
         'date',
         'vendor_id',
+        'vendor_contact_person',
+        'vendor_contact_number',
         'category_id',
     ];
 

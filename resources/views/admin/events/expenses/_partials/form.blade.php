@@ -18,6 +18,38 @@
 	@endif
 </div>
 
+
+
+	<div class="row">
+		
+		<div class="col-sm-6">
+			<div class="form-group">
+				{!!  Form::label('vendor_contact_person', 'Contact Person'); !!}
+				{!!  Form::text('vendor_contact_person',null,['class'=>'form-control']); !!}
+				@if ($errors->has('vendor_contact_person'))
+					<span class="invalid-feedback" role="alert">
+			<strong>{{ $errors->first('vendor_contact_person') }}</strong>
+		</span>
+				@endif
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class="form-group">
+				{!!  Form::label('vendor_contact_number', 'Contact Number'); !!}
+				{!!  Form::text('vendor_contact_number',null,['class'=>'form-control']); !!}
+				@if ($errors->has('vendor_contact_number'))
+					<span class="invalid-feedback" role="alert">
+			<strong>{{ $errors->first('vendor_contact_number') }}</strong>
+		</span>
+				@endif
+			</div>
+		</div>
+		
+	</div>
+	
+
+
+
 <div class="form-group">
 	{!!  Form::label('category_id', 'Category'); !!}
 	{!!  Form::select('category_id',$categories,null,['class'=>'form-control select2-tag']); !!}

@@ -22,7 +22,10 @@ class DelegateDuplicateChecker implements DuplicateCheckerInterface
     public function find($field, $value): Collection {
         $predicates = $this->fetchPredicates($field, $value);
 
-        return $this->event->delegates()->where($predicates)->get();
+        return $this->event->delegates()
+                           ->where($predicates)
+                           ->orderBy('created_at', 'asc')
+                           ->get();
     }
 
     public function isDuplicated($field, $value): bool {
@@ -69,5 +72,24 @@ class DelegateDuplicateChecker implements DuplicateCheckerInterface
         $this->event = $event;
 
         return $this;
+    }
+
+    public function convertRegistrationIdToInt(string $registration_id): int {
+        $newDuplicatedId = ltrim(str_replace(setting($this->event,
+                'registration_id_prefix') ?? "",
+            "", $registration_id), "0");
+
+        return $newDuplicatedId;
+
+    }
+
+    public function convertRegistrationIdToString(int $registration_id
+    ): int {
+
+        $prefix = setting($this->event, 'registration_id_prefix') ?? "";
+
+        return $prefix . str_pad($registration_id, 4, 0,
+                STR_PAD_LEFT);
+
     }
 }

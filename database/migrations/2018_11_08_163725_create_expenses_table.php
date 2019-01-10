@@ -26,6 +26,8 @@ class CreateExpensesTable extends Migration
             $table->unsignedInteger('vendor_id');
             $table->foreign('vendor_id')->references('id')->on('vendors')
                   ->onDelete('cascade');
+            $table->string('vendor_contact_person')->nullable();
+            $table->string('vendor_contact_number')->nullable();
             $table->unsignedInteger('event_id');
             $table->foreign('event_id')->references('id')->on('events')
                   ->onDelete('cascade');

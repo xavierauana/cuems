@@ -33,6 +33,15 @@
 			                @endif
 						</div> <!-- Normal switch -->
 		                <div class="form-group">
+			                {{Form::label('duplicated_with', 'Duplicated With')}}
+			                {{Form::text('duplicated_with',null,['class'=>'form-control'])}}
+			                @if ($errors->has('duplicated_with'))
+				                <span class="invalid-feedback" role="alert">
+						            <strong>{{ $errors->first('duplicated_with') }}</strong>
+						        </span>
+			                @endif
+						</div>
+		                <div class="form-group">
 						  <span class="switch">
 							  {{Form::checkbox('is_verified',true, $delegate->is_verified ,['class'=>'switch','id'=>'is-verified-switch'])}}
 							  <label for="is-verified-switch">Is Verified</label>
@@ -45,7 +54,6 @@
 						</div>
 	
 	                <button class="btn btn-primary">Update</button>
-		
 		                {{Form::close()}}
                 </div>
             </div>

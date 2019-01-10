@@ -18,8 +18,8 @@ class CreateDelegatesTable extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->boolean('is_male');
-            $table->string('email');
-            $table->string('mobile');
+            $table->string('email')->index();
+            $table->string('mobile')->index();
             $table->string('fax')->nullable();
             $table->string('position');
             $table->string('department');
@@ -28,7 +28,7 @@ class CreateDelegatesTable extends Migration
             $table->text('address_2')->nullable();
             $table->text('address_3')->nullable();
             $table->text('country');
-            $table->unsignedInteger('registration_id');
+            $table->unsignedInteger('registration_id')->index();
             $table->string('training_organisation')->nullable();
             $table->string('training_organisation_address')->nullable();
             $table->string('supervisor')->nullable();

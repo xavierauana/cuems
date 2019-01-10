@@ -107,7 +107,7 @@ class DelegatesController extends Controller
 
         $validatedData = $this->validate($request, $rules);
 
-        $newDelegate = $service->create($event, $validatedData);
+        $newDelegate = $service->adminCreate($event, $validatedData);
 
         Log::info('fire event: ' . $newDelegate->name);
 
@@ -144,7 +144,17 @@ class DelegatesController extends Controller
                                                  ) {
                                                      return $i->id !== $delegate->id;
                                                  }));
-        $duplicates = $duplicates->unique('id');
+
+
+        if ($delegate->duplicated_with) {
+            $duplicate = $this->repo->where('registration_id',
+                $checker->convertRegistrationIdToInt($delegate->duplicated_with))
+                                    ->first();
+            $duplicates->push($duplicate);
+        }
+
+
+        $duplicates = $duplicates->reject(null)->unique('id');
 
         return view("admin.events.delegates.show",
             compact('event', 'delegate', 'duplicates'));
@@ -290,7 +300,9 @@ class DelegatesController extends Controller
     private function updateDelegate(
         Delegate $delegate, array $validatedData
     ): Delegate {
+
         $validatedData['duplicated_with'] = $validatedData['is_duplicated'] ? $validatedData['duplicated_with'] : null;
+
         $delegate->update($validatedData);
 
         $delegate->transactions()->latest()->first()

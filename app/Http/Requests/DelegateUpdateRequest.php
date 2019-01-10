@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Delegate;
 use App\Services\InputMutator;
+use App\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DelegateUpdateRequest extends FormRequest
@@ -23,7 +24,10 @@ class DelegateUpdateRequest extends FormRequest
      * @return array
      */
     public function rules() {
-        return (new Delegate)->getStoreRules();
+        return array_merge(
+            (new Delegate)->getStoreRules(),
+            (new Transaction)->getRules()
+        );
     }
 
     public function validated() {

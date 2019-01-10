@@ -3,7 +3,7 @@
         <div class="form-group row">
                 <label class="institution col-sm-3 col-form-label">Training/Para-medical Organisation:</label>
                 <div class="col-sm-9">
-                    {{Form::select('training_organisation', array_merge(["--- Please Select ---"],array_combine(\App\Institution::pluck('name')->toArray(),\App\Institution::pluck('name')->toArray()), ['other'=>"Other"]),null, ['class'=>'form-control select2', 'required'])}}
+                    {{Form::select('training_organisation', array_merge(["--- Please Select ---"],array_combine(\App\Institution::pluck('name')->toArray(),\App\Institution::pluck('name')->toArray())),null, ['class'=>'form-control select2', 'required'])}}
 	                @if ($errors->has('training_organisation'))
 		                <span class="invalid-feedback" role="alert">
                                 <strong>{{ $errors->first('training_organisation') }}</strong>
@@ -12,7 +12,7 @@
                 </div>
             </div>
         <div class="form-group row">
-            <label class="institution col-sm-3 col-form-label">Or Other</label>
+            <label class="institution col-sm-3 col-form-label">For others, please specify</label>
             <div class="col-sm-9">
                 {{Form::text('training_other_organisation', null, ['class'=>'form-control'])}}
 	            @if ($errors->has('training_other_organisation'))

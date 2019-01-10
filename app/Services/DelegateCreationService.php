@@ -50,8 +50,8 @@ class DelegateCreationService
 
         $transactionData = [
             'status'    => $data['status'],
-            'ticket_id' => $data['status'],
-            'note'      => $data['status'],
+            'ticket_id' => $data['ticket_id'],
+            'note'      => $data['note'],
         ];
 
         $code = ($data['role'] ?? null);
@@ -66,6 +66,8 @@ class DelegateCreationService
             $this->createDelegateSponsor($data, $newDelegate);
 
             $this->recordAdminActivity($newDelegate);
+
+            $this->markDelegateIsVerified($newDelegate);
 
             DB::commit();
 
@@ -169,9 +171,25 @@ class DelegateCreationService
 
         $this->checker = $this->checker->setEvent($event);
 
-        if ($this->checker->isDuplicated('email', $newDelegate->email) or
-            $this->checker->isDuplicated('mobile', $newDelegate->mobile)) {
+
+        $emailDuplicated = $this->checker->find('email', $newDelegate->email);
+        $mobileDuplicated = $this->checker->find('email', $newDelegate->email);
+        if ($emailDuplicated > 1 or $mobileDuplicated > 1) {
+            $first = null;
+            $first = $emailDuplicated->first(function ($i) use ($newDelegate) {
+                return $i->id !== $newDelegate->id;
+            });
+
+            if (is_null($first)) {
+                $first = $mobileDuplicated->first(function ($i) use (
+                    $newDelegate
+                ) {
+                    return $i->id !== $newDelegate->id;
+                });
+            }
+
             $newDelegate->is_duplicated = DelegateDuplicationStatus::DUPLICATED;
+            $newDelegate->duplicated_with = $first->getRegistrationId();
         } else {
             $newDelegate->is_duplicated = DelegateDuplicationStatus::NO;
         }
@@ -275,5 +293,10 @@ class DelegateCreationService
             'delegate_id' => $newDelegate->id,
             'user_id'     => $this->user->id
         ]);
+    }
+
+    private function markDelegateIsVerified(Delegate $newDelegate) {
+        $newDelegate->is_verified = true;
+        $newDelegate->save();
     }
 }
