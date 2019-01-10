@@ -36,6 +36,8 @@ class PaymentController extends Controller
     }
 
     public function token(Request $request, JETCOPaymentService $service) {
+        var_dump($request->get('event'));
+        dd($request->all());
 
         $validatedData = $this->validate($request,
             array_merge($this->delegate->getStoreRules(), [
