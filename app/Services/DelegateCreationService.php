@@ -174,7 +174,7 @@ class DelegateCreationService
 
         $emailDuplicated = $this->checker->find('email', $newDelegate->email);
         $mobileDuplicated = $this->checker->find('email', $newDelegate->email);
-        if ($emailDuplicated > 1 or $mobileDuplicated > 1) {
+        if ($emailDuplicated->count() > 1 or $mobileDuplicated->count() > 1) {
             $first = null;
             $first = $emailDuplicated->first(function ($i) use ($newDelegate) {
                 return $i->id !== $newDelegate->id;
