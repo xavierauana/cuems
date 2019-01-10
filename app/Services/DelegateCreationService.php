@@ -194,8 +194,6 @@ class DelegateCreationService
             $newDelegate->is_duplicated = DelegateDuplicationStatus::NO;
         }
 
-        $newDelegate->is_verified = true;
-
         $newDelegate->save();
     }
 
