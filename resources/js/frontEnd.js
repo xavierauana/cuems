@@ -35,7 +35,7 @@ const app = new Vue({
                                                   });
                         $('.other_institution_container').hide();
                         $('.select2[name=institution]').on('select2:close', e => {
-                          if (e.target.value === 'other') {
+                          if (e.target.value === 'Others') {
                             $('.other_institution_container').show();
                             $('input[name=other_institution]').attr('require', true)
                           } else {
