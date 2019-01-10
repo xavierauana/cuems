@@ -144,13 +144,11 @@ class PaymentController extends Controller
             //                throw $e;
             //            }
 
-            return redirect(url("/",
-                ['event' => $event->id]))->withAlert("Thank you. You payment have been confirmed.");
+            return redirect(url("/?event=" . $event->id))->withAlert("Thank you. You payment have been confirmed.");
         }
 
 
-        return redirect(url("/",
-            ['event' => $event->id]))->withAlert("Something wrong. Please try again.");
+        return redirect(url("/?event=" . $event->id))->withAlert("Something wrong. Please try again.");
 
     }
 
