@@ -108,9 +108,11 @@ class SettingsControllers extends Controller
         $validatedData = $this->validate($request, [
             'key'   => [
                 "required",
-                Rule::unique('settings')->where(function ($query) use ($event) {
-                    return $query->where('event_id', $event->id);
-                })
+                Rule::unique('settings')
+                    ->ignore($setting->id, 'id')
+                    ->where(function ($query) use ($event) {
+                        return $query->where('event_id', $event->id);
+                    })
             ],
             'value' => "required",
         ]);
