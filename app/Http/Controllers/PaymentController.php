@@ -61,14 +61,13 @@ class PaymentController extends Controller
             $invoiceId = config('event.invoice_prefix') . str_random(5);
 
             $invoiceNumber = $prefix . $invoiceId;
-return $request->get('event');
+
             $record = PaymentRecord::updateOrCreate([
                 'invoice_id' => $invoiceNumber,
                 'event_id'   => $request->get('event')
             ], [
                 'status'    => PaymentRecordStatus::CREATED,
                 'form_data' => json_encode($validatedData),
-                'event_id'   => $request->get('event')
             ]);
 
             $ticket = Ticket::findOrFail($validatedData['ticket_id']);

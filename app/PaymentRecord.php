@@ -14,6 +14,7 @@ class PaymentRecord extends Model
         'status',
         'invoice_id',
         'form_data',
+        'event_id',
     ];
 
     protected static $logAttributes = [
