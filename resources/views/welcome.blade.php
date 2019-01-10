@@ -73,12 +73,11 @@
           e.preventDefault()
           axios.post('/token?event={{$event->id}}', new FormData(e.target))
                .then(function (response) {
-                 console.log(response)
 
-                 //var tokenInput = document.getElementById("DO")
-                 //tokenInput.value = response.data.token
-                 //e.target.action = response.data.url
-                 //e.target.submit()
+                 var tokenInput = document.getElementById("DO")
+                   tokenInput.value = response.data.token
+                   e.target.action = response.data.url
+                   e.target.submit()
                })
         }
         </script>
