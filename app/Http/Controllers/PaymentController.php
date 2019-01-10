@@ -68,7 +68,7 @@ class PaymentController extends Controller
             ], [
                 'status'    => PaymentRecordStatus::CREATED,
                 'form_data' => json_encode($validatedData),
-                'event_id'  => $validatedData['event_id']
+                'event_id'   => $request->get('event')
             ]);
 
             $ticket = Ticket::findOrFail($validatedData['ticket_id']);
