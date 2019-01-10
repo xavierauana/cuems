@@ -103,11 +103,11 @@ class PaymentController extends Controller
 
         $response = simplexml_load_string($service->checkPaymentStatus(["DR" => $request->get('String1')]));
 
+        $record = PaymentRecord::findOrFail($request->get('ref_id'));
+
+        $event = $record->event;
+
         if ((string)$response->Status === "AP") {
-
-            $record = PaymentRecord::findOrFail($request->get('ref_id'));
-
-            $event = $record->event;
 
             $formData = json_decode($record->form_data, true);
 
@@ -144,11 +144,13 @@ class PaymentController extends Controller
             //                throw $e;
             //            }
 
-            return redirect("/?event=" . $event->id)->withAlert("Thank you. You payment have been confirmed.");
+            return redirect(url("/",
+                ['event' => $event->id]))->withAlert("Thank you. You payment have been confirmed.");
         }
 
 
-        return redirect("/?event=" . $request->get('event'))->withAlert("Something wrong. Please try again.");
+        return redirect(url("/",
+            ['event' => $event->id]))->withAlert("Something wrong. Please try again.");
 
     }
 
