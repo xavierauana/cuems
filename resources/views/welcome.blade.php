@@ -21,11 +21,11 @@
             body {
 	            font-family: Helvetica, "微軟正黑體", "Microsoft JhengHei", sans-serif;
 	            color: #524632;
-                background-image: url("{{asset('imgs/bg.jpg')}}");
-                background-size:cover ;
-                background-repeat: no-repeat;
-                background-position-x: center;
-                background-position-y: top;
+	            background-image: url("{{asset('imgs/bg.jpg')}}");
+	            background-size: cover;
+	            background-repeat: no-repeat;
+	            background-position-x: center;
+	            background-position-y: top;
             }
         </style>
 	
@@ -72,11 +72,13 @@
         function pay(e) {
           e.preventDefault()
           axios.post('/token?event={{$event->id}}', new FormData(e.target))
-               .then(({data}) => {
-                 var tokenInput = document.getElementById("DO")
-                 tokenInput.value = data.token
-                 e.target.action = data.url
-                 e.target.submit()
+               .then(function (response) {
+                 console.log(response)
+
+                 //var tokenInput = document.getElementById("DO")
+                 //tokenInput.value = response.data.token
+                 //e.target.action = response.data.url
+                 //e.target.submit()
                })
         }
         </script>
