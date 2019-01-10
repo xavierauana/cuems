@@ -36,9 +36,6 @@ class PaymentController extends Controller
     }
 
     public function token(Request $request, JETCOPaymentService $service) {
-        return ($request->get('event'));
-
-        return ($request->all());
 
         $validatedData = $this->validate($request,
             array_merge($this->delegate->getStoreRules(), [
@@ -47,6 +44,9 @@ class PaymentController extends Controller
                     Rule::exists('tickets', 'id')->where(function ($query) {
                         $query->where('is_public', true);
                     })
+                ],
+                [
+                    'event_id' => 'required|exists:events,id'
                 ]
             ]));
 
