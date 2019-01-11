@@ -28,8 +28,9 @@ class ShowDelegateIndexPageTest extends TestCase
      *
      * @return void
      */
-    public function testExample() {
+    public function test() {
         $response = $this->get('/events/' . $this->event->id . '/delegates');
-        $response->assertSee("Delegates for Event: ".$this->event->name);
+        $response->assertStatus(200);
+        $response->assertViewIs('admin.events.delegates.index');
     }
 }
