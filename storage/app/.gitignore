@@ -1,4 +1,5 @@
 *
+!templates
 !templates/tickets_template.csv
 !templates/delegates_template.xlsx
 !public/
@@ -8,11 +9,6 @@
 !names_female.json
 !names_male.json
 !.gitignore
-
-
-2 modules / files
-legacy once per day -> output id and deparemnt code
-to go 2 desitnation 
 
 
 
