@@ -15,11 +15,12 @@ class Session extends Model
 
     protected $fillable = [
         'title',
-        'subtitle',
-        'start_at',
+        'order',
+        'venue',
         'end_at',
         'sponsor',
-        'venue',
+        'start_at',
+        'subtitle',
         'moderation_type',
     ];
 
@@ -30,13 +31,14 @@ class Session extends Model
 
     const StoreRules    = [
         'title'           => 'required',
-        'venue'           => 'required',
+        'venue'           => 'nullable',
         'subtitle'        => 'nullable',
         'sponsor'         => 'nullable',
         'moderation_type' => 'nullable|numeric',
         'moderators'      => 'nullable',
         'start_at'        => 'required|date',
         'end_at'          => 'required|date|date_gt:start_at',
+        'order'           => 'nullable|numeric|min:0',
     ];
     const ErrorMessages = [
         'date_gt' => "End Date should later than stat date",

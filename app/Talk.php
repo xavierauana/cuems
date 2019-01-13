@@ -17,6 +17,7 @@ class Talk extends Model
     const StoreRules    = [
         'title'    => 'required',
         'speakers' => 'required',
+        'order'    => 'nullable|min:0|numeric',
     ];
     const ErrorMessages = [];
 
@@ -36,10 +37,9 @@ class Talk extends Model
 
     public function getSpeakerDelegatesAttribute(): Collection {
         return Delegate::whereIn('id', function ($query) {
-            return $query->select('id')
-                        ->from('speakers')
-                        ->whereTalkId($this->id);
-
+            return $query->select('delegate_id')
+                         ->from('speakers')
+                         ->whereTalkId($this->id);
         })->get();
     }
 

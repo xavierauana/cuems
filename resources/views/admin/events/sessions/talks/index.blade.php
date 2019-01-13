@@ -14,13 +14,15 @@
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
+                        <th>Order</th>
                         <th>Title</th>
                         <th>Speakers</th>
                         <th>Actions</th>
                     </thead>
 	                  <tbody>
-	                  @foreach($session->talks as $talk)
+	                  @foreach($session->talks->sortBy('order') as $talk)
 		                  <tr>
+			                  <td>{{$talk->order}}</td>
 			                  <td>{{$talk->title}}</td>
 			                  <td>
 				                  @foreach($talk->speakerDelegates as $delegate)

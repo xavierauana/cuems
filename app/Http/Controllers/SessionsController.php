@@ -67,6 +67,8 @@ class SessionsController extends Controller
         $validatedData = $this->validate($request, Session::StoreRules,
             Session::ErrorMessages);
 
+        $validatedData['order'] = $validatedData['order'] ?? (($max = Session::max('order')) ? ($max + 1) : 1);
+
         DB::beginTransaction();
 
         try {
@@ -133,6 +135,8 @@ class SessionsController extends Controller
         $validatedData = $this->validate($request, Session::StoreRules,
             Session::ErrorMessages);
 
+        $validatedData['order'] = $validatedData['order'] ?? (($max = Session::max('order')) ? ($max + 1) : 1);
+
         $session->update($validatedData);
         $session->updateModerators($validatedData['moderators']);
 
@@ -162,7 +166,14 @@ class SessionsController extends Controller
      * @return JsonResource
      */
     public function apiGetSessions(Request $request, Event $event) {
-        $sessions = $event->sessions()->with('talks')->get();
+        $sessions = $event->sessions()
+                          ->with([
+                              'talks' => function ($query) {
+                                  return $query->orderBy('order');
+                              }
+                          ])
+                          ->orderBy('order')
+                          ->get();
         $data = SessionResource::collection($sessions);
 
         return $data;

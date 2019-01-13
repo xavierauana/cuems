@@ -11,6 +11,7 @@
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
+                        <th>Order</th>
                         <th>Title</th>
                         <th>Subtitle</th>
                         <th>Duration</th>
@@ -20,8 +21,9 @@
                         <th>Actions</th>
                     </thead>
 	                  <tbody>
-	                  @foreach($event->sessions as $session)
+	                  @foreach($event->sessions->sortBy('order') as $session)
 		                  <tr>
+			                  <td>{{$session->order}}</td>
 			                  <td>{{$session->title}}</td>
 			                  <td>{{$session->subtitle}}</td>
 			                  <td>{{$session->duration}}</td>

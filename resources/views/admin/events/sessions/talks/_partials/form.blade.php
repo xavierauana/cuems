@@ -1,10 +1,10 @@
 <div class="form-group">
-		                {!!  Form::label('title', 'Topic'); !!}
+    {!!  Form::label('title', 'Topic'); !!}
 	{!!  Form::text('title',null,['class'=>'form-control']); !!}
 	@if ($errors->has('title'))
 		<span class="invalid-feedback" role="alert">
-				                <strong>{{ $errors->first('title') }}</strong>
-			                </span>
+            <strong>{{ $errors->first('title') }}</strong>
+        </span>
 	@endif
 	                </div>
 <div class="form-group">
@@ -16,6 +16,17 @@
         </span>
 	@endif
 </div>
+
+<div class="form-group">
+    {!!  Form::label('order', 'Order'); !!}
+	{!!  Form::number('order' ,null,['class'=>'form-control','min'=>0, 'step'=>1]); !!}
+	@if ($errors->has('order'))
+		<span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('order') }}</strong>
+        </span>
+	@endif
+</div>
+
 <div class="form-group">
     <input class="btn btn-success"
            type="submit"

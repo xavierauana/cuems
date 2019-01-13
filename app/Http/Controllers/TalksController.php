@@ -58,10 +58,13 @@ class TalksController extends Controller
      * @param Event                     $event
      * @param Session                   $session
      * @return
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request, Event $event, Session $session) {
         $validatedData = $this->validate($request, Talk::StoreRules,
             Talk::ErrorMessages);
+
+        $validatedData['order'] = $validatedData['order'] ?? (($max = Talk::max('order')) ? ($max + 1) : 1);
 
         /** @var Talk $newTalk */
         $newTalk = $session->talks()->create($validatedData);
@@ -105,6 +108,7 @@ class TalksController extends Controller
      * @param Session                   $session
      * @param  Talk                     $talk
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(
         Request $request, Event $event, Session $session, Talk $talk
@@ -112,6 +116,8 @@ class TalksController extends Controller
 
         $validatedData = $this->validate($request, Talk::StoreRules,
             Talk::ErrorMessages);
+
+        $validatedData['order'] = $validatedData['order'] ?? (($max = Talk::max('order')) ? ($max + 1) : 1);
 
         /** @var Talk $newTalk */
         $talk->update($validatedData);

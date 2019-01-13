@@ -42,7 +42,7 @@
 						                   <delete-button
 								                   url="{{route('events.destroy', $event)}}"
 								                   id="{{$event->id}}"
-								                   class="btn btn-danger text-light">Delete</delete-button>
+								                   class="btn btn-danger text-light">Archive</delete-button>
 									  </div>
 				                  </div>
 			                  </td>
