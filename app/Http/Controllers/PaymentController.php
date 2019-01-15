@@ -126,6 +126,9 @@ class PaymentController extends Controller
             return redirect(url("/?event=" . $event->id))->withAlert("Thank you. You payment have been confirmed.");
         }
 
+        $record->update([
+            'status' => 'failed'
+        ]);
 
         return redirect(url("/?event=" . $event->id))->withAlert("Something wrong. Please try again.");
 
