@@ -67,7 +67,7 @@ class JETCOPaymentService implements PaymentServiceInterface
         );
 
         $response = $this->client->send($httpRequest);
-
+        \Debugbar::info($httpRequest->getUri());
         $xml = simplexml_load_string((string)$response->getBody());
 
         \Debugbar::info((string)$xml);
