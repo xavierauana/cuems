@@ -153,7 +153,8 @@ class ImportDelegates implements ShouldQueue
                     $states) ? (TransactionStatus::getStatus())[$data['transaction_status']] : "";
                 $new['role'] = optional(DelegateRole::whereCode(strtolower($data['role'] ?? ""))
                                                     ->first())->code;
-                $new['ticket_id'] = optional(Ticket::whereCode($data['ticket_code'] ?? "")
+                $new['ticket_id'] = optional(Ticket::whereEventId($this->event->id)
+                                                   ->whereCode($data['ticket_code'] ?? "")
                                                    ->first())->id;
                 if ($data['sponsor_company'] ?? null) {
                     $new['sponsor']['sponsor_id'] = optional($this->event->sponsors()
