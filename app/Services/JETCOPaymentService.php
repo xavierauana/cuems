@@ -13,7 +13,6 @@ use App\Entities\ChargeResponse;
 use App\Entities\DigitalOrderRequest;
 use App\Entities\DigitalOrderResponse;
 use App\Entities\PaymentGatewayEndpoints;
-use DebugBar\DebugBar;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
@@ -72,7 +71,7 @@ class JETCOPaymentService implements PaymentServiceInterface
         $xml = simplexml_load_string((string)$response->getBody());
 
         \Debugbar::info((string)$xml);
-        \DebugbBar::info($xml->error);
+        \Debugbar::info($xml->error);
         if (!empty((string)$xml->error)) {
             throw new  Exception(response((string)$xml->error));
         }
