@@ -118,7 +118,7 @@ class PaymentController extends Controller
                 $ticket->price);
 
             $newDelegate = $creationService->selfCreate($event, $formData,
-                $chargeResponse, $request->get('ref_id'));
+                $chargeResponse, $refId);
 
             event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
                 $newDelegate));
