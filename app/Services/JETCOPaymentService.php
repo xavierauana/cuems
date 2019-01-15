@@ -72,6 +72,7 @@ class JETCOPaymentService implements PaymentServiceInterface
         $xml = simplexml_load_string((string)$response->getBody());
 
         DebugBar::info((string)$xml);
+        DebugBar::info($xml->error);
         if (!empty((string)$xml->error)) {
             throw new  Exception(response((string)$xml->error));
         }
