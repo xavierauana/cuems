@@ -2,7 +2,7 @@
         <legend>Tickets:</legend>
          <div class="form-group row">
              <div class="col-sm-12">
-                  @foreach(\App\Ticket::whereEventId(1)->get() as $ticket)
+                  @foreach(\App\Ticket::whereEventId($event->id)->get() as $ticket)
 		             @include("_components.tickets", compact('ticket'))
 	             @endforeach
              </div>
