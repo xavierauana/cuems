@@ -74,7 +74,10 @@
         <div class="form-group row">
             <label class="position col-sm-2 col-form-label">Position</label>
             <div class="col-sm-10">
-                {{Form::select('position',['--- Please Select ---']+getPositionList()->toArray() ,null, ['class'=>'form-control select2-tag', 'required'])}}
+                @php
+	                $positions = getPositionList()->toArray();
+                @endphp
+	            {{Form::select('position',['--- Please Select ---']+ array_combine($positions,$positions)  ,null, ['class'=>'form-control select2-tag', 'required'])}}
 	            @if ($errors->has('position'))
 		            <span class="invalid-feedback" role="alert">
                             <strong>{{ $errors->first('position') }}</strong>

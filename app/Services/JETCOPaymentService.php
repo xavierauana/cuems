@@ -13,9 +13,9 @@ use App\Entities\ChargeResponse;
 use App\Entities\DigitalOrderRequest;
 use App\Entities\DigitalOrderResponse;
 use App\Entities\PaymentGatewayEndpoints;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use HttpResponseException;
 
 class JETCOPaymentService implements PaymentServiceInterface
 {
@@ -52,7 +52,7 @@ class JETCOPaymentService implements PaymentServiceInterface
      * @param \App\Entities\DigitalOrderRequest $request
      * @return \App\Entities\DigitalOrderResponse
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \HttpResponseException
+     * @throws \Exception
      */
     public function getDigitalOrder(DigitalOrderRequest $request
     ): DigitalOrderResponse {
@@ -68,11 +68,10 @@ class JETCOPaymentService implements PaymentServiceInterface
 
         $response = $this->client->send($httpRequest);
 
-
         $xml = simplexml_load_string((string)$response->getBody());
 
         if (!empty((string)$xml->error)) {
-            throw new HttpResponseException(response((string)$xml->error));
+            throw new  Exception(response((string)$xml->error));
         }
 
         return new DigitalOrderResponse((string)$xml->DO,

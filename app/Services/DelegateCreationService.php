@@ -51,7 +51,7 @@ class DelegateCreationService
         $transactionData = [
             'status'    => $data['status'],
             'ticket_id' => $data['ticket_id'],
-            'note'      => $data['note'],
+            'note'      => $data['note'] ?? "",
         ];
 
         $code = ($data['role'] ?? null);
