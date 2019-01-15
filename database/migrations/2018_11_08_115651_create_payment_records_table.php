@@ -14,7 +14,7 @@ class CreatePaymentRecordsTable extends Migration
     public function up() {
         Schema::create('payment_records', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('invoice_id');
+            $table->string('invoice_id')->unique()->index();
             $table->string('status');
             $table->unsignedInteger('event_id');
             $table->foreign('event_id')->references('id')->on('events');

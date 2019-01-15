@@ -78,7 +78,7 @@ class PaymentController extends Controller
                 PaymentType::Authorisation,
                 route("paymentCallBack",
                     [
-                        'ref_id' => encrypt($record->id)
+                        'ref_id' => base64_encode($record->id)
                     ])
             );
 
@@ -102,7 +102,7 @@ class PaymentController extends Controller
 
         $response = simplexml_load_string($service->checkPaymentStatus(["DR" => $request->get('String1')]));
 
-        $refId = decrypt($request->get('ref_id'));
+        $refId = base64_decode($request->get('ref_id'));
 
         $record = PaymentRecord::findOrFail($refId);
 
