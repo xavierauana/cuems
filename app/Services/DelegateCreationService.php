@@ -78,6 +78,44 @@ class DelegateCreationService
         }
     }
 
+    public function adminImport(
+        Event $event, array $data, bool $checkDuplicate = false
+    ): Delegate {
+
+        $data = $this->addRegistrationId($event, $data);
+
+        $transactionData = [
+            'status'    => $data['status'],
+            'ticket_id' => $data['ticket_id'],
+            'note'      => $data['note'] ?? "",
+        ];
+
+        $code = ($data['role'] ?? null);
+
+        DB::beginTransaction();
+
+        try {
+
+            $newDelegate = $this->baseCreate($event, $data, $code,
+                $transactionData);
+
+            $this->createDelegateSponsor($data, $newDelegate);
+
+            $this->recordAdminActivity($newDelegate);
+
+            $this->markDelegateIsVerified($newDelegate);
+
+            $this->checkDuplicated($event, $newDelegate);
+
+            DB::commit();
+
+            return $newDelegate;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function import() {
         //TODO: Implement method
     }

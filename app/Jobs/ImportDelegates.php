@@ -79,8 +79,8 @@ class ImportDelegates implements ShouldQueue
             return !!$this->validateData($item, $rules);
         })
                          ->each(function ($data) use ($service) {
-                             
-                             $newDelegate = $service->adminCreate($this->event,
+
+                             $newDelegate = $service->adminImport($this->event,
                                  $data, true);
 
                              Log::info('fire event: ' . $newDelegate->name);
