@@ -162,10 +162,18 @@ class TransactionController extends Controller
             't.name',
         ];
 
-        foreach ($columns as $index => $column) {
-            $condition = $index === 0 ? 'where' : 'orWhere';
-            $query = $query->$condition($column, 'like', "%{$keyword}%");
-        }
+        $query->where(function ($q) use ($columns, $keyword
+        ) {
+            foreach ($columns as $index => $column) {
+                if ($index === 0) {
+                    $q->where($column, "like",
+                        "%{$keyword}%");
+                } else {
+                    $q->orWhere($column, "like",
+                        "%{$keyword}%");
+                }
+            }
+        });
 
         return $query;
     }
