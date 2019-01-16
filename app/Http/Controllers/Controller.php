@@ -17,11 +17,11 @@ class Controller extends BaseController
         Model $repo, Request $request, $query, $keyword = 'keyword'
     ) {
         $columns = $repo->getSearchableColumns();
-        if ($keyword = $request->query($keyword)) {
+        if ($searchKeyword = $request->query($keyword)) {
             foreach ($columns as $index => $column) {
                 $constraint = $index === 0 ? "where" : "orWhere";
                 $query = $query->$constraint($column, "like",
-                    "%{$keyword}%");
+                    "%{$searchKeyword}%");
             }
         }
 
