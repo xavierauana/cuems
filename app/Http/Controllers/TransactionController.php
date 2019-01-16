@@ -159,6 +159,9 @@ class TransactionController extends Controller
             'transactions.status',
             'transactions.charge_id',
             'd.registration_id',
+            'd.first_name',
+            'd.last_name',
+            'd.email',
             't.name',
         ];
 
