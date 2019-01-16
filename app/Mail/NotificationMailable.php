@@ -68,15 +68,12 @@ class NotificationMailable extends AbstractEventNotificationMail
                             ->setPageSize('a4')
                             ->setOrientation('portrait');
 
-            $transactions = $this->delegate->transactions()
-                                           ->whereStatus(TransactionStatus::COMPLETED)
-                                           ->get();
-
-            $transactions->each(function (Transaction $transaction, $index) use
-            (
+            $attachData = function (Transaction $transaction, $index) use (
                 $service
             ) {
-                if ($data = $service->createPDF($transaction)) {
+                $data = $service->createPDF($transaction);
+                Log::info('create attached data');
+                if (!is_null($data)) {
 
                     Log::info('attached data to notification');
 
@@ -84,7 +81,16 @@ class NotificationMailable extends AbstractEventNotificationMail
                         'mime' => "application/pdf"
                     ]);
                 }
-            });
+            };
+
+            $this->delegate->transactions()
+                           ->whereStatus(TransactionStatus::COMPLETED)
+                           ->get()
+                           ->tap(
+                               function ($collection) {
+                                   $count = $collection->count();
+                                   Log::info("there are {$count} notifications");
+                               })->each($attachData);
         }
 
         $this->addAttachments();
