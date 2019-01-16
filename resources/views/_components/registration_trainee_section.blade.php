@@ -1,5 +1,5 @@
 <fieldset class="trainee" v-if="isTraineeTicket">
-        <legend>For Trainee</legend>
+        <legend>To be filled out by Medical Trainee/Para-medic Participant</legend>
         <div class="form-group row">
                 <label class="institution col-sm-3 col-form-label">Training/Para-medical Organisation:</label>
                 <div class="col-sm-9">
