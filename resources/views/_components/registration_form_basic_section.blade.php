@@ -69,68 +69,6 @@
                         </span>
 	            @endif
             </div>
-            
-        </div>
-        <div class="form-group row">
-            <label class="position col-sm-2 col-form-label">Position</label>
-            <div class="col-sm-10">
-                @php
-	                $positions = getPositionList()->toArray();
-                @endphp
-	            {{Form::select('position',['--- Please Select ---']+ array_combine($positions,$positions)  ,null, ['class'=>'form-control select2-tag', 'required'])}}
-	            @if ($errors->has('position'))
-		            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('position') }}</strong>
-                        </span>
-	            @endif
-            </div>
-        </div>
-    
-        <div class="form-group row">
-            <label class="address col-sm-2 col-form-label">Address 1</label>
-            <div class="col-sm-10">
-                 {{Form::text('address_1', null, ['class'=>'form-control', 'required'])}}
-	            @if ($errors->has('address_1'))
-		            <span class="invalid-feedback" role="alert">
-                        <strong>{{ $errors->first('address_1') }}</strong>
-                    </span>
-	            @endif
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="address col-sm-2 col-form-label">Address 2</label>
-            <div class="col-sm-10">
-                 {{Form::text('address_2', null, ['class'=>'form-control', 'required'])}}
-	            @if ($errors->has('address_2'))
-		            <span class="invalid-feedback" role="alert">
-                        <strong>{{ $errors->first('address_2') }}</strong>
-                    </span>
-	            @endif
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="address col-sm-2 col-form-label">Address 3</label>
-            <div class="col-sm-10">
-                 {{Form::text('address_3', null, ['class'=>'form-control', 'required'])}}
-	            @if ($errors->has('address_3'))
-		            <span class="invalid-feedback" role="alert">
-                        <strong>{{ $errors->first('address_3') }}</strong>
-                    </span>
-	            @endif
-            </div>
-        </div>
-    
-    
-        <div class="form-group row">
-            <label class="country col-sm-2 col-form-label">Country/Region</label>
-            <div class="col-sm-10">
-            {{Form::select('country',getCountiesList() ,'Hong Kong SAR China', ['class'=>'form-control select2', 'required'])}}
-	            @if ($errors->has('country'))
-		            <span class="invalid-feedback" role="alert">
-                        <strong>{{ $errors->first('country') }}</strong>
-                    </span>
-	            @endif
-            </div>
         </div>
         <div class="form-group row">
             <label class="email col-sm-2 col-form-label">Email</label>

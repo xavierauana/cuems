@@ -10412,7 +10412,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\nlabel.disabled[data-v-f77f6e16] {\n    color: grey;\n}\n\n", ""]);
 
 // exports
 
@@ -10423,6 +10423,10 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
 //
 //
 //
@@ -10574,27 +10578,38 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("legend", [_vm._v("Tickets:")]),
+      _c("legend", [_vm._v("Registration Details:")]),
       _vm._v(" "),
       _vm._l(_vm.tickets, function(ticket) {
         return _vm.showTicket(ticket)
-          ? _c("div", { staticClass: "form-group row" }, [
+          ? _c("div", { key: ticket.id, staticClass: "form-group row" }, [
               _c("div", { staticClass: "col-sm-12" }, [
                 _c("div", { staticClass: "form-group" }, [
                   _c("div", { staticClass: "form-check form-check-inline" }, [
-                    _c("label", { staticStyle: { "margin-right": "15px" } }, [
-                      _c("input", {
-                        attrs: { type: "radio", name: "ticket_id" },
-                        domProps: { value: ticket.id }
-                      }),
-                      _vm._v(
-                        " " +
-                          _vm._s(ticket.name) +
-                          " HK$" +
-                          _vm._s(ticket.price) +
-                          "\n                        "
-                      )
-                    ])
+                    _c(
+                      "label",
+                      {
+                        class: { disabled: !ticket.is_available },
+                        staticStyle: { "margin-right": "15px" }
+                      },
+                      [
+                        _c("input", {
+                          attrs: {
+                            type: "radio",
+                            name: "ticket_id",
+                            disabled: !ticket.is_available
+                          },
+                          domProps: { value: ticket.id }
+                        }),
+                        _vm._v(
+                          " " +
+                            _vm._s(ticket.name) +
+                            " HK$" +
+                            _vm._s(ticket.price) +
+                            "\n                        "
+                        )
+                      ]
+                    )
                   ])
                 ])
               ])

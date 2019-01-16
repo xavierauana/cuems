@@ -28,8 +28,13 @@ class Ticket extends Model
     ];
 
     protected $casts = [
-        'start_at' => 'datetime',
-        'end_at'   => 'datetime',
+        'start_at'     => 'datetime',
+        'end_at'       => 'datetime',
+        'is_available' => 'boolean',
+    ];
+
+    protected $appends = [
+        'is_available'
     ];
 
     // Validation Rules
@@ -145,6 +150,16 @@ class Ticket extends Model
 
     public function getEndAtObjectAttribute() {
         return new Carbon($this->attributes['end_at']);
+    }
+
+    public function getIsAvailableAttribute() {
+
+        $now = Carbon::now();
+
+        $start_at = new Carbon($this->getOriginal['start_at']);
+        $end_at = new Carbon($this->getOriginal['end_at']);
+
+        return $now->greaterThanOrEqualTo($start_at) and $end_at->greaterThanOrEqualTo($now);
     }
 
     // Mutator

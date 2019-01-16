@@ -15,14 +15,18 @@
             </div>
         </div>
 
-        <legend>Tickets:</legend>
-         <div class="form-group row" v-for="ticket in tickets"
+        <legend>Registration Details:</legend>
+         <div class="form-group row"
+              v-for="ticket in tickets"
+              :key="ticket.id"
               v-if="showTicket(ticket)">
              <div class="col-sm-12">
                   <div class="form-group">
                      <div class="form-check form-check-inline">
-                        <label style="margin-right: 15px">
+                        <label style="margin-right: 15px"
+                               :class="{'disabled':!ticket.is_available}">
                             <input type="radio" name="ticket_id"
+                                   :disabled="!ticket.is_available"
                                    :value="ticket.id" /> {{ticket.name}} HK${{ticket.price}}
                         </label>
                      </div>
@@ -63,5 +67,9 @@ export default {
 </script>
 
 <style scoped>
+
+    label.disabled {
+        color: grey;
+    }
 
 </style>

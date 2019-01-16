@@ -44,7 +44,7 @@
 	        @include("_components.registration_form_basic_section")
 	        @include("_components.registration_form_institution_section")
 	        <tickets
-			        :tickets="{{json_encode(\App\Ticket::whereEventId($event->id)->public()->available()->get())}}"
+			        :tickets="{{json_encode(\App\Ticket::whereEventId($event->id)->public()->get())}}"
 			        @select="update">
         @if ($errors->has('ticket'))
 			        <template slot="errorMessage">
@@ -75,9 +75,9 @@
                .then(function (response) {
 
                  var tokenInput = document.getElementById("DO")
-                   tokenInput.value = response.data.token
-                   e.target.action = response.data.url
-                   e.target.submit()
+                 tokenInput.value = response.data.token
+                 e.target.action = response.data.url
+                 e.target.submit()
                })
         }
         </script>
