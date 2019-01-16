@@ -59,9 +59,7 @@ class DelegatesController extends Controller
 
         unset($queries['keyword']);
 
-        foreach ($queries as $key => $oder) {
-            $query = $query->orderBy($key, $oder);
-        }
+        $query = $this->orderByQuery($queries, $query);
 
         $delegates = $query->paginate();
 

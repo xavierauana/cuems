@@ -21,7 +21,17 @@ class Controller extends BaseController
             foreach ($columns as $index => $column) {
                 $constraint = $index === 0 ? "where" : "orWhere";
                 $query = $query->$constraint($column, "like",
-                    "%{$request->get($keyword)}%");
+                    "%{$keyword}%");
+            }
+        }
+
+        return $query;
+    }
+
+    protected function orderByQuery(array $queries, $query) {
+        foreach ($queries as $key => $oder) {
+            if ($key !== "page") {
+                $query = $query->orderBy($key, $oder);
             }
         }
 
