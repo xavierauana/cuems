@@ -159,13 +159,6 @@ class Ticket extends Model
         $start_at = new Carbon($this->getAttributes()['start_at']);
         $end_at = new Carbon($this->getAttributes()['end_at']);
 
-        \Debugbar::info($this->getAttributes()['start_at']);
-        \Debugbar::info($this->getAttributes()['end_at']);
-        \Debugbar::info($start_at);
-        \Debugbar::info($end_at);
-        \Debugbar::info($now->greaterThanOrEqualTo($start_at));
-        \Debugbar::info($end_at->greaterThanOrEqualTo($now));
-
         return $now->greaterThanOrEqualTo($start_at) and $end_at->greaterThanOrEqualTo($now);
     }
 
