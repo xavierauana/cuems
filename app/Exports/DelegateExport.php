@@ -115,7 +115,6 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
             }, ""),
             $delegate->transactions->first()->ticket->name,
             TransactionStatus::getStatusKey($delegate->transactions->first()->status),
-            $this->transactionStatus[$delegate->transactions->first()->status],
             $delegate->is_duplicated == DelegateDuplicationStatus::DUPLICATED ? "DUPLICATED" : "NA",
             $delegate->duplicated_with,
             $sponsorRecord ? $sponsorRecord->sponsor->name : null,
