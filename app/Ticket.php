@@ -155,7 +155,6 @@ class Ticket extends Model
     public function getIsAvailableAttribute() {
 
         $now = Carbon::now();
-
         $start_at = new Carbon($this->getAttributes()['start_at']);
         $end_at = new Carbon($this->getAttributes()['end_at']);
 

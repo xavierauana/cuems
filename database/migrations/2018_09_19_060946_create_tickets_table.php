@@ -21,7 +21,7 @@ class CreateTicketsTable extends Migration
             $table->dateTime("end_at")->nullable();
             $table->unsignedInteger("vacancy")->nullable();
             $table->boolean("is_public")->default(true);
-            $table->string("template")->nullable();
+            $table->string("template")->default('ticket');
             $table->text("note")->nullable();
 
             $table->unsignedInteger('event_id');

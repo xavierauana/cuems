@@ -61,12 +61,13 @@ class NotificationMailable extends AbstractEventNotificationMail
         if ($this->notification->include_ticket) {
 
             /** @var CreateTicketService $service */
-            $service = app()->make(CreateTicketService::class);
+            $service = app()->make(CreateTicketService::class)
+                            ->setPageSize('a4')
+                            ->setOrientation('portrait');
 
             $transactions = $this->delegate->transactions()
                                            ->whereStatus(TransactionStatus::COMPLETED)
                                            ->get();
-
 
             $transactions->each(function (Transaction $transaction, $index) use
             (

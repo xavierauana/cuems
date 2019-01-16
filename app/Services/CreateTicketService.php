@@ -10,11 +10,14 @@ namespace App\Services;
 
 use App\Transaction;
 use Dompdf\Dompdf;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Dompdf\Options;
 
 class CreateTicketService
 {
     private $pdf;
+    private $ticketView;
+    private $pageSize;
+    private $orientation;
 
     /**
      * CreateTicketService constructor.
@@ -23,6 +26,7 @@ class CreateTicketService
     public function __construct(Dompdf $pdf) {
 
         $this->pdf = $pdf;
+
     }
 
 
@@ -36,19 +40,20 @@ class CreateTicketService
      * @throws \Throwable
      */
     public function createPDF(Transaction $transaction): ?string {
+        $delegate = $transaction->payee;
+        $view = $this->ticketView ?? "templates.tickets." . $transaction->ticket->template;
+        $html = view($view, compact('delegate',
+            'transaction'))->render();
 
-        $data = $this->createQRCode($transaction->uuid);
-        $imageData = base64_encode($data);
-        $delegateName = optional($transaction->payee)->name;
-        $ticketName = $transaction->ticket->name;
-        $event = $transaction->ticket->event;
-
-        $html = view("templates.ticket." . $transaction->ticket->template,
-            compact('imageData', 'delegateName', 'ticketName',
-                'event'))->render();
-
+        $pageSize = $this->pageSize ?? $transaction->ticket->templateDimension;
+        $orientation = $this->orientation ?? 'landscape';
+        $options = new Options();
+        $options->setIsRemoteEnabled(true);
+        $options->set('isHtml5ParserEnabled', true);
         $pdf = new \Dompdf\Dompdf();
-        $pdf->setPaper($transaction->ticket->templateDimension, 'landscape');
+        $pdf->setOptions($options);
+
+        $pdf->setPaper($pageSize, $orientation);
 
         $pdf->loadHtml($html);
         $pdf->render($html);
@@ -57,17 +62,33 @@ class CreateTicketService
 
     }
 
-    private
-    function createQRCode(
-        string $message, string $format = "png",
-        int $size = 400,
-        string $tolerance = "Q"
-    ) {
+    /**
+     * @param mixed $ticketView
+     * @return CreateTicketService
+     */
+    public function setTicketView($ticketView) {
+        $this->ticketView = $ticketView;
 
-        return QrCode::format($format)
-                     ->size($size)
-                     ->errorCorrection($tolerance)
-                     ->generate($message);
+        return $this;
+    }
 
+    /**
+     * @param mixed $pageSize
+     * @return CreateTicketService
+     */
+    public function setPageSize($pageSize) {
+        $this->pageSize = $pageSize;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed $orientation
+     * @return CreateTicketService
+     */
+    public function setOrientation($orientation) {
+        $this->orientation = $orientation;
+
+        return $this;
     }
 }
