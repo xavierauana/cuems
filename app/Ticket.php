@@ -4,6 +4,7 @@ namespace App;
 
 use App\Traits\FlatpickrConversion;
 use Carbon\Carbon;
+use DebugBar\DebugBar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -158,6 +159,11 @@ class Ticket extends Model
 
         $start_at = new Carbon($this->getOriginal['start_at']);
         $end_at = new Carbon($this->getOriginal['end_at']);
+
+        Debugbar::info($start_at);
+        Debugbar::info($end_at);
+        Debugbar::info($now->greaterThanOrEqualTo($start_at));
+        Debugbar::info($end_at->greaterThanOrEqualTo($now));
 
         return $now->greaterThanOrEqualTo($start_at) and $end_at->greaterThanOrEqualTo($now);
     }
