@@ -53,7 +53,6 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
             'Email',
             'Tel',
             'Fax',
-            'Transaction Status',
             'Role',
             'Ticket',
             'Transaction Status',
