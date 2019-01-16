@@ -19,9 +19,13 @@ class Controller extends BaseController
         $columns = $repo->getSearchableColumns();
         if ($searchKeyword = $request->query($keyword)) {
             foreach ($columns as $index => $column) {
-                $constraint = $index === 0 ? "where" : "orWhere";
-                $query = $query->$constraint($column, "like",
-                    "%{$searchKeyword}%");
+                if ($index === 0) {
+                    $query = $query->where($column, "like",
+                        "%{$searchKeyword}%");
+                } else {
+                    $query = $query->orWhere($column, "like",
+                        "%{$searchKeyword}%");
+                }
             }
         }
 
