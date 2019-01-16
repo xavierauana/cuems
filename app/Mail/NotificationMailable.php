@@ -83,8 +83,10 @@ class NotificationMailable extends AbstractEventNotificationMail
                 }
             };
 
+            // TODO: going to change the transaction status
             $this->delegate->transactions()
-                           ->whereStatus(TransactionStatus::COMPLETED)
+                           ->whereStatus(TransactionStatus::AUTHORIZED)
+                //                           ->whereStatus(TransactionStatus::COMPLETED)
                            ->get()
                            ->tap(
                                function ($collection) {
