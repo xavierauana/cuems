@@ -23,6 +23,10 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link"
+					   href="{{route('events.sponsors.index', $event)}}">Sponsors</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link"
 					   href="{{route('events.transactions.index', $event)}}">Transactions</a>
 				</li>
 				<li class="nav-item">

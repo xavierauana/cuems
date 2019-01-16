@@ -14,7 +14,7 @@ class SystemEvent
     /**
      * @var int
      */
-    public $event;
+    public $systemEvent;
     /**
      * @var \Illuminate\Database\Eloquent\Model|null
      */
@@ -28,7 +28,7 @@ class SystemEvent
      */
     public function __construct(int $event, Model $model = null) {
         //
-        $this->event = $event;
+        $this->systemEvent = $event;
         $this->model = $model;
     }
 

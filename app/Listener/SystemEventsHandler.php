@@ -43,25 +43,34 @@ class SystemEventsHandler
     }
 
     private function getNotification(SystemEvent $event): Collection {
-        switch ($event->event) {
+
+        $e = $event->model->event;
+
+        if (is_null($e)) {
+            throw new \Exception("No event fetched!");
+        }
+
+        $query = Notification::whereEventId($e->id);
+
+        switch ($event->systemEvent) {
             case SystemEvents::CREATE_DELEGATE:
-                return Notification::whereEvent(SystemEvents::CREATE_DELEGATE)
-                                   ->get();
+                return $query->whereEvent(SystemEvents::CREATE_DELEGATE)
+                             ->get();
             case SystemEvents::ADMIN_CREATE_DELEGATE:
-                return Notification::whereEvent(SystemEvents::ADMIN_CREATE_DELEGATE)
-                                   ->get();
+                return $query->whereEvent(SystemEvents::ADMIN_CREATE_DELEGATE)
+                             ->get();
             case SystemEvents::TRANSACTION_COMPLETED:
-                return Notification::whereEvent(SystemEvents::TRANSACTION_COMPLETED)
-                                   ->get();
+                return $query->whereEvent(SystemEvents::TRANSACTION_COMPLETED)
+                             ->get();
             case SystemEvents::TRANSACTION_FAILED:
-                return Notification::whereEvent(SystemEvents::TRANSACTION_FAILED)
-                                   ->get();
+                return $query->whereEvent(SystemEvents::TRANSACTION_FAILED)
+                             ->get();
             case SystemEvents::TRANSACTION_PENDING:
-                return Notification::whereEvent(SystemEvents::TRANSACTION_PENDING)
-                                   ->get();
+                return $query->whereEvent(SystemEvents::TRANSACTION_PENDING)
+                             ->get();
             case SystemEvents::TRANSACTION_REFUND:
-                return Notification::whereEvent(SystemEvents::TRANSACTION_REFUND)
-                                   ->get();
+                return $query->whereEvent(SystemEvents::TRANSACTION_REFUND)
+                             ->get();
             default:
                 return new Collection();
         }

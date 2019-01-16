@@ -80,6 +80,9 @@ Route::group(
     // Tickets
     @include('routes/tickets.php');
 
+    // Sponsors
+    @include('routes/sponsors.php');
+
     // Transaction
     @include('routes/transactions.php');
 
