@@ -7,6 +7,7 @@ use App\Event;
 use App\Notification;
 use App\Services\CreateTicketService;
 use App\Transaction;
+use Illuminate\Support\Facades\Log;
 
 class NotificationMailable extends AbstractEventNotificationMail
 {
@@ -58,8 +59,10 @@ class NotificationMailable extends AbstractEventNotificationMail
             $this->notification->from_name)
              ->subject($this->notification->subject);
 
-        if ($this->notification->include_ticket) {
+        Log::info('going to check notification has ticket or not');
 
+        if ($this->notification->include_ticket) {
+            Log::info('notification has ticket');
             /** @var CreateTicketService $service */
             $service = app()->make(CreateTicketService::class)
                             ->setPageSize('a4')
@@ -74,6 +77,9 @@ class NotificationMailable extends AbstractEventNotificationMail
                 $service
             ) {
                 if ($data = $service->createPDF($transaction)) {
+
+                    Log::info('attached data to notification');
+
                     $this->attachData($data, "ticket.pdf", [
                         'mime' => "application/pdf"
                     ]);

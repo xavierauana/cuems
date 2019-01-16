@@ -36,7 +36,6 @@ abstract class AbstractEventNotificationMail extends Mailable
                 throw new \Exception("No implementation other than local drive");
             }
         });
-
     }
 }
 
