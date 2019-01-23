@@ -27,36 +27,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-//
-//Route::get('confirmation', function () {
-//
-//
-//    $delegate = \App\Delegate::first();
-//    return view('notifications.confirmation', compact('delegate'));
-//    $transaction = $delegate->transactions()->first();
-//
-//    //    return view('templates.ticket.ticket', compact('delegate', 'transaction'));
-//    /** @var \Barryvdh\DomPDF\PDF $pdf */
-//    //    $pdf = \PDF::loadView('notifications.confirmation', compact('delegate'));
-//
-//    $service = app()->make(CreateTicketService::class);
-//
-//    $result = $service->setPageSize('a4')->setOrientation('portrait')
-//                      ->createPDF($transaction);
-//
-//    return response($result, 200, [
-//        "Content-Type"        => "application/pdf",
-//        "Content-Disposition" => "inline; filename=\"filename.pdf\""
-//    ]);
-//    dd($result);
-//
-//    $html = view('notifications.confirmation', compact('delegate'))->render();
-//    $pdf->loadHTML($html)->setPaper('a4');
-//    dd($pdf);
-//
-//    return $pdf->stream('ticket.pdf');
-//
-//});
 
 Route::get('/', function (Request $request) {
     $id = $request->get('event');

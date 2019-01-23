@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\DelegatesController;
 use App\Http\Controllers\SessionsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,3 +22,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get("events/{event}/sessions",
     SessionsController::class . "@apiGetSessions");
+Route::get("events/{event}/delegates",
+    DelegatesController::class . "@getDelegates")->name('api.delegates');
