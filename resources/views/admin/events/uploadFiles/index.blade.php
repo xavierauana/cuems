@@ -1,5 +1,5 @@
 @component('admin._components.eventContainer', ['event'=>$event])
-	    <div class="row justify-content-center">
+	<div class="row justify-content-center">
 	        <div class="col-md-10">
                 @if (session('status'))
 			        <div class="alert alert-success" role="alert">
@@ -48,6 +48,9 @@
 		                                <td>{{$uploadFile->name}}</td>
                                         <td>
 	                                        {{Form::open(['url'=>route('events.uploadFiles.destroy',[$event,$uploadFile]),'method'=>"DELETE",'style'=>'display:inline','@submit.prevent'=>"confirmDelete"])}}
+	                                        <a class="btn btn-success text-light btn-sm"
+	                                           target="_blank"
+	                                           href="{{route('events.uploadFiles.show',[$event->id,$uploadFile->id ])}}">Preview</a>
 	                                        <button class="btn btn-danger btn-sm"
 	                                                type="submit">Delete</button>
 	                                        {{Form::close()}}

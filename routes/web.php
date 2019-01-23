@@ -133,7 +133,6 @@ Route::group(
         return response()->json(['path' => $path]);
 
     });
-
     Route::resource('events.uploadFiles',
         UploadFilesController::class);
 

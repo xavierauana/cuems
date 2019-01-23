@@ -94,7 +94,10 @@ class UploadFilesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Event $event, UploadFile $uploadFile) {
-        //
+        $path = storage_path("app/" . $uploadFile->path);
+
+
+        return response()->file($path);
     }
 
     /**
