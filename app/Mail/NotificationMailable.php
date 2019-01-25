@@ -59,6 +59,16 @@ class NotificationMailable extends AbstractEventNotificationMail
             $this->notification->from_name)
              ->subject($this->notification->subject);
 
+        if ($cc = $this->notification->cc) {
+            $this->cc($cc);
+        }
+
+
+        if ($bcc = $this->notification->bcc) {
+            $this->bcc($bcc);
+        }
+
+
         Log::info('going to check notification has ticket or not');
 
         if ($this->notification->include_ticket) {
@@ -83,10 +93,8 @@ class NotificationMailable extends AbstractEventNotificationMail
                 }
             };
 
-            // TODO: going to change the transaction status
             $this->delegate->transactions()
-                           ->whereStatus(TransactionStatus::AUTHORIZED)
-                //                           ->whereStatus(TransactionStatus::COMPLETED)
+                           ->whereStatus(TransactionStatus::COMPLETED)
                            ->get()
                            ->tap(
                                function ($collection) {

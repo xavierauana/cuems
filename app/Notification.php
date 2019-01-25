@@ -20,6 +20,8 @@ class Notification extends Model
         'schedule',
         'from_name',
         'from_email',
+        'cc',
+        'bcc',
         'subject',
         'include_ticket',
         'verified_only',
@@ -91,6 +93,8 @@ class Notification extends Model
             'verified_only'      => "nullable|boolean",
             'include_duplicated' => "nullable|boolean",
             'include_ticket'     => "nullable|boolean",
+            'cc'                 => "nullable|email",
+            'bcc'                => "nullable|email",
             'files'              => "nullable",
             'files.*'            => "exists:upload_files,id",
         ];

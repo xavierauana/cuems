@@ -29,6 +29,7 @@ const app = new Vue({
                         isTraineeTicket: false
                       },
                       mounted() {
+                        $('div#other_position_container').hide()
                         $('.select2').select2();
                         $('.select2-tag').select2({
                                                     tags: true
@@ -43,6 +44,18 @@ const app = new Vue({
                             $('input[name=other_institution]').attr('require', false)
                           }
                         })
+
+                        $('select[name="position"]').on('change', function (e) {
+                          const val = e.target.value,
+                                $el = $('div#other_position_container')
+
+                          if (val === "Others") {
+                            $el.show()
+                          } else {
+                            $el.hide()
+                          }
+                        })
+
 
                       },
                       methods   : {

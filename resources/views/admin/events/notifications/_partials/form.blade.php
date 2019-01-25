@@ -37,10 +37,28 @@
 </div>
 <div class="form-group">
     {!!  Form::label('from_email', 'From Email'); !!}
-	{!!  Form::text('from_email',null,['class'=>'form-control']); !!}
+	{!!  Form::email('from_email',null,['class'=>'form-control']); !!}
 	@if ($errors->has('from_email'))
 		<span class="invalid-feedback" role="alert">
             <strong>{{ $errors->first('from_email') }}</strong>
+        </span>
+	@endif
+</div>
+<div class="form-group">
+    {!!  Form::label('cc', 'CC'); !!}
+	{!!  Form::email('cc',null,['class'=>'form-control']); !!}
+	@if ($errors->has('cc'))
+		<span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('cc') }}</strong>
+        </span>
+	@endif
+</div>
+<div class="form-group">
+    {!!  Form::label('bcc', 'BCC'); !!}
+	{!!  Form::email('bcc',null,['class'=>'form-control']); !!}
+	@if ($errors->has('bcc'))
+		<span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('bcc') }}</strong>
         </span>
 	@endif
 </div>

@@ -7,6 +7,7 @@ use App\Event;
 use App\Http\Requests\NotificationStoreRequest;
 use App\Http\Requests\NotificationUpdateRequest;
 use App\Notification;
+use App\Services\TestNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -159,6 +160,7 @@ class NotificationsController extends Controller
      * @param \Illuminate\Http\Request $request
      * @param \App\Event               $event
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function postImport(Request $request, Event $event
     ): RedirectResponse {
@@ -190,6 +192,49 @@ class NotificationsController extends Controller
     }
 
     /**
+     * @param \App\Event                            $event
+     * @param \App\Notification                     $notification
+     * @param \App\Services\TestNotificationService $service
+     * @param \Illuminate\Http\Request              $request
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Exception
+     */
+    public function test(
+        Event $event,
+        TestNotificationService $service,
+        Request $request
+    ) {
+
+        $this->validate($request, [
+            'email'           => 'required|email',
+            'notification_id' => 'required|exists:notifications,id',
+        ]);
+
+        /** @var \App\Notification $notification */
+        $notification = $event->notifications()
+                              ->findOrFail($request->get('notification_id'));
+
+        $service = $service->setNotification($notification)
+                           ->setTestEmail($request->get('email'));
+
+        switch ($notification->event) {
+            case SystemEvents::ADMIN_CREATE_DELEGATE;
+            case SystemEvents::CREATE_DELEGATE:
+                $service->testDelegate();
+                break;
+            case SystemEvents::TRANSACTION_COMPLETED;
+            case SystemEvents::TRANSACTION_FAILED;
+            case SystemEvents::TRANSACTION_PENDING;
+            case SystemEvents::TRANSACTION_REFUND:
+                $service->testTransaction();
+                break;
+        }
+
+        return redirect()->back()->withStatus('Test notification sent!');
+
+    }
+
+    /**
      * @return array
      */
     private function getFormattedEvents(): array {
@@ -210,5 +255,6 @@ class NotificationsController extends Controller
 
         return $events;
     }
+
 
 }

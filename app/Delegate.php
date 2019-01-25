@@ -21,7 +21,6 @@ class Delegate extends Model
         'institution',
     ];
 
-
     protected $fillable = [
         'prefix',
         'first_name',

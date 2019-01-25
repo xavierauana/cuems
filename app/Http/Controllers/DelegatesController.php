@@ -21,7 +21,6 @@ use App\Transaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DelegatesController extends Controller
@@ -106,9 +105,7 @@ class DelegatesController extends Controller
         $validatedData = $this->validate($request, $rules);
 
         $newDelegate = $service->adminCreate($event, $validatedData);
-
-        Log::info('fire event: ' . $newDelegate->name);
-
+        
         event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
             $newDelegate));
 
