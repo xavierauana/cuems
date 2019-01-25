@@ -1,16 +1,15 @@
 @component('admin._components.eventContainer', ['event'=>$event])
-	<div class="row justify-content-center">
-        <div class="col">
-         @include("admin._partials.alert")
-	        <div class="card">
-		        <div class="card-header">Duplicated delegates for Event: {{$event->title}}
-			        <a href="{{route('events.delegates.export', [$event,'duplicated'=>true])}}"
-			           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
-                </div>
-                
+	<div class="row">
+			<div class="col">
+				@include("admin._partials.alert")
+				<div class="card">
+			        <div class="card-header">Duplicated delegates for Event: {{$event->title}}
+				        <a href="{{route('events.delegates.export', [$event,'duplicated'=>true])}}"
+				           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
+	                </div>
                 <div class="table-responsive">
                   <table class="table">
-                    <thead>
+	                  <thead>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Mobile</th>
@@ -55,7 +54,7 @@
                   </table>
                 </div>
             </div>
-        </div>
+		</div>
     </div>
 	
 	@push('scripts')

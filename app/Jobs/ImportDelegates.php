@@ -76,7 +76,7 @@ class ImportDelegates implements ShouldQueue
         $this->conversion();
 
         $this->collection->filter(function ($item) use ($rules) {
-            return !!$this->validateData($item, $rules);
+            return !!$this->isDataValid($item, $rules);
         })
                          ->each(function ($data) use ($service) {
 
@@ -91,14 +91,14 @@ class ImportDelegates implements ShouldQueue
 
     }
 
-    private function validateData(array $data, array $rules): ?array {
+    /**
+     * @param array $data
+     * @param array $rules
+     * @return bool
+     */
+    private function isDataValid(array $data, array $rules): bool {
 
-        $validator = Validator::make($data, $rules);
-        if ($validator->passes()) {
-            return $validator->validate();
-        }
-
-        return null;
+        return Validator::make($data, $rules)->passes();
     }
 
     /**

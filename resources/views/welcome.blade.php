@@ -60,7 +60,7 @@
         
         <div>{!! setting($event, "privacy") !!}</div>
         
-        <button class="btn btn-primary">Pay Ticket</button>
+        <button class="btn btn-primary">Submit</button>
 	
 	        {{Form::close()}}
         </div>

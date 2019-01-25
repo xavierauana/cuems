@@ -1,7 +1,7 @@
 @component('admin._components.eventContainer', ['event'=>$event])
 	<div class="row justify-content-center">
         <div class="col">
-         @include("admin._partials.alert")
+	         @include("admin._partials.alert")
 	        <div class="card">
 		        <div class="card-header">Delegates for Event: {{$event->title}}
 			        <a href="{{route('events.delegates.create', $event)}}"
@@ -15,8 +15,8 @@
 			           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
 			        <a href="{{route('events.delegates.duplicates', $event)}}"
 			           class="btn btn-sm btn-warning pull-right mr-1">Duplicates</a>
-                </div>
-                
+	            </div>
+	            
 		        <div class="card-body">
 			        <div class="row">
 				        <div class="col-6">
@@ -32,37 +32,35 @@
 								        </div>
 							        </div>
 					        </form>
-					      
-					        
 				        </div>
 			        </div>
 		        </div>
-                <div class="table-responsive">
-                  <table class="table">
-                    <thead>
-                        <th>
+	            <div class="table-responsive">
+	              <table class="table">
+	                <thead>
+	                    <th>
 	                        <a href="{{request()->url()."?registration_id=".((request()->has('registration_id') and request()->query('registration_id') === 'asc')?"desc":"asc")}}">
 	                        Registration ID
 	                        </a>
-                        </th>
-                        <th>
+	                    </th>
+	                    <th>
 	                        <a href="{{request()->url()."?first_name=".((request()->has('first_name') and request()->query('first_name') === 'asc')?"desc":"asc")}}">
 	                        Name
 	                        </a>
-                        </th>
-                        <th>
+	                    </th>
+	                    <th>
 	                        <a href="{{request()->url()."?last_name=".((request()->has('last_name') and request()->query('last_name') === 'asc')?"desc":"asc")}}">
 		                        Email
 	                        </a>
-                        </th>
-                        <th>
+	                    </th>
+	                    <th>
 	                        <a href="{{request()->url()."?institution=".((request()->has('institution') and request()->query('institution') === 'asc')?"desc":"asc")}}">
 		                        Institution
 	                        </a>
-                        </th>
-                        <th>Role</th>
-                        <th>Actions</th>
-                    </thead>
+	                    </th>
+	                    <th>Role</th>
+	                    <th>Actions</th>
+	                </thead>
 	                  <tbody>
 	                  @foreach($delegates as $delegate)
 		                  <tr>
@@ -95,13 +93,14 @@
 		                  </tr>
 	                  @endforeach
 	                  </tbody>
-                  </table>
+	              </table>
 	                <div class="col">
-		            {!! $delegates->links() !!}
+		               
+		            {!! $delegates->appends(request()->query())->links() !!}
 	                </div>
 	                
-                </div>
-            </div>
+	            </div>
+	        </div>
         </div>
     </div>
 	

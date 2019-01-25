@@ -16,7 +16,10 @@ $status = array_flip((new \ReflectionClass(\App\Enums\TransactionStatus::class))
 					        <div class="input-group mb-3">
 							  <input type="text" class="form-control"
 							         name="keyword"
-							         placeholder="Keyword" aria-label="Keyword">
+							         placeholder="Keyword"
+							         aria-label="Keyword"
+							         value="{{request()->query('keyword')}}"
+							  >
 							  <div class="input-group-append">
 							    <button class="btn btn-outline-secondary"
 							            type="submit">Search</button>
@@ -81,7 +84,7 @@ $status = array_flip((new \ReflectionClass(\App\Enums\TransactionStatus::class))
 	                  @endforeach
 	                  </tbody>
                   </table>
-	                {{$transactions->links()}}
+	                {{$transactions->appends(request()->query())->links()}}
                 </div>
             </div>
         </div>

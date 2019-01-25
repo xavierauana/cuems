@@ -4,10 +4,12 @@ namespace App\Listener;
 
 use App\Delegate;
 use App\Enums\SystemEvents;
+use App\Event;
 use App\Events\SystemEvent;
 use App\Jobs\SendNotification;
 use App\Notification;
 use App\Transaction;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class SystemEventsHandler
@@ -42,9 +44,14 @@ class SystemEventsHandler
 
     }
 
+    /**
+     * @param \App\Events\SystemEvent $event
+     * @return \Illuminate\Support\Collection
+     * @throws \Exception
+     */
     private function getNotification(SystemEvent $event): Collection {
 
-        $e = $event->model->event;
+        $e = $this->getEvent($event);
 
         if (is_null($e)) {
             throw new \Exception("No event fetched!");
@@ -52,28 +59,7 @@ class SystemEventsHandler
 
         $query = Notification::whereEventId($e->id);
 
-        switch ($event->systemEvent) {
-            case SystemEvents::CREATE_DELEGATE:
-                return $query->whereEvent(SystemEvents::CREATE_DELEGATE)
-                             ->get();
-            case SystemEvents::ADMIN_CREATE_DELEGATE:
-                return $query->whereEvent(SystemEvents::ADMIN_CREATE_DELEGATE)
-                             ->get();
-            case SystemEvents::TRANSACTION_COMPLETED:
-                return $query->whereEvent(SystemEvents::TRANSACTION_COMPLETED)
-                             ->get();
-            case SystemEvents::TRANSACTION_FAILED:
-                return $query->whereEvent(SystemEvents::TRANSACTION_FAILED)
-                             ->get();
-            case SystemEvents::TRANSACTION_PENDING:
-                return $query->whereEvent(SystemEvents::TRANSACTION_PENDING)
-                             ->get();
-            case SystemEvents::TRANSACTION_REFUND:
-                return $query->whereEvent(SystemEvents::TRANSACTION_REFUND)
-                             ->get();
-            default:
-                return new Collection();
-        }
+        return $this->constructNotificationQuery($event, $query)->get();
 
     }
 
@@ -114,6 +100,61 @@ class SystemEventsHandler
         } elseif ($this->transactionPayeeHasRole($event, $role)) {
             dispatch(new SendNotification($notification,
                 $event->model));
+        }
+    }
+
+    /**
+     * @param \App\Events\SystemEvent $event
+     * @param                         $query
+     * @return mixed
+     * @throws \Exception
+     */
+    private function constructNotificationQuery(SystemEvent $event, $query
+    ): Builder {
+        switch ($event->systemEvent) {
+            case SystemEvents::CREATE_DELEGATE:
+                $query = $query->whereEvent(SystemEvents::CREATE_DELEGATE);
+                break;
+            case SystemEvents::ADMIN_CREATE_DELEGATE:
+                $query = $query->whereEvent(SystemEvents::ADMIN_CREATE_DELEGATE);
+                break;
+            case SystemEvents::TRANSACTION_COMPLETED:
+                $query = $query->whereEvent(SystemEvents::TRANSACTION_COMPLETED);
+                break;
+            case SystemEvents::TRANSACTION_FAILED:
+                $query = $query->whereEvent(SystemEvents::TRANSACTION_FAILED);
+                break;
+            case SystemEvents::TRANSACTION_PENDING:
+                $query = $query->whereEvent(SystemEvents::TRANSACTION_PENDING);
+                break;
+            case SystemEvents::TRANSACTION_REFUND:
+                $query = $query->whereEvent(SystemEvents::TRANSACTION_REFUND);
+                break;
+            default:
+                throw new \Exception("Invalided system event!");
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param \App\Events\SystemEvent $event
+     * @return mixed
+     * @throws \Exception
+     */
+    private function getEvent(SystemEvent $event): Event {
+
+        switch (get_class($event->model)) {
+            case Delegate::class:
+                return $event->model->event;
+            case Transaction::class:
+                $payee = $event->model->payee;
+                if ($payee instanceof Delegate) {
+                    return $payee->event;
+                }
+                throw new \Exception("System event model is not valid");
+            default:
+                throw new \Exception("System event model is not valid");
         }
     }
 }

@@ -143,6 +143,9 @@ class TransactionController extends Controller
         if (in_array('keyword', array_keys($queries))) {
             unset($queries['keyword']);
         }
+        if (in_array('page', array_keys($queries))) {
+            unset($queries['page']);
+        }
         foreach ($queries as $key => $oder) {
             $query = $query->orderBy('transactions.' . $key, $oder);
         }

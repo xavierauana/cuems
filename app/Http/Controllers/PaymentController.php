@@ -123,14 +123,16 @@ class PaymentController extends Controller
             event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
                 $newDelegate));
 
-            return redirect(url("/?event=" . $event->id))->withAlert("Thank you. You payment have been confirmed.");
+            return redirect(url("/?event=" . $event->id))->withAlert(setting($event,
+                'payment_successful_msg'));
         }
 
         $record->update([
             'status' => 'failed'
         ]);
 
-        return redirect(url("/?event=" . $event->id))->withAlert("Something wrong. Please try again.");
+        return redirect(url("/?event=" . $event->id))->withAlert(setting($event,
+            'payment_failed_msg'));
 
     }
 
