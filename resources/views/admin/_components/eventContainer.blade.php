@@ -31,6 +31,10 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link"
+					   href="{{route('events.payment_records.index', $event)}}">Payment Records</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link"
 					   href="{{route('events.notifications.index', $event)}}">Notifications</a>
 				</li>
 				<li class="nav-item">

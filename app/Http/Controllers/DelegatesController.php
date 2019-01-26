@@ -16,6 +16,7 @@ use App\Imports\DelegatesImport;
 use App\Imports\NewDelegateImport;
 use App\Jobs\ImportDelegates;
 use App\Jobs\UpdateNewDelegates;
+use App\PaymentRecord;
 use App\Services\DelegateCreationService;
 use App\Transaction;
 use Illuminate\Http\RedirectResponse;
@@ -104,8 +105,13 @@ class DelegatesController extends Controller
 
         $validatedData = $this->validate($request, $rules);
 
-        $newDelegate = $service->adminCreate($event, $validatedData);
-        
+        if ($recordId = $request->query('conversion') and $record = PaymentRecord::findOrFail($recordId)) {
+            $newDelegate = $service->adminCreateWithFailedTransaction($event,
+                $validatedData, $record);
+        } else {
+            $newDelegate = $service->adminCreate($event, $validatedData);
+        }
+
         event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
             $newDelegate));
 

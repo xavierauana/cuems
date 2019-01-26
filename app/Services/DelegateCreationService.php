@@ -60,8 +60,9 @@ class DelegateCreationService
 
         try {
 
-            $newDelegate = $this->baseCreate($event, $data, $code,
-                $transactionData);
+            $newDelegate = $this->baseCreate($event, $data, $code);
+
+            $this->createDelegateTransaction($newDelegate, $transactionData);
 
             $this->createDelegateSponsor($data, $newDelegate);
 
@@ -186,8 +187,9 @@ class DelegateCreationService
         try {
 
 
-            $delegate = $this->baseCreate($event, $data, null,
-                $transactionData);
+            $delegate = $this->baseCreate($event, $data, null);
+
+            $this->createDelegateTransaction($delegate, $transactionData);
 
             $this->checkDuplicated($event, $delegate);
 
@@ -292,17 +294,12 @@ class DelegateCreationService
      * @return \App\Delegate
      */
     private function baseCreate(
-        Event $event, array $data, string $roleCode = null,
-        array $transactionData
+        Event $event, array $data, string $roleCode = null
     ): Delegate {
 
         $newDelegate = $this->createDelegate($event, $data);
 
         $this->assignRoleToDelegate($newDelegate, $roleCode);
-
-        $this->createDelegateTransaction($newDelegate, $transactionData);
-
-        DB::commit();
 
         return $newDelegate;
 
@@ -334,5 +331,48 @@ class DelegateCreationService
     private function markDelegateIsVerified(Delegate $newDelegate) {
         $newDelegate->is_verified = true;
         $newDelegate->save();
+    }
+
+    public function adminCreateWithFailedTransaction(
+        Event $event, array $data, PaymentRecord $record
+    ) {
+
+        $data = $this->addRegistrationId($event, $data);
+
+
+        $transactionData = [
+            'status'    => $data['status'],
+            'ticket_id' => $data['ticket_id'],
+            'note'      => $data['note'] ?? "",
+        ];
+
+        $code = ($data['role'] ?? null);
+
+        DB::beginTransaction();
+
+        try {
+
+            $newDelegate = $this->baseCreate($event, $data, $code);
+
+            $this->createDelegateTransaction($newDelegate, $transactionData);
+
+            $this->createDelegateSponsor($data, $newDelegate);
+
+            $this->recordAdminActivity($newDelegate);
+
+            $this->markDelegateIsVerified($newDelegate);
+
+            $record->conversion()->updateOrCreate([], [
+                'status' => 'converted'
+            ]);
+
+            DB::commit();
+
+            return $newDelegate;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
     }
 }

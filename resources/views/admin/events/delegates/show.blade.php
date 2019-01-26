@@ -49,6 +49,9 @@
 					        <div class="col-md-4"><strong>Transaction Status: </strong> {{array_flip(\App\Enums\TransactionStatus::getStatus())[$delegate->transactions()->first()->status]  }}</div>
 					        <div class="col-md-4"><strong>Role: </strong> {{$delegate->roles->first()->label}}</div>
 				        </div>
+				        <div class="row">
+					        <div class="col"><strong>Note</strong> {{$delegate->transactions()->first()->note}}</div>
+				        </div>
 			        </section>
 			        
 			        <section>

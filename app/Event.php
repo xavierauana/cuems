@@ -70,6 +70,10 @@ class Event extends Model
         return $this->hasMany(UploadFile::class);
     }
 
+    public function paymentRecords(): Relation {
+        return $this->hasMany(PaymentRecord::class);
+    }
+
     // Helpers
 
     public function getTotalExpense(): float {

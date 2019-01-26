@@ -7,7 +7,7 @@
                 
                 <div class="card-body">
 	                
-	                {{Form::open(['route' => ["events.delegates.store", $event],'method'=>"POST", 'id'=>"payment-form"])}}
+	                {{Form::open(['url' => route("events.delegates.store", [$event->id,'conversion'=>request()->query('conversion')]) ,'method'=>"POST", 'id'=>"payment-form"])}}
 	
 	                @include("_components.registration_form_basic_section")
 	

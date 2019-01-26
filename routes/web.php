@@ -17,6 +17,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DelegateRolesController;
 use App\Http\Controllers\InstitutionsController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentRecordsController;
 use App\Http\Controllers\PositionsController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\SettingsControllers;
@@ -135,5 +136,16 @@ Route::group(
     });
     Route::resource('events.uploadFiles',
         UploadFilesController::class);
+
+    //Payment Records
+    Route::get('events/{event}/paymentRecords',
+        PaymentRecordsController::class . "@index")
+         ->name('events.payment_records.index');
+    Route::get('events/{event}/paymentRecords/{record}',
+        PaymentRecordsController::class . "@show")
+         ->name('events.payment_records.show');
+    Route::get('events/{event}/paymentRecords/{record}/convert',
+        PaymentRecordsController::class . "@convert")
+         ->name('events.payment_records.convert');
 
 });

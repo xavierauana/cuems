@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -34,5 +35,19 @@ class PaymentRecord extends Model
 
     public function getFormDataAttribute($value) {
         return decrypt($value);
+    }
+
+    // Scope
+    public function scopeFailed(Builder $q): Builder {
+        return $q->whereStatus('failed');
+    }
+
+    public function conversion(): Relation {
+        return $this->hasOne(PaymentRecordConversion::class);
+    }
+
+    // Accessor
+    public function getEmailAttribute(): ?string {
+        return json_decode($this->form_data, true)['email'] ?? null;
     }
 }
