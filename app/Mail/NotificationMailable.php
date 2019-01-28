@@ -88,6 +88,7 @@ class NotificationMailable extends AbstractEventNotificationMail
                     Log::info('attached data to notification');
 
                     $this->attachData($data, "ticket.pdf", [
+                        'as'   => $this->delegate->getRegistrationId() . ".pdf",
                         'mime' => "application/pdf"
                     ]);
                 }
