@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+<?php
+$delegate = isset($delegate) ? $delegate : $transaction->payee
+?>
+		
+		<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
 	<style>
