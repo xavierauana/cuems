@@ -14,6 +14,5 @@ $factory->define(App\Ticket::class, function (Faker $faker) {
         'code'     => $faker->uuid,
         'start_at' => $startAt,
         'end_at'   => $endAt,
-        'event_id' => factory(\App\Event::class)->create()->id
     ];
 });
