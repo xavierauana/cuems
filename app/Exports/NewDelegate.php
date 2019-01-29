@@ -51,6 +51,12 @@ class NewDelegate implements FromCollection, WithHeadings, WithMapping
      * @return array
      */
     public function map($delegate): array {
+        try {
+            $name = $delegate->transactions()->first()->ticket->name;
+        } catch (\Exception $e) {
+            dd($delegate);
+        }
+
         return [
             $delegate->id,
             $delegate->first_name,
@@ -62,7 +68,7 @@ class NewDelegate implements FromCollection, WithHeadings, WithMapping
             ) {
                 return $carry . $role->label . ", ";
             }, ""),
-            $delegate->transactions()->first()->ticket->name,
+            $name,
             $this->transactionStatus[$delegate->transactions->first()->status],
             $delegate->transactions->first()->charge_id,
             $delegate->is_duplicated,
