@@ -14,7 +14,9 @@ class ApiDelegateResource extends JsonResource
      */
     public function toArray($request) {
         return [
-            'name' => $this->name
+            'title'   => $this->prefix,
+            'name'    => $this->first_name . " " . $this->last_name,
+            'country' => $this->country
         ];
     }
 }
