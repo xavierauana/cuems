@@ -62,7 +62,7 @@ class NewDelegate implements FromCollection, WithHeadings, WithMapping
             ) {
                 return $carry . $role->label . ", ";
             }, ""),
-            $delegate->transactions->first()->ticket->name,
+            $delegate->transactions()->first()->ticket->name,
             $this->transactionStatus[$delegate->transactions->first()->status],
             $delegate->transactions->first()->charge_id,
             $delegate->is_duplicated,
