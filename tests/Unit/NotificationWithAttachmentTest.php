@@ -6,6 +6,7 @@ use App\Delegate;
 use App\Event;
 use App\Mail\TransactionMail;
 use App\Notification;
+use App\Ticket;
 use App\Transaction;
 use App\UploadFile;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -30,15 +31,20 @@ class NotificationWithAttachmentTest extends MailCatcherTestCase
      */
     public function notification_has_attachment() {
         $event = factory(Event::class)->create();
+        $ticket = factory(Ticket::class)->create([
+            'event_id' => $event->id
+        ]);
         $delegate = factory(Delegate::class)->create([
             'event_id' => $event->id
         ]);
         $transaction = factory(Transaction::class)->create([
             'payee_type' => get_class($delegate),
             'payee_id'   => $delegate->id,
+            'ticket_id'  => $ticket->id
         ]);
         $notification = factory(Notification::class)->create([
-            'template' => 'test_transaction'
+            'template' => 'test_transaction',
+            'event_id' => $event->id,
         ]);
         $filename = "CROSS入庫通知書.pdf";
         $file = factory(UploadFile::class)->create([

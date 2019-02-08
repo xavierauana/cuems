@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+/**
+ * @method static findOrFail($refId)
+ */
 class PaymentRecord extends Model
 {
     use LogsActivity;

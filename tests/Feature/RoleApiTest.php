@@ -34,9 +34,19 @@ class RoleApiTest extends TestCase
         $response = $this->json('GET',
             route('api.delegates', $this->event->id));
 
-        $response->assertJson([
-            'data' => []
-        ]);
+        $this->assertEquals("", $response->content());
+
+    }
+
+    /**
+     * @test
+     */
+    public function get_default_with_empty_result() {
+        $response = $this->json('GET',
+            route('api.delegates', [$this->event->id,'role'=>'default']));
+
+        $this->assertEquals("", $response->content());
+
     }
 
     /**
@@ -132,6 +142,11 @@ class RoleApiTest extends TestCase
      * @return array
      */
     private function getJsonData($delegate): array {
-        return ['name' => $delegate->name];
+        return [
+            'title'      => $delegate->prefix,
+            'surname'    => $delegate->first_name,
+            'given_name' => $delegate->last_name,
+            'country'    => $delegate->country
+        ];
     }
 }

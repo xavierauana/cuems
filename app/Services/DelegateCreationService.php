@@ -11,11 +11,15 @@ namespace App\Services;
 use App\Contracts\DuplicateCheckerInterface;
 use App\Delegate;
 use App\DelegateRole;
+use App\Entities\ChargeResponse;
 use App\Enums\DelegateDuplicationStatus;
 use App\Enums\PaymentRecordStatus;
 use App\Enums\TransactionStatus;
 use App\Event;
 use App\PaymentRecord;
+use App\TransactionType;
+use App\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DelegateCreationService
@@ -35,10 +39,12 @@ class DelegateCreationService
      * @param \App\Contracts\DuplicateCheckerInterface $checker
      */
     public function __construct(
-        DelegateRole $role, DuplicateCheckerInterface $checker
+        DelegateRole $role, DuplicateCheckerInterface $checker,
+        User $user = null
     ) {
+
         $this->role = $role;
-        $this->user = request()->user();
+        $this->user = $user ?? Auth::user();
         $this->checker = $checker;
     }
 
@@ -49,9 +55,10 @@ class DelegateCreationService
         $data = $this->addRegistrationId($event, $data);
 
         $transactionData = [
-            'status'    => $data['status'],
-            'ticket_id' => $data['ticket_id'],
-            'note'      => $data['note'] ?? "",
+            'status'              => $data['status'],
+            'ticket_id'           => $data['ticket_id'],
+            'note'                => $data['note'] ?? "",
+            'transaction_type_id' => $data['transaction_type_id'] ?? null,
         ];
 
         $code = ($data['role'] ?? null);
@@ -79,16 +86,14 @@ class DelegateCreationService
         }
     }
 
-    public function adminImport(
-        Event $event, array $data, bool $checkDuplicate = false
-    ): Delegate {
-
+    public function adminImport(Event $event, array $data): Delegate {
         $data = $this->addRegistrationId($event, $data);
 
         $transactionData = [
-            'status'    => $data['status'],
-            'ticket_id' => $data['ticket_id'],
-            'note'      => $data['note'] ?? "",
+            'status'              => $data['status'],
+            'ticket_id'           => $data['ticket_id'],
+            'note'                => $data['note'] ?? "",
+            'transaction_type_id' => $data['transaction_type_id'],
         ];
 
         $code = ($data['role'] ?? null);
@@ -101,6 +106,8 @@ class DelegateCreationService
                 $transactionData);
 
             $this->createDelegateSponsor($data, $newDelegate);
+
+            $this->createDelegateTransaction($newDelegate, $transactionData);
 
             $this->recordAdminActivity($newDelegate);
 
@@ -168,20 +175,21 @@ class DelegateCreationService
     }
 
     public function selfCreate(
-        Event $event, array $data, $chargeResponse, string $refId
+        Event $event, array $data, ChargeResponse $chargeResponse,
+        PaymentRecord $record
     ): Delegate {
 
         $data = $this->addRegistrationId($event, $data);
 
         $transactionData = [
-            'charge_id'  => $chargeResponse->chargeID,
-            'card_brand' => $chargeResponse->brand,
-            'last_4'     => $chargeResponse->last4,
-            'ticket_id'  => $data['ticket_id'],
-            'status'     => TransactionStatus::AUTHORIZED,
+            'charge_id'           => $chargeResponse->chargeID,
+            'card_brand'          => $chargeResponse->brand,
+            'last_4'              => $chargeResponse->last4,
+            'ticket_id'           => $data['ticket_id'],
+            'status'              => TransactionStatus::AUTHORIZED,
+            'transaction_type_id' => TransactionType::whereLabel('Credit Card')
+                                                    ->first()->id,
         ];
-
-
         DB::beginTransaction();
 
         try {
@@ -193,8 +201,8 @@ class DelegateCreationService
 
             $this->checkDuplicated($event, $delegate);
 
-            PaymentRecord::findOrFail($refId)
-                         ->update(['status' => PaymentRecordStatus::AUTHORIZED]);
+            $record->update(['status' => PaymentRecordStatus::AUTHORIZED]);
+
 
             DB::commit();
 
@@ -210,7 +218,6 @@ class DelegateCreationService
     public function checkDuplicated(Event $event, Delegate $newDelegate): void {
 
         $this->checker = $this->checker->setEvent($event);
-
 
         $emailDuplicated = $this->checker->find('email', $newDelegate->email);
         $mobileDuplicated = $this->checker->find('email', $newDelegate->email);

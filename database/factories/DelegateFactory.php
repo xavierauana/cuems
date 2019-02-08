@@ -20,5 +20,9 @@ $factory->define(App\Delegate::class, function (Faker $faker) {
         'country'         => $faker->country,
         'registration_id' => (DB::table("delegates")
                                 ->max('registration_id') ?? 0) + 1,
+
+        'event_id' => function () {
+            return factory(\App\Event::class)->create()->id;
+        }
     ];
 });

@@ -89,19 +89,17 @@ class DelegatesController extends Controller
      *
      * @param \App\Event                            $event
      * @param  \Illuminate\Http\Request             $request
-     * @param \App\Transaction                      $transaction
      * @param \App\Services\DelegateCreationService $service
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Illuminate\Validation\ValidationException
      * @throws \ReflectionException
      */
     public function store(
-        Event $event, Request $request, Transaction $transaction,
+        Event $event, Request $request,
         DelegateCreationService $service
     ): RedirectResponse {
 
-        $rules = array_merge($this->repo->getStoreRules(),
-            $transaction->getRules());
+        $rules = $this->getStoreValidationRules();
 
         $validatedData = $this->validate($request, $rules);
 
@@ -401,5 +399,15 @@ class DelegatesController extends Controller
 
     public function template() {
         return response()->download(storage_path('app/templates/delegates_template.xlsx'));
+    }
+
+    /**
+     * @param \App\Transaction $transaction
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function getStoreValidationRules(): array {
+        return array_merge($this->repo->getStoreRules(),
+            (new Transaction)->getRules());
     }
 }

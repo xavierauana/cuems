@@ -106,6 +106,17 @@
             </div>
         </div>
         <div class="form-group row">
+            <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Transaction Status:</label>
+            <div class="col-sm-6 col-md-8  col-lg-9">
+                {{Form::select('transaction_type_id',\App\TransactionType::pluck('label','id'), null, ['class'=>'form-control'])}}
+	            @if ($errors->has('transaction_type_id'))
+		            <span class="invalid-feedback" role="alert">
+                        <strong>{{ $errors->first('transaction_type_id') }}</strong>
+                    </span>
+	            @endif
+            </div>
+        </div>
+        <div class="form-group row">
             <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Note:</label>
             <div class="col-sm-6 col-md-8  col-lg-9">
                 {{Form::textarea('note', null, ['class'=>'form-control'])}}

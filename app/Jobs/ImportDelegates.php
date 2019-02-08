@@ -11,6 +11,7 @@ use App\Events\SystemEvent;
 use App\Services\DelegateCreationService;
 use App\Ticket;
 use App\Transaction;
+use App\TransactionType;
 use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -82,11 +83,12 @@ class ImportDelegates implements ShouldQueue
 
                              $newDelegate = $service->adminImport($this->event,
                                  $data, true);
+                             if ($newDelegate) {
+                                 Log::info('fire event: ' . $newDelegate->name);
 
-                             Log::info('fire event: ' . $newDelegate->name);
-
-                             event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
-                                 $newDelegate));
+                                 event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
+                                     $newDelegate));
+                             }
                          });
 
     }
@@ -125,49 +127,49 @@ class ImportDelegates implements ShouldQueue
     private function conversion() {
 
         $this->collection = $this->collection
-            ->map(function ($item) {
-                $data = $item->toArray();
+            ->map->toArray()
+                 ->map(function ($data) {
+                     return $this->dataMapping($data);
+                 });
+    }
 
-                return $data;
-            })
-            ->map(function ($data) {
+    private function dataMapping(array $data): array {
+        $new = [];
+        $new['prefix'] = $data['title'] ?? null;
+        $new['first_name'] = $data['given_name'] ?? null;
+        $new['last_name'] = $data['surname'] ?? null;
+        $new['is_male'] = strtolower($data['gender'] ?? "") == 'male';
+        $new['position'] = $data['position'] ?? null;
+        $new['department'] = $data['department'] ?? null;
+        $new['institution'] = $data['institution_hospital'] ?? null;
+        $new['address_1'] = $data['address_line_1'] ?? null;
+        $new['address_2'] = $data['address_line_2'] ?? null;
+        $new['address_3'] = $data['address_line_3'] ?? null;
+        $new['country'] = $data['country'] ?? null;
+        $new['email'] = $data['email'] ?? null;
+        $new['mobile'] = $data['tel'] ?? null;
+        $new['fax'] = $data['fax'] ?? null;
 
-                $new = [];
-                $new['prefix'] = $data['title'] ?? null;
-                $new['first_name'] = $data['given_name'] ?? null;
-                $new['last_name'] = $data['surname'] ?? null;
-                $new['is_male'] = strtolower($data['gender'] ?? "") == 'male';
-                $new['position'] = $data['position'] ?? null;
-                $new['department'] = $data['department'] ?? null;
-                $new['institution'] = $data['institution_hospital'] ?? null;
-                $new['address_1'] = $data['address_line_1'] ?? null;
-                $new['address_2'] = $data['address_line_2'] ?? null;
-                $new['address_3'] = $data['address_line_3'] ?? null;
-                $new['country'] = $data['country'] ?? null;
-                $new['email'] = $data['email'] ?? null;
-                $new['mobile'] = $data['tel'] ?? null;
-                $new['fax'] = $data['fax'] ?? null;
+        $states = array_keys(TransactionStatus::getStatus());
+        $new['status'] = in_array($data['transaction_status'] ?? "",
+            $states) ? (TransactionStatus::getStatus())[$data['transaction_status']] : "";
+        $new['role'] = optional(DelegateRole::whereCode(strtolower($data['role'] ?? ""))
+                                            ->first())->code;
+        $new['ticket_id'] = optional(Ticket::whereEventId($this->event->id)
+                                           ->whereCode($data['ticket_code'] ?? "")
+                                           ->first())->id;
+        $new['transaction_type_id'] = $data['transaction_type'] ? optional(TransactionType::whereLabel($data['transaction_type'])
+                                                                                          ->first())->id : null;
+        if ($data['sponsor_company'] ?? null) {
+            $new['sponsor']['sponsor_id'] = optional($this->event->sponsors()
+                                                                 ->firstOrCreate(['name' => $data['sponsor_company']]))->id;
+        }
 
-                $states = array_keys(TransactionStatus::getStatus());
-                $new['status'] = in_array($data['transaction_status'] ?? "",
-                    $states) ? (TransactionStatus::getStatus())[$data['transaction_status']] : "";
-                $new['role'] = optional(DelegateRole::whereCode(strtolower($data['role'] ?? ""))
-                                                    ->first())->code;
-                $new['ticket_id'] = optional(Ticket::whereEventId($this->event->id)
-                                                   ->whereCode($data['ticket_code'] ?? "")
-                                                   ->first())->id;
-                if ($data['sponsor_company'] ?? null) {
-                    $new['sponsor']['sponsor_id'] = optional($this->event->sponsors()
-                                                                         ->firstOrCreate(['name' => $data['sponsor_company']]))->id;
-                }
+        $new['sponsor']['name'] = $data['sponsor_correspondent_name'] ?? null;
+        $new['sponsor']['email'] = $data['sponsor_correspondent_email'] ?? null;
+        $new['sponsor']['tel'] = $data['sponsor_correspondent_tel'] ?? null;
+        $new['sponsor']['address'] = $data['sponsor_correspondent_address'] ?? null;
 
-                $new['sponsor']['name'] = $data['sponsor_correspondent_name'] ?? null;
-                $new['sponsor']['email'] = $data['sponsor_correspondent_email'] ?? null;
-                $new['sponsor']['tel'] = $data['sponsor_correspondent_tel'] ?? null;
-                $new['sponsor']['address'] = $data['sponsor_correspondent_address'] ?? null;
-
-                return $new;
-
-            });
+        return $new;
     }
 }

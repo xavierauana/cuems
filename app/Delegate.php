@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Enums\DelegateDuplicationStatus;
+use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -11,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 class Delegate extends Model
 {
-    use Notifiable, SoftDeletes;
+    use Notifiable, SoftDeletes, FormAccessible;
 
     protected $searchableColumns = [
         'first_name',
@@ -133,6 +134,10 @@ class Delegate extends Model
         return $this->roles()->pluck('id')->toArray();
     }
 
+    public function formTransactionTypeIdAttribute(): ?int {
+        return optional($this->transactions()->first())->transaction_type_id;
+    }
+
     // Helper
 
     public function getStoreRules(): array {
@@ -158,7 +163,8 @@ class Delegate extends Model
             'training_organisation_address' => 'nullable|traineeInfoRequired',
             'supervisor'                    => 'nullable|traineeInfoRequired',
             'training_position'             => 'nullable|traineeInfoRequired',
-            'is_duplicated'                 => 'nullable|in:' . DelegateDuplicationStatus::DUPLICATED,
+            'is_duplicated'                 => 'nullable|in:' . implode(",",
+                    array_values(DelegateDuplicationStatus::getStatus())),
             'is_verified'                   => 'nullable|boolean',
             'roles_id.*'                    => 'nullable|exists:delegate_roles,id',
             'duplicated_with'               => 'nullable',

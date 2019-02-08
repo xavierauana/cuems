@@ -3,7 +3,7 @@
         
         <div class="form-group row">
    
-            <label class="col-sm-2 col-form-label">Title:</label>
+            <label class="col-sm-2 col-form-label"><span class="required-asterisk">*</span>Title:</label>
             <div class="col-sm-10">
                 <div class="form-check form-check-inline">
                   {{Form::radio('prefix', 'Prof', null, ['class'=>'form-check-input','required'])}}
@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Gender:</label>
+            <label class="col-sm-2 col-form-label"><span class="required-asterisk">*</span>Gender:</label>
             <div class="col-sm-10">
                 
                 <div class="form-check form-check-inline">
@@ -48,7 +48,7 @@
             </div>
         </div>
         <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Surname</label>
+            <label class="col-sm-2 col-form-label"><span class="required-asterisk">*</span>Surname</label>
             <div class="col-sm-10">
                {{Form::text('last_name', null, ['class'=>'form-control', 'required','placeholder'=>'Chan'])}}
 	            @if ($errors->has('last_name'))
@@ -60,7 +60,7 @@
             
         </div>
         <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Given Name</label>
+            <label class="col-sm-2 col-form-label"><span class="required-asterisk">*</span>Given Name</label>
             <div class="col-sm-10">
                  {{Form::text('first_name', null, ['class'=>'form-control', 'required','placeholder'=>'Tai-Man or Peter Tai-Man'])}}
 	            @if ($errors->has('first_name'))
@@ -71,7 +71,7 @@
             </div>
         </div>
         <div class="form-group row">
-            <label class="email col-sm-2 col-form-label">Email</label>
+            <label class="email col-sm-2 col-form-label"><span class="required-asterisk">*</span>Email</label>
             <div class="col-sm-10">
             {{Form::email('email', null, ['class'=>'form-control', 'required'])}}
 	            @if ($errors->has('email'))
@@ -82,7 +82,7 @@
             </div>
         </div>
         <div class="form-group row">
-            <label class="mobile col-sm-2 col-form-label">Mobile Tel</label>
+            <label class="mobile col-sm-2 col-form-label"><span class="required-asterisk">*</span>Mobile/Office No.</label>
             <div class="col-sm-10">
             {{Form::text('mobile', null, ['class'=>'form-control', 'required'])}}
 	            @if ($errors->has('mobile'))

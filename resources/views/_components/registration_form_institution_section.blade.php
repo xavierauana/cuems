@@ -1,6 +1,6 @@
 <fieldset class="institution">
     <div class="form-group row">
-            <label class="position col-sm-2 col-form-label">Position</label>
+            <label class="position col-sm-2 col-form-label"><span class="required-asterisk">*</span>Position</label>
             <div class="col-sm-10">
                 @php
 	                $positions = getPositionList()->toArray();
@@ -14,7 +14,7 @@
             </div>
         </div>
     <div class="form-group row" id="other_position_container">
-            <label class="position col-sm-2 col-form-label">For others, please specify</label>
+            <label class="position col-sm-2 col-form-label"><span class="required-asterisk">*</span>For others, please specify</label>
             <div class="col-sm-10">
                 @php
 	                $positions = getPositionList()->toArray();
@@ -29,7 +29,7 @@
         </div>
     
       <div class="form-group row">
-            <label class="department col-sm-2 col-form-label">Department</label>
+            <label class="department col-sm-2 col-form-label"><span class="required-asterisk">*</span>Department</label>
             <div class="col-sm-10">
             
              {{Form::text('department', null, ['class'=>'form-control', 'required'])}}
@@ -42,7 +42,7 @@
         </div>
     
         <div class="form-group row">
-            <label class="institution col-sm-2 col-form-label">Institution/Hospital</label>
+            <label class="institution col-sm-2 col-form-label"><span class="required-asterisk">*</span>Institution/Hospital</label>
             <div class="col-sm-10">
                 {{Form::select('institution', array_merge(["--- Please Select ---"], array_combine(\App\Institution::pluck('name')->toArray(),\App\Institution::pluck('name')->toArray())),null, ['class'=>'form-control select2', 'required'])}}
 	            @if ($errors->has('institution'))
@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="form-group row other_institution_container">
-            <label class="institution col-sm-2 col-form-label">For others, please specify</label>
+            <label class="institution col-sm-2 col-form-label"><span class="required-asterisk">*</span>For others, please specify</label>
             <div class="col-sm-10">
                 {{Form::text('other_institution', null, ['class'=>'form-control'])}}
 	            @if ($errors->has('other_institution'))
@@ -65,7 +65,7 @@
         </div>
     
       <div class="form-group row">
-            <label class="address col-sm-2 col-form-label">Address 1</label>
+            <label class="address col-sm-2 col-form-label"><span class="required-asterisk">*</span>Address 1</label>
             <div class="col-sm-10">
                  {{Form::text('address_1', null, ['class'=>'form-control', 'required'])}}
 	            @if ($errors->has('address_1'))
@@ -76,7 +76,7 @@
             </div>
         </div>
         <div class="form-group row">
-            <label class="address col-sm-2 col-form-label">Address 2</label>
+            <label class="address col-sm-2 col-form-label"><span class="required-asterisk">*</span>Address 2</label>
             <div class="col-sm-10">
                  {{Form::text('address_2', null, ['class'=>'form-control', 'required'])}}
 	            @if ($errors->has('address_2'))
@@ -87,7 +87,7 @@
             </div>
         </div>
         <div class="form-group row">
-            <label class="address col-sm-2 col-form-label">Address 3</label>
+            <label class="address col-sm-2 col-form-label"><span class="required-asterisk">*</span>Address 3</label>
             <div class="col-sm-10">
                  {{Form::text('address_3', null, ['class'=>'form-control', 'required'])}}
 	            @if ($errors->has('address_3'))
@@ -100,7 +100,7 @@
     
     
         <div class="form-group row">
-            <label class="country col-sm-2 col-form-label">Country/Region</label>
+            <label class="country col-sm-2 col-form-label"><span class="required-asterisk">*</span>Country/Region</label>
             <div class="col-sm-10">
             {{Form::select('country',getCountiesList() ,'Hong Kong SAR China', ['class'=>'form-control select2', 'required'])}}
 	            @if ($errors->has('country'))

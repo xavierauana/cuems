@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Validation\Rule;
 
+/**
+ * @method static findOrFail($ticket_id)
+ */
 class Ticket extends Model
 {
     use FlatpickrConversion;

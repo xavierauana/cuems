@@ -17,6 +17,7 @@ class Transaction extends Model
         'card_brand',
         'last_4',
         'ticket_id',
+        'transaction_type_id',
         'status',
         'note',
     ];
@@ -28,6 +29,7 @@ class Transaction extends Model
         'ticket_id',
         'status',
         'note',
+        'transaction_type_id'
     ];
 
     protected static $logOnlyDirty = true;
@@ -38,15 +40,20 @@ class Transaction extends Model
      */
     public function getRules(): array {
         return [
-            'status'    => 'required|in:' . implode(",",
+            'status'              => 'required|in:' . implode(",",
                     array_values((new \ReflectionClass(TransactionStatus::class))->getConstants())),
-            'ticket_id' => 'required|in:' . implode(",",
+            'ticket_id'           => 'required|in:' . implode(",",
                     Ticket::pluck('id')->toArray()),
-            'note'      => 'nullable'
+            'note'                => 'nullable',
+            'transaction_type_id' => 'required|exists:transaction_types,id'
         ];
     }
 
     // Relation
+
+    public function transactionType(): Relation {
+        return $this->belongsTo(TransactionType::class);
+    }
 
     public function payee(): Relation {
         return $this->morphTo();

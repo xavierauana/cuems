@@ -121,7 +121,6 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
             optional($sponsorRecord)->email,
             optional($sponsorRecord)->tel,
             optional($sponsorRecord)->address,
-
         ];
     }
 }

@@ -31,7 +31,6 @@ class SystemEventsHandler
      */
     public function handle(SystemEvent $event) {
         $notifications = $this->getNotification($event);
-
         $notifications->each(function (Notification $notification) use ($event
         ) {
             if ($role = $notification->role) {
@@ -56,7 +55,6 @@ class SystemEventsHandler
         if (is_null($e)) {
             throw new \Exception("No event fetched!");
         }
-
         $query = Notification::whereEventId($e->id);
 
         return $this->constructNotificationQuery($event, $query)->get();
@@ -104,12 +102,13 @@ class SystemEventsHandler
     }
 
     /**
-     * @param \App\Events\SystemEvent $event
-     * @param                         $query
-     * @return mixed
+     * @param \App\Events\SystemEvent               $event
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
      * @throws \Exception
      */
-    private function constructNotificationQuery(SystemEvent $event, $query
+    private function constructNotificationQuery(
+        SystemEvent $event, Builder $query
     ): Builder {
         switch ($event->systemEvent) {
             case SystemEvents::CREATE_DELEGATE:
@@ -156,5 +155,6 @@ class SystemEventsHandler
             default:
                 throw new \Exception("System event model is not valid");
         }
+
     }
 }

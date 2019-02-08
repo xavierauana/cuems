@@ -44,13 +44,15 @@
 				        </div>
 				        <hr>
 				        <div class="row">
-					        <div class="col-md-4"><strong>Ticket</strong> {{$delegate->transactions()->first()->ticket->name}}</div>
-					        <div class="col-md-4"><strong>Transaction ID: </strong> {{$delegate->transactions()->first()->charge_id ?? "NA"}}</div>
-					        <div class="col-md-4"><strong>Transaction Status: </strong> {{array_flip(\App\Enums\TransactionStatus::getStatus())[$delegate->transactions()->first()->status]  }}</div>
-					        <div class="col-md-4"><strong>Role: </strong> {{$delegate->roles->first()->label}}</div>
+					        <?php $transaction = $delegate->transactions()->first(); ?>
+					        <div class="col-12"><strong>Ticket</strong> {{ $transaction->ticket->name}}</div>
+					        <div class="col-md-6"><strong>Transaction ID: </strong> {{$transaction->charge_id ?? "NA"}}</div>
+					        <div class="col-md-6"><strong>Transaction Type: </strong> {{$transaction->transactionType->label ?? "NA"}}</div>
+					        <div class="col-md-6"><strong>Transaction Status: </strong> {{array_flip(\App\Enums\TransactionStatus::getStatus())[$transaction->status]  }}</div>
+					        <div class="col-md-6"><strong>Role: </strong> {{$delegate->roles->first()->label}}</div>
 				        </div>
 				        <div class="row">
-					        <div class="col"><strong>Note</strong> {{$delegate->transactions()->first()->note}}</div>
+					        <div class="col"><strong>Note</strong> {{$transaction->note}}</div>
 				        </div>
 			        </section>
 			        

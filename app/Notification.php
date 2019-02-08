@@ -28,6 +28,10 @@ class Notification extends Model
         'include_duplicated'
     ];
 
+    protected $casts = [
+        'include_duplicated' => 'boolean'
+    ];
+
 
     // Relation
     public function event(): Relation {
@@ -103,6 +107,9 @@ class Notification extends Model
     public function send($notifiable = null): void {
 
         if ($notifiable) {
+            if (strtolower($notifiable->is_duplicated) === strtolower(DelegateDuplicationStatus::DUPLICATED) and $this->include_duplicated === false) {
+                return;
+            }
 
             $this->sendNotificationToDelegate($notifiable);
 
@@ -111,7 +118,8 @@ class Notification extends Model
             $query = $this->role->delegates();
 
             if (!$this->include_duplicated) {
-                $query->where('is_duplicated', DelegateDuplicationStatus::NO);
+                $query->where('is_duplicated', "<>",
+                    DelegateDuplicationStatus::DUPLICATED);
             }
 
             if ($this->verified_only) {
@@ -125,7 +133,6 @@ class Notification extends Model
             });
 
         } else {
-
             $query = Delegate::latest();
 
             if (!$this->include_duplicated) {

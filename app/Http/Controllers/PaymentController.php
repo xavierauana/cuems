@@ -95,6 +95,13 @@ class PaymentController extends Controller
         }
     }
 
+    /**
+     * @param \Illuminate\Http\Request              $request
+     * @param \App\Services\JETCOPaymentService     $service
+     * @param \App\Services\DelegateCreationService $creationService
+     * @return mixed
+     * @throws \Exception
+     */
     public function paid(
         Request $request, JETCOPaymentService $service,
         DelegateCreationService $creationService
@@ -102,9 +109,7 @@ class PaymentController extends Controller
 
         $response = simplexml_load_string($service->checkPaymentStatus(["DR" => $request->get('String1')]));
 
-        $refId = base64_decode($request->get('ref_id'));
-
-        $record = PaymentRecord::findOrFail($refId);
+        $record = PaymentRecord::findOrFail(base64_decode($request->get('ref_id')));
 
         $event = $record->event;
 
@@ -118,7 +123,7 @@ class PaymentController extends Controller
                 $ticket->price);
 
             $newDelegate = $creationService->selfCreate($event, $formData,
-                $chargeResponse, $refId);
+                $chargeResponse, $record);
 
             event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
                 $newDelegate));

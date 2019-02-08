@@ -27,6 +27,14 @@
 	            background-position-x: center;
 	            background-position-y: top;
             }
+
+            span.required-asterisk {
+	            color: red;
+                font-size: small;
+                top: -4px;
+                position: relative;
+            margin-right: 2px;
+            }
         </style>
 	
 	    @stack('styles')
@@ -36,7 +44,7 @@
         <div class="container" id="registration">
         
         @include("_partials.alert")
-	
+	    <p><strong>The field below with asterisk(*) must be filled.</strong></p>
 	        {{Form::open(['url' => "",'method'=>"POST", 'id'=>"payment-form", 'onsubmit'=>"pay(event)"])}}
 	
 	        <input type="hidden" id="DO" name="DO" />
