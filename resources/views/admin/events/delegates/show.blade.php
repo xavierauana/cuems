@@ -44,7 +44,8 @@
 				        </div>
 				        <hr>
 				        <div class="row">
-					        <?php $transaction = $delegate->transactions()->first(); ?>
+					        <?php $transaction = $delegate->transactions()
+                                                          ->first(); ?>
 					        <div class="col-12"><strong>Ticket</strong> {{ $transaction->ticket->name}}</div>
 					        <div class="col-md-6"><strong>Transaction ID: </strong> {{$transaction->charge_id ?? "NA"}}</div>
 					        <div class="col-md-6"><strong>Transaction Type: </strong> {{$transaction->transactionType->label ?? "NA"}}</div>
@@ -88,7 +89,7 @@
 		                <a class="btn btn-primary"
 		                   href="{{route('events.delegates.edit', [$event, $delegate])}}">Edit</a>
 		                <a class="btn btn-info text-light"
-		                   href="{{route('events.delegates.index', $event)}}">Back</a>
+		                   href="{{url()->previous()}}">Back</a>
 	                </section>
 		        </div>
             </div>

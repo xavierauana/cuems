@@ -11,6 +11,9 @@
 			        <a href="{{route('sponsors.download_template')}}"
 			           target="_blank"
 			           class="btn btn-sm btn-outline-primary pull-right mr-1">Download Sponsor Template</a>
+			        <a href="{{route('events.sponsors.delegates.export.all',$event)}}"
+			           target="_blank"
+			           class="btn btn-sm btn-outline-primary pull-right mr-1">Export Delegates</a>
                 </div>
                 
                 <div class="table-responsive">
@@ -20,9 +23,9 @@
                         <th>Actions</th>
                     </thead>
 	                  <tbody>
-	                  @foreach($event->sponsors as $sponsors)
+	                  @foreach($event->sponsors as $sponsor)
 		                  <tr>
-			                  <td>{{$sponsors->name}}</td>
+			                  <td>{{$sponsor->name}}</td>
 			                  <td>
 				                  <div class="btn-toolbar" role="toolbar"
 				                       aria-label="Toolbar with button groups">
@@ -30,12 +33,14 @@
 					                        role="group"
 					                        aria-label="First group">
 						                   <a class="btn btn-info text-light"
-						                      href="{{route('events.sponsors.edit',[$event, $sponsors])}}">Edit</a>
+						                      href="{{route('events.sponsors.edit',[$event, $sponsor])}}">Edit</a>
+						                   <a class="btn btn-primary text-light"
+						                      href="{{route('events.sponsors.delegates',[$event, $sponsor])}}">Delegates</a>
 									  </div>
 					                   <div class="btn-group btn-group-sm mr-2"
 					                        role="group"
 					                        aria-label="Second group">
-						                   {{Form::open(['url'=>route('events.sponsors.destroy',[$event, $sponsors]),'method'=>'DELETE','onsubmit'=>"confirmDelete(event, '{$sponsors->name}')"])}}
+						                   {{Form::open(['url'=>route('events.sponsors.destroy',[$event, $sponsor]),'method'=>'DELETE','onsubmit'=>"confirmDelete(event, '{$sponsor->name}')"])}}
 						                   <button class="btn btn-danger btn-sm text-light"
 						                           type="submit">Delete</button>
 						                   {{Form::close()}}

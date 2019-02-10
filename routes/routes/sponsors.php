@@ -16,4 +16,13 @@ Route::get("events/{event}/sponsors/import",
      ->name('events.sponsors.import');
 Route::post("events/{event}/sponsors/import",
     SponsorsController::class . "@postImport");
+Route::get("events/{event}/sponsors/{sponsor}/delegates",
+    SponsorsController::class . "@delegates")
+     ->name('events.sponsors.delegates');
+Route::get("events/{event}/sponsors/export",
+    SponsorsController::class . "@allDelegatesExport")
+     ->name('events.sponsors.delegates.export.all');
+Route::get("events/{event}/sponsors/{sponsor}/export",
+    SponsorsController::class . "@delegatesExport")
+     ->name('events.sponsors.delegates.export');
 Route::resource("events.sponsors", SponsorsController::class);

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Event;
+use App\Exports\AllSponsoredDelegatesExport;
+use App\Exports\SponsoredDelegatesExport;
 use App\Imports\SponsorsImport;
 use App\Sponsor;
 use Illuminate\Http\Request;
@@ -160,5 +162,19 @@ class SponsorsController extends Controller
 
     public function template() {
         return response()->download(storage_path('app/templates/sponsors_template.xlsx'));
+    }
+
+    public function delegates(Event $event, Sponsor $sponsor) {
+
+        return view("admin.events.sponsors.delegates",
+            compact('event', 'sponsor'));
+    }
+
+    public function delegatesExport(Event $event, Sponsor $sponsor) {
+        return new SponsoredDelegatesExport($sponsor);
+    }
+
+    public function allDelegatesExport(Event $event) {
+        return new AllSponsoredDelegatesExport($event);
     }
 }
