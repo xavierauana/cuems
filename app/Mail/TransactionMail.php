@@ -16,7 +16,7 @@ class TransactionMail extends AbstractEventNotificationMail
     /**
      * @var \App\Transaction
      */
-    protected $transaction;
+    protected $notifiable;
     /**
      * @var \App\Event
      */
@@ -37,7 +37,7 @@ class TransactionMail extends AbstractEventNotificationMail
         Notification $notification, $transaction, Event $event
     ) {
         //
-        $this->transaction = $transaction;
+        $this->notifiable = $transaction;
         $this->event = $event;
         $this->notification = $notification;
     }
@@ -47,18 +47,16 @@ class TransactionMail extends AbstractEventNotificationMail
      *
      * @return $this
      */
-    public
-    function build() {
+    public function build() {
         $builder = $this->view("notifications." . $this->notification->template,
             [
                 'event'       => $this->event,
-                'transaction' => $this->transaction,
-            ])->from($this->notification->from_email,
-            $this->notification->from_name)
+                'transaction' => $this->notifiable,
+            ])
+                        ->from($this->notification->from_email,
+                            $this->notification->from_name)
                         ->subject($this->notification->subject);
 
-        $builder = $this->addAttachments($builder);
-
-        return $builder;
+        $this->addAttachments($builder);
     }
 }

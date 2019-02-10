@@ -107,5 +107,18 @@ class MailCatcherTestCase extends TestCase
         $this->assertEquals($attachmentFileName, $name);
     }
 
+    protected function assertNoAttachment($email) {
+        $attachments = $name = json_decode((string)$email->getBody(),
+            true)['attachments'];
+
+
+        if (count($attachments) === 0) {
+            $this->assertTrue(true);
+        } else {
+            $this->assertTrue(false, 'There is attachment');
+        }
+
+    }
+
 
 }

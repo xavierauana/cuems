@@ -161,7 +161,6 @@ class Notification extends Model
      */
     private function createMail($notifiable): array {
         $email = $notifiable->routeNotificationForMail();
-        $attachments = $this->uploadFiles()->get();
         if ($notifiable instanceof Delegate) {
             $mail = new NotificationMailable(
                 $this,

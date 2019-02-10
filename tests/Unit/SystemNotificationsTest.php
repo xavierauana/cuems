@@ -8,8 +8,10 @@ use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
 use App\Event;
+use App\Events\SystemEvent;
 use App\Jobs\SendNotification;
 use App\Notification;
+use App\Services\DelegateCreationService;
 use App\Sponsor;
 use App\Ticket;
 use App\Transaction;
@@ -226,6 +228,117 @@ class SystemNotificationsTest extends MailCatcherTestCase
         $this->assertEmailWasSentTo($delegate->email, $email);
         $this->assertEmailSubjectContains($notification2->subject, $email);
 
+    }
+
+    /**
+     * @test
+     */
+    public function notification_with_ticket_with_transaction_completed_event(
+    ) {
+
+        $this->withoutExceptionHandling();
+        $subject = "Notification with ticket";
+
+        $delegate = factory(Delegate::class)->create();
+
+        factory(Notification::class)->create([
+            'template'       => 'test_transaction',
+            'from_name'      => "Xavier",
+            'from_email'     => "xaive.au@anacreation.com",
+            'subject'        => $subject,
+            'event'          => SystemEvents::TRANSACTION_COMPLETED,
+            'event_id'       => $delegate->event->id,
+            'include_ticket' => true
+        ]);
+
+        factory(Transaction::class)->create([
+            'payee_id'   => $delegate->id,
+            'payee_type' => Delegate::class,
+            'status'     => TransactionStatus::COMPLETED
+        ]);
+
+        $email = $this->getLastEmail();
+
+        $this->assertEmailSubjectContains($subject, $email);
+
+        $this->assertEmailHasAttachment($delegate->getRegistrationId() . ".pdf",
+            $email);
+
+    }
+
+    /**
+     * @test
+     */
+    public function notification_with_ticket_with_delegate_completed_event() {
+
+        $subject = "Notification with ticket delegate created";
+
+        factory(Notification::class)->create([
+            'template'       => 'test_transaction',
+            'from_name'      => "Xavier",
+            'from_email'     => "xaive.au@anacreation.com",
+            'subject'        => $subject,
+            'event'          => SystemEvents::ADMIN_CREATE_DELEGATE,
+            'event_id'       => $this->event->id,
+            'include_ticket' => true
+        ]);
+
+        $data = $this->createData($this->event, TransactionStatus::COMPLETED);
+
+        app(DelegateCreationService::class)->adminCreate($this->event,
+            $data);
+
+        $delegate = Delegate::where([
+            'first_name' => $data['first_name'],
+            'last_name'  => $data['last_name'],
+        ])->first();
+
+        event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE, $delegate));
+
+        $email = $this->getLastEmail();
+
+        $this->assertEmailSubjectContains($subject, $email);
+
+        $this->assertEmailHasAttachment($delegate->getRegistrationId() . ".pdf",
+            $email);
+
+    }
+
+    /**
+     * @test
+     */
+    public function notification_with_no_ticket_with_delegate_completed_event(
+    ) {
+
+        $subject = "Notification with ticket delegate created";
+
+        factory(Notification::class)->create([
+            'template'       => 'test_transaction',
+            'from_name'      => "Xavier",
+            'from_email'     => "xaive.au@anacreation.com",
+            'subject'        => $subject,
+            'event'          => SystemEvents::ADMIN_CREATE_DELEGATE,
+            'event_id'       => $this->event->id,
+            'include_ticket' => true
+        ]);
+
+        $data = $this->createData($this->event, TransactionStatus::AUTHORIZED);
+
+        app(DelegateCreationService::class)->adminCreate($this->event,
+            $data);
+
+        $delegate = Delegate::where([
+            'first_name' => $data['first_name'],
+            'last_name'  => $data['last_name'],
+        ])->first();
+
+        event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE, $delegate));
+
+        $email = $this->getLastEmail();
+
+        $this->assertEmailSubjectContains($subject, $email);
+
+        $this->assertNoAttachment($email);
 
     }
 
@@ -282,6 +395,9 @@ class SystemNotificationsTest extends MailCatcherTestCase
             "note"                          => $this->faker->paragraph,
             "transaction_type_id"           => $transactionType->id,
         ];
-
     }
+
+
 }
+
+
