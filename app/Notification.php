@@ -107,9 +107,6 @@ class Notification extends Model
     public function send($notifiable = null): void {
 
         if ($notifiable) {
-            if (strtolower($notifiable->is_duplicated) === strtolower(DelegateDuplicationStatus::DUPLICATED) and $this->include_duplicated === false) {
-                return;
-            }
 
             $this->sendNotificationToDelegate($notifiable);
 
@@ -133,6 +130,7 @@ class Notification extends Model
             });
 
         } else {
+
             $query = Delegate::latest();
 
             if (!$this->include_duplicated) {

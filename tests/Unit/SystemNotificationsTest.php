@@ -103,7 +103,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
 
         $delegate->roles()->save($role);
 
-//        $this->expectsJobs([SendNotification::class]);
+        //        $this->expectsJobs([SendNotification::class]);
 
         $ticket = factory(Ticket::class)->create(['event_id' => $this->event->id]);
 
@@ -243,10 +243,10 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'role_id'            => null,
             "include_duplicated" => false
         ];
+
         $notification1 = factory(Notification::class)->create($notificationData);
 
         $this->assertDatabaseHas("notifications", $notificationData);
-
 
         $notification2 = factory(Notification::class)->create([
             'template'           => 'test_transaction',
@@ -259,7 +259,8 @@ class SystemNotificationsTest extends MailCatcherTestCase
             "include_duplicated" => true
         ]);
 
-        $data = $this->createData($this->event, TransactionStatus::AUTHORIZED,
+        $data = $this->createData($this->event,
+            TransactionStatus::AUTHORIZED,
             DelegateDuplicationStatus::DUPLICATED);
 
         $uri = route('events.delegates.store', $this->event->id);
@@ -456,6 +457,103 @@ class SystemNotificationsTest extends MailCatcherTestCase
 
     }
 
+
+    /**
+     * @test
+     */
+    public function verified_delegates_only() {
+
+        $subject = "Verified Delegates only";
+
+        factory(Notification::class)->create([
+            'template'       => 'test_transaction',
+            'from_name'      => "Xavier",
+            'from_email'     => "xaive.au@anacreation.com",
+            'subject'        => $subject,
+            'event'          => SystemEvents::ADMIN_CREATE_DELEGATE,
+            'event_id'       => $this->event->id,
+            'role_id'        => null,
+            'include_ticket' => false,
+            'verified_only'  => true
+        ]);
+
+        $delegate = factory(Delegate::class)->create([
+            'event_id'    => $this->event->id,
+            'is_verified' => false
+        ]);
+
+        event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE, $delegate));
+
+        $this->assertEquals(0, count($this->getAllEmail()));
+
+        $delegate = factory(Delegate::class)->create([
+            'event_id'    => $this->event->id,
+            'is_verified' => true
+        ]);
+
+        event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE, $delegate));
+
+        $email = $this->getLastEmail();
+
+        $this->assertEmailSubjectContains($subject, $email);
+
+    }
+
+    /**
+     * @test
+     */
+    public function verified_transaction_delegates_only() {
+
+        $this->withoutExceptionHandling();
+
+        $subject = "Verified Delegates only";
+
+        factory(Notification::class)->create([
+            'template'       => 'test_transaction',
+            'from_name'      => "Xavier",
+            'from_email'     => "xaive.au@anacreation.com",
+            'subject'        => $subject,
+            'event'          => SystemEvents::TRANSACTION_COMPLETED,
+            'event_id'       => $this->event->id,
+            'role_id'        => null,
+            'include_ticket' => false,
+            'verified_only'  => true
+        ]);
+
+        $delegate = factory(Delegate::class)->create([
+            'event_id'    => $this->event->id,
+            'is_verified' => false
+        ]);
+
+        factory(Transaction::class)->create([
+            'payee_id'   => $delegate->id,
+            'payee_type' => Delegate::class,
+            'status'     => TransactionStatus::COMPLETED
+        ]);
+
+        $this->assertEquals(0, count($this->getAllEmail()));
+
+        $delegate = factory(Delegate::class)->create([
+            'event_id'    => $this->event->id,
+            'is_verified' => true
+        ]);
+
+        factory(Transaction::class)->create([
+            'payee_id'   => $delegate->id,
+            'payee_type' => Delegate::class,
+            'status'     => TransactionStatus::COMPLETED
+        ]);
+
+        event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE, $delegate));
+
+        $email = $this->getLastEmail();
+
+        $this->assertEmailSubjectContains($subject, $email);
+
+    }
+
+
+
     private function createData(
         Event $event = null, int $status = TransactionStatus::AUTHORIZED,
         string $duplicateStatus = DelegateDuplicationStatus::NO
@@ -510,7 +608,6 @@ class SystemNotificationsTest extends MailCatcherTestCase
             "transaction_type_id"           => $transactionType->id,
         ];
     }
-
 
 }
 

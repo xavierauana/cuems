@@ -3,6 +3,7 @@
 namespace App\Listener;
 
 use App\Delegate;
+use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Event;
 use App\Events\SystemEvent;
@@ -31,13 +32,37 @@ class SystemEventsHandler
      */
     public function handle(SystemEvent $event) {
         $notifications = $this->getNotification($event);
-        $notifications->each(function (Notification $notification) use ($event
+        $notifications->filter(function (Notification $notification) use ($event
+        ) {
+            if (!$notification->include_duplicated) {
+                $model = ($event->model instanceof Delegate) ?
+                    $event->model :
+                    $event->model->payee;
+
+                return $model->is_duplicated !== DelegateDuplicationStatus::DUPLICATED;
+            }
+
+            return true;
+        })->filter(function (Notification $notification) use ($event
+        ) {
+            if ($notification->verified_only) {
+                $model = ($event->model instanceof Delegate) ?
+                    $event->model :
+                    $event->model->payee;
+
+                return $model->is_verified;
+            }
+
+            return true;
+        })->each(function (Notification $notification) use ($event
         ) {
             if ($role = $notification->role) {
-                $this->dispatchJobWithNotificationRole($notification, $event,
+                $this->dispatchJobWithNotificationRole($notification,
+                    $event,
                     $role);
             } else {
-                dispatch(new SendNotification($notification, $event->model));
+                dispatch(new SendNotification($notification,
+                    $event->model));
             }
         });
 
