@@ -32,8 +32,10 @@ class SystemEventsHandler
      */
     public function handle(SystemEvent $event) {
         $notifications = $this->getNotification($event);
+        Log::info("notifications " . $notifications->count());
         $notifications->filter(function (Notification $notification) use ($event
         ) {
+            Log::info('duplicated check');
             if (!$notification->include_duplicated) {
                 $model = ($event->model instanceof Delegate) ?
                     $event->model :
@@ -46,6 +48,7 @@ class SystemEventsHandler
         })
                       ->filter(function (Notification $notification) use ($event
                       ) {
+                          Log::info('verify check');
                           if ($notification->verified_only) {
                               $model = ($event->model instanceof Delegate) ?
                                   $event->model :
