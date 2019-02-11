@@ -18,6 +18,7 @@ use App\Services\DelegateCreationService;
 use App\Services\JETCOPaymentService;
 use App\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
@@ -124,6 +125,8 @@ class PaymentController extends Controller
 
             $newDelegate = $creationService->selfCreate($event, $formData,
                 $chargeResponse, $record);
+
+            Log::info('Going to send the event');
 
             event(new SystemEvent(SystemEvents::CREATE_DELEGATE,
                 $newDelegate));

@@ -7,11 +7,11 @@ use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Event;
 use App\Events\SystemEvent;
-use App\Jobs\SendNotification;
 use App\Notification;
 use App\Transaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class SystemEventsHandler
 {
@@ -43,28 +43,34 @@ class SystemEventsHandler
             }
 
             return true;
-        })->filter(function (Notification $notification) use ($event
-        ) {
-            if ($notification->verified_only) {
-                $model = ($event->model instanceof Delegate) ?
-                    $event->model :
-                    $event->model->payee;
+        })
+                      ->filter(function (Notification $notification) use ($event
+                      ) {
+                          if ($notification->verified_only) {
+                              $model = ($event->model instanceof Delegate) ?
+                                  $event->model :
+                                  $event->model->payee;
 
-                return $model->is_verified;
-            }
+                              return $model->is_verified;
+                          }
 
-            return true;
-        })->each(function (Notification $notification) use ($event
-        ) {
-            if ($role = $notification->role) {
-                $this->dispatchJobWithNotificationRole($notification,
-                    $event,
-                    $role);
-            } else {
-                dispatch(new SendNotification($notification,
-                    $event->model));
-            }
-        });
+                          return true;
+                      })
+                      ->each(function (Notification $notification) use ($event
+                      ) {
+                          Log::info("going to dispatch the job");
+                          if ($role = $notification->role) {
+                              Log::info("with Role");
+                              $this->dispatchJobWithNotificationRole($notification,
+                                  $event,
+                                  $role);
+                          } else {
+                              Log::info("without Role");
+                              Log::info("and dispatch");
+
+                              $notification->send($event->model);
+                          }
+                      });
 
     }
 
@@ -118,8 +124,10 @@ class SystemEventsHandler
         Notification $notification, $event, $role
     ): void {
         if ($this->delegateHasRole($role, $event->model)) {
+            Log::info('delegate');
             $notification->send($event->model);
         } elseif ($this->transactionPayeeHasRole($event, $role)) {
+            Log::info('transaction');
             $notification->send($event->model);
         }
     }

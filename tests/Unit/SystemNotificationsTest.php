@@ -43,9 +43,11 @@ class SystemNotificationsTest extends MailCatcherTestCase
 
     public function test_notification_trigger() {
 
+        $subject = "this is subject";
         factory(Notification::class)->create([
-            'template' => 'test',
+            'template' => 'test_transaction',
             'event'    => SystemEvents::TRANSACTION_COMPLETED,
+            'subject'  => $subject,
             'event_id' => $this->event->id,
             'role_id'  => null
         ]);
@@ -53,7 +55,6 @@ class SystemNotificationsTest extends MailCatcherTestCase
         $delegate = factory(Delegate::class)->create([
             'event_id' => $this->event->id
         ]);
-        $this->expectsJobs([SendNotification::class]);
 
         $ticket = factory(Ticket::class)->create(['event_id' => $this->event->id]);
         factory(Transaction::class)->create([
@@ -62,6 +63,10 @@ class SystemNotificationsTest extends MailCatcherTestCase
             "payee_id"   => $delegate->id,
             "ticket_id"  => $ticket->id
         ]);
+
+        $email = $this->getLastEmail();
+
+        $this->assertEmailSubjectContains($subject, $email);
 
     }
 
@@ -551,7 +556,6 @@ class SystemNotificationsTest extends MailCatcherTestCase
         $this->assertEmailSubjectContains($subject, $email);
 
     }
-
 
 
     private function createData(
