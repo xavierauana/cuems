@@ -66,10 +66,12 @@ class SystemEventsHandler
      * @param $event
      * @return bool
      */
-    private function delegateHasRole($role, Delegate $delegate): bool {
-        return in_array($role->id, $delegate->roles()
-                                            ->pluck('id')
-                                            ->toArray());
+    private function delegateHasRole($role, $delegate): bool {
+
+        return ($delegate instanceof Delegate) and in_array($role->id,
+                $delegate->roles()
+                         ->pluck('id')
+                         ->toArray());
     }
 
     /**
@@ -78,9 +80,8 @@ class SystemEventsHandler
      * @return bool
      */
     private function transactionPayeeHasRole($event, $role): bool {
-        return $event->model instanceof Transaction and
-               $event->model->payee_type === Delegate::class and
-               $this->delegateHasRole($role, $event->model->payee);
+        return $event->model instanceof Transaction and $this->delegateHasRole($role,
+                $event->model->payee);
     }
 
     /**
@@ -91,13 +92,10 @@ class SystemEventsHandler
     private function dispatchJobWithNotificationRole(
         Notification $notification, $event, $role
     ): void {
-        if ($event->model instanceof Delegate and
-            $this->delegateHasRole($role, $event->model)) {
-            dispatch(new SendNotification($notification,
-                $event->model));
+        if ($this->delegateHasRole($role, $event->model)) {
+            $notification->send($event->model);
         } elseif ($this->transactionPayeeHasRole($event, $role)) {
-            dispatch(new SendNotification($notification,
-                $event->model));
+            $notification->send($event->model);
         }
     }
 

@@ -10,7 +10,6 @@ use App\Transaction;
 class TransactionObserver
 {
     public function saved(Transaction $transaction) {
-
         if (!$transaction->isDirty('status')) {
             return;
         }

@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Delegate;
 use App\DelegateRole;
+use App\Entities\ChargeResponse;
 use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
@@ -11,6 +12,7 @@ use App\Event;
 use App\Events\SystemEvent;
 use App\Jobs\SendNotification;
 use App\Notification;
+use App\PaymentRecord;
 use App\Services\DelegateCreationService;
 use App\Sponsor;
 use App\Ticket;
@@ -40,10 +42,12 @@ class SystemNotificationsTest extends MailCatcherTestCase
     }
 
     public function test_notification_trigger() {
+
         factory(Notification::class)->create([
             'template' => 'test',
             'event'    => SystemEvents::TRANSACTION_COMPLETED,
-            'event_id' => $this->event->id
+            'event_id' => $this->event->id,
+            'role_id'  => null
         ]);
 
         $delegate = factory(Delegate::class)->create([
@@ -81,14 +85,16 @@ class SystemNotificationsTest extends MailCatcherTestCase
         ]);
     }
 
-    public function test_notification_with_role_trigger() {
-
+    public function test_transaction_notification_with_role_trigger() {
+        $subject = "AOnbther subject";
         $role = factory(DelegateRole::class)->create();
 
         factory(Notification::class)->create([
             'event'    => SystemEvents::TRANSACTION_COMPLETED,
+            'template' => 'test_transaction',
             'event_id' => $this->event->id,
-            'role_id'  => $role->id
+            'role_id'  => $role->id,
+            'subject'  => $subject,
         ]);
 
         $delegate = factory(Delegate::class)->create([
@@ -97,7 +103,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
 
         $delegate->roles()->save($role);
 
-        $this->expectsJobs(SendNotification::class);
+//        $this->expectsJobs([SendNotification::class]);
 
         $ticket = factory(Ticket::class)->create(['event_id' => $this->event->id]);
 
@@ -107,6 +113,50 @@ class SystemNotificationsTest extends MailCatcherTestCase
             "payee_id"   => $delegate->id,
             "ticket_id"  => $ticket->id
         ]);
+
+        $email = $this->getLastEmail();
+
+        $this->assertEmailSubjectContains($subject, $email);
+    }
+
+    /**
+     * @test
+     */
+    public function test_delegate_notification_with_role_trigger() {
+        $subject = "Subject 1";
+        $role = factory(DelegateRole::class)->create();
+
+        factory(Notification::class)->create([
+            'template' => 'test_transaction',
+            'event'    => SystemEvents::CREATE_DELEGATE,
+            'event_id' => $this->event->id,
+            'subject'  => $subject,
+            'role_id'  => $role->id
+        ]);
+
+        $delegate = factory(Delegate::class)->create([
+            'event_id' => $this->event->id
+        ]);
+
+        $delegate->roles()->save($role);
+
+        //        $this->expectsJobs(SendNotification::class);
+
+        $ticket = factory(Ticket::class)->create(['event_id' => $this->event->id]);
+
+        factory(Transaction::class)->create([
+            "status"     => TransactionStatus::COMPLETED,
+            "payee_type" => get_class($delegate),
+            "payee_id"   => $delegate->id,
+            "ticket_id"  => $ticket->id
+        ]);
+
+        event(new SystemEvent(SystemEvents::CREATE_DELEGATE, $delegate));
+
+        $email = $this->getLastEmail();
+
+        $this->assertEmailSubjectContains($subject, $email);
+
     }
 
     public function test_notification_with_role_not_trigger() {
@@ -151,6 +201,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'subject'    => $subject,
             'event'      => SystemEvents::TRANSACTION_COMPLETED,
             'event_id'   => $this->event->id,
+            'role_id'    => null
         ]);
 
         $delegate = factory(Delegate::class)->create([
@@ -189,6 +240,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'subject'            => "Excluded",
             'event'              => SystemEvents::ADMIN_CREATE_DELEGATE,
             'event_id'           => $this->event->id,
+            'role_id'            => null,
             "include_duplicated" => false
         ];
         $notification1 = factory(Notification::class)->create($notificationData);
@@ -203,6 +255,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'subject'            => "Included",
             'event'              => SystemEvents::ADMIN_CREATE_DELEGATE,
             'event_id'           => $this->event->id,
+            'role_id'            => null,
             "include_duplicated" => true
         ]);
 
@@ -248,7 +301,8 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'subject'        => $subject,
             'event'          => SystemEvents::TRANSACTION_COMPLETED,
             'event_id'       => $delegate->event->id,
-            'include_ticket' => true
+            'include_ticket' => true,
+            'role_id'        => null
         ]);
 
         factory(Transaction::class)->create([
@@ -280,6 +334,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'subject'        => $subject,
             'event'          => SystemEvents::ADMIN_CREATE_DELEGATE,
             'event_id'       => $this->event->id,
+            'role_id'        => null,
             'include_ticket' => true
         ]);
 
@@ -319,6 +374,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'subject'        => $subject,
             'event'          => SystemEvents::ADMIN_CREATE_DELEGATE,
             'event_id'       => $this->event->id,
+            'role_id'        => null,
             'include_ticket' => true
         ]);
 
@@ -339,6 +395,64 @@ class SystemNotificationsTest extends MailCatcherTestCase
         $this->assertEmailSubjectContains($subject, $email);
 
         $this->assertNoAttachment($email);
+
+    }
+
+    /**
+     * @test
+     */
+    public function self_registration_trigger_notification() {
+
+        $subject = "Notification self created";
+
+        $data = $this->createData($this->event, TransactionStatus::AUTHORIZED);
+
+        $role = factory(DelegateRole::class)->create([
+            'is_default' => true
+        ]);
+
+        $data['role_id'] = $role->id;
+        factory(Notification::class)->create([
+            'template'           => 'test_transaction',
+            'from_name'          => "Xavier",
+            'from_email'         => "xaive.au@anacreation.com",
+            'subject'            => $subject,
+            'event'              => SystemEvents::CREATE_DELEGATE,
+            'event_id'           => $this->event->id,
+            'include_ticket'     => true,
+            'include_duplicated' => false,
+            'verified_only'      => false,
+            'role_id'            => $role->id
+        ]);
+
+        factory(TransactionType::class)->create([
+            'label' => 'Credit Card'
+        ]);
+
+
+        $chargeId = 'invoice_123';
+        $chargeResponse = new ChargeResponse($chargeId, "brand", "1111");
+
+        $paymentRecord = PaymentRecord::create([
+            'invoice_id' => $chargeId,
+            'form_data'  => $data,
+            'event_id'   => $this->event->id,
+            'status'     => "created"
+        ]);
+
+        app(DelegateCreationService::class)->selfCreate($this->event, $data,
+            $chargeResponse, $paymentRecord);
+
+        $delegate = Delegate::where([
+            'first_name' => $data['first_name'],
+            'last_name'  => $data['last_name'],
+        ])->first();
+
+        event(new SystemEvent(SystemEvents::CREATE_DELEGATE, $delegate));
+
+        $email = $this->getLastEmail();
+
+        $this->assertEmailSubjectContains($subject, $email);
 
     }
 

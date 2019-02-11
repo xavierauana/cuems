@@ -144,8 +144,8 @@ class RoleApiTest extends TestCase
     private function getJsonData($delegate): array {
         return [
             'title'      => $delegate->prefix,
-            'surname'    => $delegate->first_name,
-            'given_name' => $delegate->last_name,
+            'surname'    => $delegate->last_name,
+            'given_name' => $delegate->first_name,
             'country'    => $delegate->country
         ];
     }
