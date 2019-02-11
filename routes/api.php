@@ -20,7 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get("events/{event}/sessions",
-    SessionsController::class . "@apiGetSessions");
-Route::get("events/{event}/delegates",
-    DelegatesController::class . "@getDelegates")->name('api.delegates');
+Route::group(['middleware' => 'cors'], function () {
+    Route::get("events/{event}/sessions",
+        SessionsController::class . "@apiGetSessions");
+    Route::get("events/{event}/delegates",
+        DelegatesController::class . "@getDelegates")->name('api.delegates');
+});

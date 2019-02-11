@@ -16,7 +16,7 @@ class SessionResource extends JsonResource
      */
     public function toArray($request) {
         $moderators = $this->moderators->map(function (int $delegateId) {
-            return new DelegateResource(Delegate::find($delegateId));
+            return new DelegateResource(Delegate::findOrFail($delegateId));
         });
 
         $moderationType = ucwords(strtolower(array_flip(SessionModerationType::getTypes())[$this->moderation_type]));
@@ -32,7 +32,7 @@ class SessionResource extends JsonResource
             "end_at"          => $this->end_at,
             "sponsor"         => $this->sponsor,
             "moderation_type" => $moderationType,
-            "start_at"        => $this->start_at,
+            "start_at"        => $this->start_at ?? null,
             "talks"           => TalkResource::collection($this->talks)
         ];
     }

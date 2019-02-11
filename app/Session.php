@@ -73,11 +73,12 @@ class Session extends Model
     }
 
     public function getStartAtAttribute($value): string {
-        return $this->convert($value);
+        return $value ? $this->convert($value) : "";
+
     }
 
     public function getEndAtAttribute($value): string {
-        return $this->convert($value);
+        return $value ? $this->convert($value) : "";
     }
 
     // Mutator
