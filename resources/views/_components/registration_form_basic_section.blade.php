@@ -73,7 +73,7 @@
         <div class="form-group row">
             <label class="email col-sm-2 col-form-label"><span class="required-asterisk">*</span>Email</label>
             <div class="col-sm-10">
-            {{Form::email('email', null, ['class'=>'form-control', 'required'])}}
+            {{Form::email('email', null, ['class'=>'form-control delegate-form', 'required'])}}
 	            @if ($errors->has('email'))
 		            <span class="invalid-feedback" role="alert">
                         <strong>{{ $errors->first('email') }}</strong>
@@ -84,7 +84,7 @@
         <div class="form-group row">
             <label class="mobile col-sm-2 col-form-label"><span class="required-asterisk">*</span>Mobile/Office No.</label>
             <div class="col-sm-10">
-            {{Form::text('mobile', null, ['class'=>'form-control', 'required'])}}
+            {{Form::text('mobile', null, ['class'=>'form-control delegate-form', 'required'])}}
 	            @if ($errors->has('mobile'))
 		            <span class="invalid-feedback" role="alert">
                         <strong>{{ $errors->first('mobile') }}</strong>

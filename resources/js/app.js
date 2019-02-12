@@ -68,7 +68,7 @@ const app = new Vue({
                           }
                         },
                         registerSearchDelegateFields(inputName) {
-                          let el = document.querySelector('input[name="' + inputName + '"]')
+                          let el = document.querySelector('input.delegate-form[name="' + inputName + '"]')
 
                           if (el) {
                             el.addEventListener('change', () => {

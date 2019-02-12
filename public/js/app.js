@@ -10775,7 +10775,7 @@ var app = new Vue({
     registerSearchDelegateFields: function registerSearchDelegateFields(inputName) {
       var _this = this;
 
-      var el = document.querySelector('input[name="' + inputName + '"]');
+      var el = document.querySelector('input.delegate-form[name="' + inputName + '"]');
 
       if (el) {
         el.addEventListener('change', function () {
