@@ -29,7 +29,7 @@ class TransactionController extends Controller
         $query = $this->orderQuery($queries, $query);
         $query = $this->searchQuery($request->query('keyword'), $query);
 
-        $transactions = $query->paginate();
+        $transactions = $query->with('payee.event')->paginate();
 
         return view('admin.events.transactions.index',
             compact('transactions', 'event'));
