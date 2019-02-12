@@ -91,6 +91,7 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
     public function map($delegate): array {
 
         $sponsorRecord = $delegate->sponsorRecord;
+        $transaction = $delegate->transactions->first();
 
         return [
             $delegate->getRegistrationId(),
@@ -112,8 +113,8 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
             ) {
                 return $carry . $role->label . ", ";
             }, ""),
-            ($transaction = $delegate->transactions->first()) ? $transaction->ticket->name : null,
-            TransactionStatus::getStatusKey($delegate->transactions->first()->status),
+            $transaction ? $transaction->ticket->name : null,
+            $transaction ? TransactionStatus::getStatusKey($delegate->transactions->first()->status) : null,
             $delegate->is_duplicated == DelegateDuplicationStatus::DUPLICATED ? "DUPLICATED" : "NA",
             $delegate->duplicated_with,
             $sponsorRecord ? $sponsorRecord->sponsor->name : null,
