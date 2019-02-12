@@ -99,7 +99,10 @@ class DelegateRolesController extends Controller
      * @param  \App\DelegateRole $delegateRole
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DelegateRole $delegateRole) {
-        //
+    public function destroy(int $delegateRoleId) {
+
+        DelegateRole::whereId($delegateRoleId)->delete();
+
+        return response()->json(['status' => 'completed']);
     }
 }

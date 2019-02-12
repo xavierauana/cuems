@@ -18,6 +18,7 @@ use App\Jobs\ImportDelegates;
 use App\Jobs\UpdateNewDelegates;
 use App\PaymentRecord;
 use App\Services\DelegateCreationService;
+use App\Services\ImportDelegateService;
 use App\Transaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -238,7 +239,7 @@ class DelegatesController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
     public function postImport(
-        Event $event, Request $request, DelegateCreationService $service
+        Event $event, Request $request, ImportDelegateService $service
     ): RedirectResponse {
         $this->validate($request, [
             'file' => 'required|file|min:0'
@@ -247,10 +248,15 @@ class DelegatesController extends Controller
         $collection = Excel::toCollection(new DelegatesImport,
             $request->file('file'));
 
-        $job = new ImportDelegates($event, $collection->first(),
-            $request->user());
+//        $service->create($event, $collection->first(),
+        //            $request->user());
 
-        $this->dispatch($job);
+        ImportDelegates::dispatch($event, $collection->first(), $request->user());
+//        $job = new ImportDelegates($event, $collection->first(),
+        //            $request->user());
+        //
+        //
+        //        $this->dispatch($job);
 
         return redirect()->route('events.delegates.index', $event);
     }
@@ -409,5 +415,19 @@ class DelegatesController extends Controller
     public function getStoreValidationRules(): array {
         return array_merge($this->repo->getStoreRules(),
             (new Transaction)->getRules());
+    }
+
+    public function searchDuplicate() {
+        if ($email = request('email')) {
+            $delegates = Delegate::whereEmail($email)->get();
+
+            return response()->json($delegates);
+        }
+
+        if ($mobile = request('mobile')) {
+            $delegates = Delegate::whereMobile($mobile)->get();
+
+            return response()->json($delegates);
+        }
     }
 }

@@ -15,27 +15,21 @@ $delegate = isset($delegate) ? $delegate : $transaction->payee
 <body>
 
 <p>Dear {{$delegate->prefix}} {{$delegate->last_name}},</p>
-<p>Thank you for your participation in Advances in Medicine which was held on 25-26 May 2019.  Attached please find your confirmation which is served as an official receipt of your registration.  Please kindly be reminded to present this letter at the Conference registration counter to obtain your registration kit.</p>
-<p>Should you have any enquiry, please do not hesitate to contact the Conference Secretariat by email at <a
-			href="mailto:aim@cuhk.edu.hk"
-			target="_top">aim@cuhk.edu.hk</a>.</p>
+<p>Thank you very much for registering for the Advances in Medicine conference 2019 which will be held on 25-26 May 2019 at the Hong Kong Convention and Exhibition Centre.  Please find enclosed the confirmation letter of your registration for your reference.  The letter serves as an official receipt and please bring along the letter (hard copy or electronic copy is acceptable) to the conference for registration purpose.</p>
+<p>You are welcome to visit the website at <a
+			href="http://www.mect.cuhk.edu.hk/AIM/" target="_top">http://www.mect.cuhk.edu.hk/AIM/</a> from time to time for the conference updates.  Should you have any enquiries regarding the registration, please feel free to contact Ms. Celia Lin at <a
+			href="mailto:aim@cuhk.edu.hk" target="_top">aim@cuhk.edu.hk</a>.</p>
 
-<p>Look forward to seeing you next year!</p>
+<p>We look forward to meeting you at the conference.</p>
 
 
 <p>Best regards,</p>
 <p>
-<b style="color:#6b2d6c">Wingman Wong <br>
+<b style="color:#660066">Wingman Wong <br>
 Department of Medicine & Therapeutics <br>
 Faculty of Medicine <br>
 The Chinese University of Hong Kong
 </b></p>
-<p>
-	Tel: (852) 3505-3127  Fax: (852) 2645-1699 <br>
-Email: <a href="mailto:wing-man@cuhk.edu.hk">wing-man@cuhk.edu.hk</a> <br>
-Add: 9/F., Lui Che Woo Clinical Sciences Building, Prince of Wales Hospital, Shatin, N.T., Hong Kong
-
-</p>
 
 <img src="{{asset('imgs/logo.png')}}" style="max-width: 600px; height:auto">
 

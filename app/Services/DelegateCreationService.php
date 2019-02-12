@@ -61,7 +61,7 @@ class DelegateCreationService
             'transaction_type_id' => $data['transaction_type_id'] ?? null,
         ];
 
-        $code = ($data['role'] ?? null);
+        $code = $data['role'] ?? null;
 
         DB::beginTransaction();
 
@@ -110,8 +110,6 @@ class DelegateCreationService
             $this->createDelegateTransaction($newDelegate, $transactionData);
 
             $this->recordAdminActivity($newDelegate);
-
-            $this->markDelegateIsVerified($newDelegate);
 
             $this->checkDuplicated($event, $newDelegate);
 
@@ -193,7 +191,6 @@ class DelegateCreationService
         DB::beginTransaction();
 
         try {
-
 
             $delegate = $this->baseCreate($event, $data, null);
 
@@ -305,8 +302,16 @@ class DelegateCreationService
     ): Delegate {
 
         $newDelegate = $this->createDelegate($event, $data);
+        if (isset($data['roles_id']) and count($data['roles_id'])) {
+            foreach ($data['roles_id'] as $roleId) {
+                if ($roleCode = optional(DelegateRole::find($roleId))->code) {
+                    $this->assignRoleToDelegate($newDelegate, $roleCode);
+                }
+            }
+        } else {
+            $this->assignRoleToDelegate($newDelegate, $roleCode);
+        }
 
-        $this->assignRoleToDelegate($newDelegate, $roleCode);
 
         return $newDelegate;
 

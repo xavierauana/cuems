@@ -67,6 +67,10 @@ class Delegate extends Model
 
     }
 
+    public function transactions(): Relation {
+        return $this->morphMany(Transaction::class, "payee");
+    }
+
     // Scope
     public function scopeExcludeRole($query, $role): Builder {
         $roleCode = null;
@@ -75,13 +79,12 @@ class Delegate extends Model
         } elseif (is_string($role)) {
             $roleCode = $role;
         }
-
         return $query->whereIn('id', function ($query) use ($roleCode) {
             $query->select('delegate_delegate_role.delegate_id')
                   ->from('delegate_delegate_role')
                   ->join("delegate_roles", 'delegate_roles.id', '=',
                       'delegate_delegate_role.delegate_role_id')
-                  ->where('delegate_roles.code', '!=', $roleCode)
+                  ->where('delegate_roles.code', '<>', $roleCode)
                   ->distinct();
         });
     }
@@ -104,8 +107,12 @@ class Delegate extends Model
                          });
     }
 
-    public function transactions(): Relation {
-        return $this->morphMany(Transaction::class, "payee");
+    public function scopeTickets($query): Builder {
+        return $query->select('tickets.*')
+                     ->join('transactions', 'payee_id', '=', 'delegates.id')
+                     ->where('payee_type', Delegate::class)
+                     ->join('tickets', 'transactions.ticket_id', "=",
+                         "tickets.id");
     }
 
     // Accessor

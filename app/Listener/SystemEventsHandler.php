@@ -7,6 +7,7 @@ use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Event;
 use App\Events\SystemEvent;
+use App\Jobs\SendNotification;
 use App\Notification;
 use App\Transaction;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,8 +71,9 @@ class SystemEventsHandler
                           } else {
                               Log::info("without Role");
                               Log::info("and dispatch");
-
-                              $notification->send($event->model);
+                              SendNotification::dispatch($notification,
+                                  $event->model);
+                              //                              $notification->send($event->model);
                           }
                       });
 
@@ -128,10 +130,12 @@ class SystemEventsHandler
     ): void {
         if ($this->delegateHasRole($role, $event->model)) {
             Log::info('delegate');
-            $notification->send($event->model);
+            SendNotification::dispatch($notification, $event->model);
+            //            $notification->send($event->model);
         } elseif ($this->transactionPayeeHasRole($event, $role)) {
             Log::info('transaction');
-            $notification->send($event->model);
+            SendNotification::dispatch($notification, $event->model);
+            //            $notification->send($event->model);
         }
     }
 

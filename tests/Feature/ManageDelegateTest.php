@@ -22,8 +22,6 @@ class ManageDelegateTest extends TestCase
      * @test
      */
     public function create_delegate() {
-        $this->withoutExceptionHandling();
-
         $this->actingAs(factory(User::class)->create());
 
         $event = factory(Event::class)->create();
@@ -43,6 +41,79 @@ class ManageDelegateTest extends TestCase
 
         $this->assertEquals(TransactionType::first()->id,
             $delegate->transactions()->first()->transactionType->id);
+
+    }
+
+    /**
+     * @test
+     */
+    public function create_delegate_with_other_role() {
+
+        $this->withoutExceptionHandling();
+
+        $this->actingAs(factory(User::class)->create());
+
+        $event = factory(Event::class)->create();
+
+        $role = factory(DelegateRole::class)->create();
+
+        $data = $this->createData($event);
+
+        $data['roles_id'] = [
+            $role->id
+        ];
+
+        $uri = route('events.delegates.store', $event->id);
+
+        $this->post($uri, $data);
+
+        $delegate = Delegate::where(
+            [
+                'first_name' => $data['first_name'],
+                'last_name'  => $data['last_name'],
+            ]
+        )->first();
+
+        $this->assertEquals($role->id, $delegate->roles->first()->id);
+
+    }
+
+    /**
+     * @test
+     */
+    public function multiple_roles() {
+
+        $this->actingAs(factory(User::class)->create());
+
+        $event = factory(Event::class)->create();
+
+        $role1 = factory(DelegateRole::class)->create();
+        $role2 = factory(DelegateRole::class)->create();
+
+        $data = $this->createData($event);
+
+        $data['roles_id'] = [
+            $role1->id,
+            $role2->id
+        ];
+
+        $uri = route('events.delegates.store', $event->id);
+
+        $this->post($uri, $data);
+
+        $delegate = Delegate::where(
+            [
+                'first_name' => $data['first_name'],
+                'last_name'  => $data['last_name'],
+            ]
+        )->first();
+
+        $this->assertEquals(2, $delegate->roles->count());
+
+        $delegate->roles->each(function (DelegateRole $role) use ($role1, $role2
+        ) {
+            $this->assertTrue(in_array($role->id, [$role1->id, $role2->id]));
+        });
 
     }
 

@@ -10,45 +10,53 @@
 					   href="{{route('events.details', $event)}}">Dashboard</a>
 				</li>
 				<li class="nav-item dropdown">
-					<a class="nav-link"
-					   href="{{route('events.sessions.index', $event)}}">Sessions</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
-					   href="{{route('events.delegates.index', $event)}}">Delegates</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
-					   href="{{route('events.tickets.index', $event)}}">Tickets</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
-					   href="{{route('events.sponsors.index', $event)}}">Sponsors</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
-					   href="{{route('events.transactions.index', $event)}}">Transactions</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
-					   href="{{route('events.payment_records.index', $event)}}">Payment Records</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
-					   href="{{route('events.notifications.index', $event)}}">Notifications</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
-					   href="{{route('events.uploadFiles.index', $event)}}">Upload Files</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
-					   href="{{route('events.expenses.index', $event)}}">Expenses</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link"
-					   href="{{route('events.settings.index',$event)}}">Settings</a>
-				</li>
+				    <a class="nav-link dropdown-toggle" data-toggle="dropdown"
+				       href="#" role="button" aria-haspopup="true"
+				       aria-expanded="false">Conference Info</a>
+				    <div class="dropdown-menu">
+					    <a class="dropdown-item"
+					       href="{{route('events.delegates.index', $event)}}">Delegates</a>
+					    <a class="dropdown-item"
+					       href="{{route('events.sessions.index', $event)}}">Sessions</a>
+					    <a class="dropdown-item"
+					       href="{{route('events.sponsors.index', $event)}}">Sponsors</a>
+					    <a class="dropdown-item"
+					       href="{{route('events.tickets.index', $event)}}">Tickets</a>
+				    </div>
+				  </li>
+				<li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle" data-toggle="dropdown"
+				       href="#" role="button" aria-haspopup="true"
+				       aria-expanded="false">Notifications</a>
+				    <div class="dropdown-menu">
+					    <a class="dropdown-item"
+					       href="{{route('events.notifications.index', $event)}}">Notifications</a>
+					   <a class="dropdown-item"
+					      href="{{route('events.uploadFiles.index', $event)}}">Attachments</a>
+				    </div>
+				  </li>
+				<li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle" data-toggle="dropdown"
+				       href="#" role="button" aria-haspopup="true"
+				       aria-expanded="false">All Transactions</a>
+				    <div class="dropdown-menu">
+					    <a class="dropdown-item"
+					       href="{{route('events.transactions.index', $event)}}">Success</a>
+					   <a class="dropdown-item"
+					      href="{{route('events.payment_records.index', $event)}}">Failed</a>
+				    </div>
+				  </li>
+				<li class="nav-item dropdown">
+				    <a class="nav-link dropdown-toggle" data-toggle="dropdown"
+				       href="#" role="button" aria-haspopup="true"
+				       aria-expanded="false">Settings</a>
+				    <div class="dropdown-menu">
+					    <a class="dropdown-item"
+					       href="{{route('events.settings.index',$event)}}">Key</a>
+					   <a class="dropdown-item"
+					      href="{{route('events.expenses.index', $event)}}">Expenses</a>
+				    </div>
+				  </li>
 			</ul>
 	    </div>
 	    <div class="col">

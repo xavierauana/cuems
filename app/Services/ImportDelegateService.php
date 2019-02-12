@@ -1,6 +1,12 @@
 <?php
+/**
+ * Author: Xavier Au
+ * Date: 2019-02-13
+ * Time: 01:39
+ */
 
-namespace App\Jobs;
+namespace App\Services;
+
 
 use App\Delegate;
 use App\DelegateRole;
@@ -8,71 +14,67 @@ use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
 use App\Event;
 use App\Events\SystemEvent;
-use App\Services\DelegateCreationService;
 use App\Ticket;
 use App\Transaction;
 use App\TransactionType;
 use App\User;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class ImportDelegates implements ShouldQueue
+class ImportDelegateService
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    /**
-     * @var \App\Event
-     */
+
+    private $user;
+    private $collection;
     private $event;
     /**
-     * @var \Illuminate\Support\Collection
+     * @var \App\Transaction
      */
-    private $collection;
+    private $transaction;
     /**
-     * @var \App\User
+     * @var \App\Delegate
      */
-    private $user;
-
-
+    private $delegate;
     /**
-     * Create a new job instance.
-     *
-     * @param \App\Event                            $event
-     * @param \Illuminate\Support\Collection        $collection
-     * @param \App\User                             $user
-     * @param \App\Services\DelegateCreationService $service
+     * @var \App\DelegateRole
      */
-    public function __construct(
-        Event $event, Collection $collection, User $user
-    ) {
-        //
-        $this->event = $event;
-
-        $this->collection = $collection;
-        $this->user = $user;
-    }
+    private $role;
+    /**
+     * @var \App\Services\DelegateCreationService
+     */
+    private $service;
 
     /**
-     * Execute the job.
-     *
+     * ImportDelegateService constructor.
      * @param \App\Transaction                      $transaction
      * @param \App\Delegate                         $delegate
      * @param \App\DelegateRole                     $role
      * @param \App\Services\DelegateCreationService $service
-     * @return void
-     * @throws \ReflectionException
      */
-    public function handle(
+    public function __construct(
         Transaction $transaction, Delegate $delegate, DelegateRole $role,
         DelegateCreationService $service
     ) {
+        $this->transaction = $transaction;
+        $this->delegate = $delegate;
+        $this->role = $role;
+        $this->service = $service;
+    }
 
-        $rules = $this->getValidationRules($transaction, $delegate, $role);
+
+    /**
+     * @param \App\Event                     $event
+     * @param \Illuminate\Support\Collection $collection
+     * @param \App\User                      $user
+     * @throws \ReflectionException
+     */
+    public function create(Event $event, Collection $collection, User $user) {
+        $this->user = $user;
+        $this->event = $event;
+        $this->collection = $collection;
+
+        $rules = $this->getValidationRules();
 
         $this->conversion();
 
@@ -86,44 +88,30 @@ class ImportDelegates implements ShouldQueue
 
                 return false;
             }
-            
+
+
             return true;
         })
-                         ->each(function ($data) use ($service) {
-                             if ($newDelegate = $service->adminImport($this->event,
-                                 $data)) {
+                         ->each(function ($data) {
+                             $newDelegate = $this->service->adminImport($this->event,
+                                 $data, true);
+                             if ($newDelegate) {
                                  Log::info('fire event: ' . $newDelegate->name);
 
                                  event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
                                      $newDelegate));
                              }
                          });
-
     }
 
     /**
-     * @param array $data
-     * @param array $rules
-     * @return bool
-     */
-    private function getValidator(array $data, array $rules) {
-
-        return Validator::make($data, $rules);
-    }
-
-    /**
-     * @param \App\Transaction  $transaction
-     * @param \App\Delegate     $delegate
-     * @param \App\DelegateRole $role
      * @return array
      * @throws \ReflectionException
      */
-    private function getValidationRules(
-        Transaction $transaction, Delegate $delegate, DelegateRole $role
-    ): array {
-        $rules = $delegate->getStoreRules();
+    private function getValidationRules(): array {
+        $rules = $this->delegate->getStoreRules();
 
-        $rules = $rules = array_merge($rules, $transaction->getRules());
+        $rules = $rules = array_merge($rules, $this->transaction->getRules());
 
         return $rules;
     }
@@ -185,4 +173,15 @@ class ImportDelegates implements ShouldQueue
 
         return $new;
     }
+
+    /**
+     * @param array $data
+     * @param array $rules
+     * @return bool
+     */
+    private function getValidator(array $data, array $rules) {
+
+        return Validator::make($data, $rules);
+    }
+
 }

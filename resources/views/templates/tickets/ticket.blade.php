@@ -1,7 +1,11 @@
 <?php
-$ticket = $delegate->transactions()->first()->ticket;
+$ticket = $transaction->ticket;
 $qrCode = base64_encode(\QrCode::format('png')->size(150)
                                ->generate($transaction->uuid));
+
+$isWaived = strpos(strtolower($ticket->note), 'waived') > -1;
+$isSponsored = strpos(strtolower($ticket->note), 'sponsored') > -1;
+$isWaivedOrSponsored = $isWaived or $isSponsored;
 ?>
 		<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -89,22 +93,16 @@ The Chinese University of Hong Kong <br>
 				@endif
 			</td>
 			<td style="padding-bottom: 15px; text-align: center; border-collapse: separate; border-spacing: 5px 5px; border-bottom: 1px solid black">
-				@if(strpos(strtolower($ticket->name),'waived')))
-				                                               Waived
-				@elseif(strpos(strtolower($ticket->name),'sponsor'))
-				                                               Sponsored
-				@else
-				                                               ${{number_format($ticket->price,1,".",",")}}
-				@endif
+				${{number_format($ticket->price,1,".",",")}}
 			</td>
 			<td style="padding-bottom: 15px; text-align: center; border-collapse: separate; border-spacing: 5px 5px; border-bottom: 1px solid black">1</td>
 			<td style="padding-bottom: 15px; text-align: center; border-collapse: separate; border-spacing: 5px 5px; border-bottom: 1px solid black">
-				@if(strpos(strtolower($ticket->name),'waived')))
-				                                               Waived
-				@elseif(strpos(strtolower($ticket->name),'sponsor'))
-				                                               Sponsored
+				@if($isWaived)
+					Waived
+				@elseif($isSponsored)
+					Sponsored
 				@else
-				                                               ${{number_format($ticket->price,1,".",",")}}
+					${{number_format($ticket->price,1,".",",")}}
 				@endif
 
 			</td>
@@ -114,12 +112,18 @@ The Chinese University of Hong Kong <br>
 			<strong>Grand Total (HK$):</strong>
 		</td>
 		<td style="text-align: center; border-bottom-style: double; border-collapse: separate; border-spacing: 5px 5px">
-			<strong>${{number_format($ticket->price,1,".",",")}}</strong>
+			<strong>
+				@if($isWaivedOrSponsored)
+					NULL
+				@else
+					${{number_format($ticket->price,1,".",",")}}
+				@endif
+					</strong>
 		</td>
 	</tr>
 </table>
 
-<p>Paid by : Credit Card</p>
+<p>Paid by : {{$isWaivedOrSponsored? "NULL" : $transaction->transactionType->label}}</p>
 <p><strong>*Lunch box will be served at the venue on a first-come-first-served basis.</strong></p>
 <p>Remarks:</p>
 <p>

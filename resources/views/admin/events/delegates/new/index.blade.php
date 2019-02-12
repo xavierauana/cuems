@@ -7,7 +7,7 @@
 			        <a href="{{route('events.delegates.new.export', $event)}}"
 			           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
 			        <a href="{{route('events.delegates.new.import', $event)}}"
-			           class="btn btn-sm btn-outline-primary pull-right mr-1">Import</a>
+			           class="btn btn-sm btn-outline-primary pull-right mr-1">Update</a>
                 </div>
                 
                 <div class="table-responsive">

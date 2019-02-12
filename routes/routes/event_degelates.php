@@ -69,4 +69,6 @@ Route::get("events/{event}/delegates/export",
 Route::get("events/{event}/delegates/search",
     DelegatesController::class . "@search")
      ->name("events.delegates.search");
+Route::post("events/{event}/delegates/search",
+    DelegatesController::class . "@searchDuplicate");
 Route::resource("events.delegates", DelegatesController::class);
