@@ -16,7 +16,6 @@
 			        <a href="{{route('events.delegates.duplicates', $event)}}"
 			           class="btn btn-sm btn-warning pull-right mr-1">Duplicates</a>
 	            </div>
-	            
 		        <div class="card-body">
 			        <div class="row">
 				        <div class="col-6">

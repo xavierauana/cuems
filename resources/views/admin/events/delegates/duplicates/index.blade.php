@@ -3,11 +3,11 @@
 			<div class="col">
 				@include("admin._partials.alert")
 				<div class="card">
-			        <div class="card-header">Duplicated delegates for Event: {{$event->title}}
-				        <a href="{{route('events.delegates.export', [$event,'duplicated'=>true])}}"
-				           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
+					<div class="card-header">Duplicated delegates for Event: {{$event->title}}
+						<a href="{{route('events.delegates.export', [$event,'duplicated'=>true])}}"
+						   class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
 	                </div>
-                <div class="table-responsive">
+					<div class="table-responsive">
                   <table class="table">
 	                  <thead>
                         <th>Name</th>

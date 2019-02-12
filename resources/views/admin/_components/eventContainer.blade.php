@@ -3,7 +3,7 @@
 @section('content')
 	<div class="container">
     <div class="row">
-	    <div class="col-sm-2 sidebar">
+	    <div class="col-12 col-sm-2 sidebar">
 			<ul class="nav flex-column">
 				<li class="nav-item dropdown">
 					<a class="nav-link"
@@ -59,7 +59,7 @@
 				  </li>
 			</ul>
 	    </div>
-	    <div class="col">
+	    <div class="col-12 col-sm-10">
 		    {{$slot}}
 	    </div>
     </div>
