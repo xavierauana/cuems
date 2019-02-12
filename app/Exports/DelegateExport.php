@@ -112,7 +112,7 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
             ) {
                 return $carry . $role->label . ", ";
             }, ""),
-            optional($delegate->transactions->first())->ticket->name,
+            ($transaction = $delegate->transactions->first()) ? $transaction->ticket->name : null,
             TransactionStatus::getStatusKey($delegate->transactions->first()->status),
             $delegate->is_duplicated == DelegateDuplicationStatus::DUPLICATED ? "DUPLICATED" : "NA",
             $delegate->duplicated_with,
