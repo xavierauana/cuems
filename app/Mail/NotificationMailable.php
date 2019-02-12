@@ -2,11 +2,8 @@
 
 namespace App\Mail;
 
-use App\Enums\TransactionStatus;
 use App\Event;
 use App\Notification;
-use App\Services\CreateTicketService;
-use App\Transaction;
 use Illuminate\Support\Facades\Log;
 
 class NotificationMailable extends AbstractEventNotificationMail
@@ -58,6 +55,14 @@ class NotificationMailable extends AbstractEventNotificationMail
             ])->from($this->notification->from_email,
             $this->notification->from_name)
              ->subject($this->notification->subject);
+
+        if ($cc = $this->notification->cc) {
+            $this->cc($cc);
+        }
+
+        if ($bcc = $this->notification->bcc) {
+            $this->bcc($bcc);
+        }
 
 
         Log::info('going to check notification has ticket or not');

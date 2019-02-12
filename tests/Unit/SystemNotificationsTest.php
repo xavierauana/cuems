@@ -41,34 +41,93 @@ class SystemNotificationsTest extends MailCatcherTestCase
         parent::tearDown();
     }
 
-    public function test_notification_trigger() {
+    public function test_notification_delegate_triggers() {
 
-        $subject = "this is subject";
-        factory(Notification::class)->create([
-            'template' => 'test_transaction',
-            'event'    => SystemEvents::TRANSACTION_COMPLETED,
-            'subject'  => $subject,
-            'event_id' => $this->event->id,
-            'role_id'  => null
-        ]);
+        $events = [
+            SystemEvents::CREATE_DELEGATE,
+            SystemEvents::ADMIN_CREATE_DELEGATE
+        ];
 
-        $delegate = factory(Delegate::class)->create([
-            'event_id' => $this->event->id
-        ]);
 
-        $ticket = factory(Ticket::class)->create(['event_id' => $this->event->id]);
-        factory(Transaction::class)->create([
-            "status"     => TransactionStatus::COMPLETED,
-            "payee_type" => get_class($delegate),
-            "payee_id"   => $delegate->id,
-            "ticket_id"  => $ticket->id
-        ]);
+        foreach ($events as $index => $eventTrigger) {
+            $subject = "this is subject " . $index;
+            factory(Notification::class)->create([
+                'template' => 'test_transaction',
+                'event'    => $eventTrigger,
+                'subject'  => $subject,
+                'event_id' => $this->event->id,
+                'role_id'  => null,
+            ]);
 
-        $email = $this->getLastEmail();
+            $delegate = factory(Delegate::class)->create([
+                'event_id' => $this->event->id
+            ]);
 
-        $this->assertEmailSubjectContains($subject, $email);
+            event(new SystemEvent($eventTrigger, $delegate));
+
+            $email = $this->getLastEmail();
+
+            $this->assertEmailSubjectContains($subject, $email);
+
+        }
 
     }
+
+    public function test_notification_transaction_triggers() {
+
+        $events = [
+            SystemEvents::TRANSACTION_COMPLETED,
+            SystemEvents::TRANSACTION_REFUND,
+            SystemEvents::TRANSACTION_PENDING,
+            SystemEvents::TRANSACTION_FAILED,
+        ];
+
+        $ticket = factory(Ticket::class)->create(['event_id' => $this->event->id]);
+
+        foreach ($events as $index => $eventTrigger) {
+            $subject = "this is subject " . $index;
+
+            factory(Notification::class)->create([
+                'template' => 'test_transaction',
+                'event'    => $eventTrigger,
+                'subject'  => $subject,
+                'event_id' => $this->event->id,
+                'role_id'  => null,
+            ]);
+
+            $delegate = factory(Delegate::class)->create([
+                'event_id' => $this->event->id
+            ]);
+            $status = null;
+            switch ($eventTrigger) {
+                case SystemEvents::TRANSACTION_FAILED;
+                    $status = TransactionStatus::FAILED;
+                    break;
+                case SystemEvents::TRANSACTION_PENDING;
+                    $status = TransactionStatus::PROCESSING;
+                    break;
+                case SystemEvents::TRANSACTION_REFUND;
+                    $status = TransactionStatus::REFUNDED;
+                    break;
+                case SystemEvents::TRANSACTION_COMPLETED;
+                    $status = TransactionStatus::COMPLETED;
+                    break;
+                default:
+                    throw  new \Exception("Wrong");
+            }
+            factory(Transaction::class)->create([
+                "status"     => $status,
+                "payee_type" => get_class($delegate),
+                "payee_id"   => $delegate->id,
+                "ticket_id"  => $ticket->id
+            ]);
+
+            $email = $this->getLastEmail();
+
+            $this->assertEmailSubjectContains($subject, $email);
+        }
+    }
+
 
     public function test_notification_not_trigger() {
         factory(Notification::class)->create([

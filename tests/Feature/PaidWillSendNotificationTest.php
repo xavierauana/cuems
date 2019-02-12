@@ -41,6 +41,8 @@ class PaidWillSendNotificationTest extends MailCatcherTestCase
         factory(Notification::class)->create([
             'template'           => 'test_transaction',
             'subject'            => $subject,
+            'cc'                 => "xavier.au@anacreation.com",
+            'bcc'                => "xavier@anacreation.com",
             'event'              => SystemEvents::CREATE_DELEGATE,
             'event_id'           => $event->id,
             'include_duplicated' => false,
@@ -60,5 +62,8 @@ class PaidWillSendNotificationTest extends MailCatcherTestCase
         $email = $this->getLastEmail();
 
         $this->assertEmailSubjectContains($subject, $email);
+
+        $this->assertHasCc($email, 'xavier.au@anacreation.com');
+        $this->assertHasBCc($email, 'xavier@anacreation.com');
     }
 }

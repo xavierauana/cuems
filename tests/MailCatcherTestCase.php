@@ -117,7 +117,17 @@ class MailCatcherTestCase extends TestCase
         } else {
             $this->assertTrue(false, 'There is attachment');
         }
+    }
 
+    protected function assertHasCc($email, $address) {
+        $data = json_decode((string)$email->getBody(), true);
+        $this->assertTrue(strpos($data['source'],
+                "Cc: " . strtolower($address)) > -1, "Cannot find CC");
+    }
+    protected function assertHasBcc($email, $address) {
+        $data = json_decode((string)$email->getBody(), true);
+        $this->assertTrue(strpos($data['source'],
+                "Bcc: " . strtolower($address)) > -1, "Cannot find BCC");
     }
 
 
