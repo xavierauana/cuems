@@ -14,7 +14,6 @@
 
 <p>We look forward to meeting you at the conference.</p>
 
-
 <p>Best regards,</p>
 <p>
 Wingman Wong <br>
