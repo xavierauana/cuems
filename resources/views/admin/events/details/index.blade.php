@@ -37,7 +37,7 @@
 					    <a href="{{route("events.delegates.new", $event)}}"><h4
 								    class="card-header">Sponsor</h4></a>
 					    <div class="card-body">
-						    <h5>{{number_format($event->delegates()->tickets()->where('tickets.note','sponsor')->count())}}</h5>
+						    <h5>{{number_format($event->delegates()->tickets()->where('tickets.note','like','%sponsored%')->count())}}</h5>
 					    </div>
 				    </div>
 			    </div>
@@ -46,7 +46,7 @@
 					    <a href="{{route("events.delegates.new", $event)}}"><h4
 								    class="card-header">Waived</h4></a>
 					    <div class="card-body">
-						    <h5>{{number_format($event->delegates()->tickets()->where('tickets.note','waived')->count())}}</h5>
+						    <h5>{{number_format($event->delegates()->tickets()->where('tickets.note','like','%waived%')->count())}}</h5>
 					    </div>
 				    </div>
 			    </div>
