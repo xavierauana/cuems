@@ -136,7 +136,9 @@ class DummyDataCreator
     }
 
     public function remove() {
+        $type = $this->transaction->transactionType;
         $this->transaction->forceDelete();
+        $type->forceDelete();
         $this->role->forceDelete();
         $this->delegate->forceDelete();
         $this->ticket->forceDelete();

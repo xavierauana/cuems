@@ -106,7 +106,7 @@
             </div>
         </div>
         <div class="form-group row">
-            <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Transaction Status:</label>
+            <label class="col-sm-6 col-md-4 col-lg-3 col-form-label">Transaction Type:</label>
             <div class="col-sm-6 col-md-8  col-lg-9">
                 {{Form::select('transaction_type_id',\App\TransactionType::pluck('label','id'), null, ['class'=>'form-control'])}}
 	            @if ($errors->has('transaction_type_id'))
