@@ -12,11 +12,11 @@ $delegate = $delegate ?? $transaction->payee;
 
 <p>Best regards,</p>
 
-<p><b><font color="#660066">
+<p><b><span color="#660066">
 Wingman Wong <br>
 Department of Medicine & Therapeutics <br>
 Faculty of Medicine <br>
 The Chinese University of Hong Kong
-</font></b></p>
+</span></b></p>
 
 <img src="{{asset('imgs/logo.png')}}" style="max-width: 600px; height:auto">
