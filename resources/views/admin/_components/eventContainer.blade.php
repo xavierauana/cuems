@@ -38,12 +38,12 @@
 				<li class="nav-item dropdown">
 				    <a class="nav-link dropdown-toggle" data-toggle="dropdown"
 				       href="#" role="button" aria-haspopup="true"
-				       aria-expanded="false">All Transactions</a>
+				       aria-expanded="false">Transactions</a>
 				    <div class="dropdown-menu">
 					    <a class="dropdown-item"
 					       href="{{route('events.transactions.index', $event)}}">Success</a>
 					   <a class="dropdown-item"
-					      href="{{route('events.payment_records.index', $event)}}">Failed</a>
+					      href="{{route('events.payment_records.index', $event)}}">Fail</a>
 				    </div>
 				  </li>
 				<li class="nav-item dropdown">
