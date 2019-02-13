@@ -24,8 +24,7 @@ $delegate = isset($delegate) ? $delegate : $transaction->payee
 
 
 <p>Best regards,</p>
-<p>
-<b style="color:#660066">Wingman Wong <br>
+<p><b style="color:#660066">Wingman Wong <br>
 Department of Medicine & Therapeutics <br>
 Faculty of Medicine <br>
 The Chinese University of Hong Kong
