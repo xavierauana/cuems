@@ -13,9 +13,7 @@
                     <thead>
                         <th>Order</th>
                         <th>Title</th>
-                        <th>Subtitle</th>
                         <th>Duration</th>
-                        <th>Moderation Type</th>
                         <th>Moderators</th>
                         <th>Number of talks</th>
                         <th>Actions</th>
@@ -25,9 +23,7 @@
 		                  <tr>
 			                  <td>{{$session->order}}</td>
 			                  <td>{{$session->title}}</td>
-			                  <td>{{$session->subtitle}}</td>
 			                  <td>{{$session->duration}}</td>
-			                  <td>{{title_case(\App\Enums\SessionModerationType::getType($session->moderation_type))}}</td>
 			                  <td>
 				                  @foreach($session->moderatorDelegates as $delegate)
 					                  <a href="{{route('events.delegates.show',[$event,$delegate])}}"><span
