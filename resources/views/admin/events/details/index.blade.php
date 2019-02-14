@@ -28,7 +28,7 @@
 					    <a href="{{route("events.delegates.duplicates", $event)}}"><h4
 								    class="card-header">Duplicated</h4></a>
 					    <div class="card-body">
-						    <h5>{{number_format($event->delegates()->whereIsVerified(\App\Enums\DelegateDuplicationStatus::DUPLICATED)->count())}}</h5>
+						    <h5>{{number_format($event->delegates()->whereIsDuplicated(\App\Enums\DelegateDuplicationStatus::DUPLICATED)->count())}}</h5>
 					    </div>
 				    </div>
 			    </div>

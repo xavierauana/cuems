@@ -50,10 +50,10 @@ The Chinese University of Hong Kong <br>
 <table width="100%">
 	<tr>
 		<td>
-			<p>{{\Carbon\Carbon::now()->toDateString()}}</p>
+			<p>{{\Carbon\Carbon::now()->format("j F Y")}}</p>
 			<p>
-				{{$delegate->prefix}} {{$delegate->first_name}} {{$delegate->last_name}}
-				, <br>
+				{{$delegate->prefix}}, {{$delegate->first_name}} {{$delegate->last_name}}
+				<br>
 				{{$delegate->department}} <br>
 				{{$delegate->institution}} <br>
 				{{$delegate->address_1}} <br>
@@ -70,7 +70,7 @@ The Chinese University of Hong Kong <br>
 
 <p>Your registration no.: {{$delegate->getRegistrationId()}}</p>
 <h4 style=" text-align: center">CONFIRMATION OF REGISTRATION</h4>
-			<p>We are pleased to confirm your registration details as follows:-</p>
+			<p>We are pleased to confirm your registration for AIM Conference 2019 as follows:-</p>
 <table style="width: 100%">
 	<tr>
 		<th style="text-align: center; border-collapse: separate; border-spacing: 1px 1px; border-bottom: 1px solid black">Category</th>
@@ -116,7 +116,7 @@ The Chinese University of Hong Kong <br>
 				@if($isWaivedOrSponsored)
 					NULL
 				@else
-					${{number_format($ticket->price,1,".",",")}}
+					${{number_format($ticket->price,0,".",",")}}
 				@endif
 					</strong>
 		</td>
