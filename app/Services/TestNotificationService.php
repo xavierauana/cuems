@@ -9,6 +9,7 @@ namespace App\Services;
 
 
 use App\Notification;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class TestNotificationService
@@ -43,36 +44,57 @@ class TestNotificationService
 
 
     /**
-     * @throws \Exception
+     * @return bool
      */
-    private function construct(): void {
-        $this->validateDataIsReady();
+    private function construct(): bool {
+        if ($this->validateDataIsReady()) {
+            $this->dummyData = (new DummyDataCreator)->setNotification($this->notification)
+                                                     ->setEmail($this->testEmail)
+                                                     ->createDummyData();
 
-        $this->dummyData = (new DummyDataCreator)->setNotification($this->notification)
-                                                 ->setEmail($this->testEmail)
-                                                 ->createDummyData();
+            return true;
+        }
+
+        return false;
 
     }
 
 
-    /**
-     * @throws \Exception
-     */
     public function testDelegate() {
-        $this->construct();
 
-        $this->notification->send($this->dummyData->getDelegate());
+        if (!$this->construct()) {
+            return false;
+        }
 
-        $this->dummyData->remove();
+        try {
+            $this->notification->send($this->dummyData->getDelegate());
+            $this->dummyData->remove();
+        } catch (\Exception $e) {
+            throw $e;
+        } finally {
+            $this->dummyData->remove();
+        }
+
     }
+
 
     /**
      * @throws \Exception
      */
     public function testTransaction() {
-        $this->construct();
-        $this->notification->send($this->dummyData->getTransaction());
-        $this->dummyData->remove();
+        if (!$this->construct()) {
+            return false;
+        }
+
+
+        try {
+            $this->notification->send($this->dummyData->getTransaction());
+            $this->dummyData->remove();
+        } catch (\Exception $e) {
+            throw $e;
+        } finally {
+            $this->dummyData->remove();
+        }
     }
 
     /**
@@ -86,15 +108,21 @@ class TestNotificationService
     }
 
     /**
-     * @throws \Exception
+     * @return bool
      */
-    private function validateDataIsReady(): void {
+    private function validateDataIsReady(): bool {
         if (is_null($this->notification)) {
-            throw  new \Exception("No notification to test.");
+            Log::error("Test notification failed. No notification to test.");
+
+            return false;
         }
         if (is_null($this->testEmail)) {
-            throw  new \Exception("No test email is set.");
+            Log::error("Test notification failed. No test email set.");
+
+            return false;
         }
+
+        return true;
     }
 
 
