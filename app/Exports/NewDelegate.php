@@ -26,7 +26,10 @@ class NewDelegate implements FromCollection, WithHeadings, WithMapping
      * param \Illuminate\Support\Collection
      */
     public function collection() {
-        return $this->event->delegates()->whereIsVerified(false)->get();
+        return $this->event->delegates()
+                           ->whereIsVerified(false)
+                           ->with(['roles', 'transactions'])
+                           ->get();
     }
 
     public function headings(): array {
@@ -52,9 +55,9 @@ class NewDelegate implements FromCollection, WithHeadings, WithMapping
      */
     public function map($delegate): array {
         try {
-            $name = $delegate->transactions()->first()->ticket->name;
+            $name = $delegate->transactions->first()->ticket->name;
         } catch (\Exception $e) {
-            dd($delegate);
+            $name = null;
         }
 
         return [
