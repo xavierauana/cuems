@@ -3,7 +3,7 @@
         <div class="col">
          @include("admin._partials.alert")
 	        <div class="card">
-		        <div class="card-header  @if($delegate->is_duplicated === \App\Enums\DelegateDuplicationStatus::DUPLICATED) bg-warning @endif">Delegate: {{$delegate->name}}
+		        <div class="card-header  @if($delegate->is_duplicated === \App\Enums\DelegateDuplicationStatus::DUPLICATED) bg-warning @endif">Delegate: {{$delegate->name}} ({{$delegate->getRegistrationId()}})
 			        @if($delegate->is_duplicated === \App\Enums\DelegateDuplicationStatus::DUPLICATED)
 				        <span class="mt-1 float-right badge badge-warning">Duplicated</span>
 			        @endif
@@ -50,7 +50,6 @@
 					        <div class="col-md-6"><strong>Transaction ID: </strong> {{$transaction->charge_id ?? "NA"}}</div>
 					        <div class="col-md-6"><strong>Transaction Type: </strong> {{$transaction->transactionType->label ?? "NA"}}</div>
 					        <div class="col-md-6"><strong>Transaction Status: </strong> {{array_flip(\App\Enums\TransactionStatus::getStatus())[$transaction->status]  }}</div>
-					        <div class="col-md-6"><strong>Role: </strong> {{$delegate->roles->first()->label}}</div>
 				        </div>
 				        <div class="row">
 					        <div class="col"><strong>Note</strong> {{$transaction->note}}</div>
@@ -63,6 +62,7 @@
 		                <div class="table-responsive">
 		                  <table class="table">
 		                    <thead>
+		                        <th>Registration Id</th>
 		                        <th>Name</th>
 		                        <th>Email</th>
 		                        <th>Mobile</th>
@@ -73,6 +73,7 @@
 			                  <tbody>
 			                  @foreach($duplicates as $duplicate)
 				                  <tr>
+					                  <td>{{$duplicate->getRegistrationId()}}</td>
 					                  <td><a target="_blank"
 					                         href="{{route('events.delegates.show',[$event, $duplicate])}}">{{$duplicate->name}}</a></td>
 					                  <td>{{$duplicate->email}}</td>

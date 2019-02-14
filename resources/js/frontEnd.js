@@ -58,7 +58,7 @@ const app = new Vue({
 
 
                       },
-                      methods   : {
+                      methods   :  {
                         update(type) {
                           this.isTraineeTicket = type === 'trainee'
                           if (type === 'trainee') {

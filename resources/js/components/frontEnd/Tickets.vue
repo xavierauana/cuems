@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     showTicket(ticket) {
-      return ticket.note === 'trainee' ?
+      return ticket.note.toLowerCase().indexOf('trainee') > -1 ?
              this.selectType === "trainee" :
              this.selectType === "practitioner"
     },
