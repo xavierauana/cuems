@@ -74,6 +74,8 @@ Route::group(
     @include('routes/event_degelates.php');
 
     // Session and talks
+    Route::get('/events/{event}/talks', TalksController::class . "@all")
+         ->name('events.talks.all');
     Route::resource("events.sessions", SessionsController::class);
     Route::resource("events.sessions.talks", TalksController::class);
 

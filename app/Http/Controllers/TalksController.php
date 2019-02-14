@@ -158,4 +158,12 @@ class TalksController extends Controller
                            return $carry;
                        }, []);
     }
+
+    public function all(Event $event) {
+        $talks = $event->sessions->map(function (Session $session) {
+            return $session->talks()->with('session')->get();
+        })->flatten();
+
+        return view("admin.events.talks.index", compact('event', 'talks'));
+    }
 }

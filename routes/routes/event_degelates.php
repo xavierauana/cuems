@@ -47,6 +47,12 @@ Route::post('events/{event}/delegates/{delegate}/duplicated',
 Route::get("events/{event}/delegates/new",
     DelegatesController::class . "@new")
      ->name("events.delegates.new");
+Route::get("events/{event}/delegates/sponsored",
+    DelegatesController::class . "@sponsored")
+     ->name("events.delegates.sponsored");
+Route::get("events/{event}/delegates/waived",
+    DelegatesController::class . "@waived")
+     ->name("events.delegates.waived");
 Route::post("events/{event}/delegates/new/import",
     DelegatesController::class . "@importNew")
      ->name("events.delegates.new.import");

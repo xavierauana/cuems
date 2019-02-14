@@ -17,9 +17,9 @@
 						         <strong>Prefix: </strong> {{$delegate->prefix}}
 					        </div>
 					        <div class="col-sm-5">
-						        <strong>First Name: </strong> {{$delegate->first_name}}
+						        <strong>Given Name: </strong> {{$delegate->first_name}}
 					        </div><div class="col-sm-5">
-						        <strong>First Name: </strong> {{$delegate->last_name}}
+						        <strong>Surname: </strong> {{$delegate->last_name}}
 					        </div>
 				        </div>
 				        <div class="row">
@@ -46,7 +46,7 @@
 				        <div class="row">
 					        <?php $transaction = $delegate->transactions()
                                                           ->first(); ?>
-					        <div class="col-12"><strong>Ticket</strong> {{ $transaction->ticket->name}}</div>
+					        <div class="col-12"><strong>Ticket: </strong> {{ $transaction->ticket->name}}</div>
 					        <div class="col-md-6"><strong>Transaction ID: </strong> {{$transaction->charge_id ?? "NA"}}</div>
 					        <div class="col-md-6"><strong>Transaction Type: </strong> {{$transaction->transactionType->label ?? "NA"}}</div>
 					        <div class="col-md-6"><strong>Transaction Status: </strong> {{array_flip(\App\Enums\TransactionStatus::getStatus())[$transaction->status]  }}</div>

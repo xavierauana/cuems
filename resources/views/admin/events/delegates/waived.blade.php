@@ -1,42 +1,29 @@
+
 @component('admin._components.eventContainer', ['event'=>$event])
 	<div class="row justify-content-center">
         <div class="col">
 	         @include("admin._partials.alert")
 	        <div class="card">
-		        <div class="card-header">Delegates for Event: {{$event->title}}
-			        <a href="{{route('events.delegates.new', $event)}}"
-			           class="btn btn-sm btn-success pull-right">New</a>
-			        {{--<a href="{{route('events.delegates.create', $event)}}"--}}
-			           {{--class="btn btn-sm btn-success pull-right">New</a>--}}
-			        {{--<a href="{{route('delegates.import_template')}}"--}}
-			           {{--target="_blank"--}}
-			           {{--class="btn btn-sm btn-outline-primary pull-right mr-1">Download Import Template</a>--}}
-			        {{--<a href="{{route('events.delegates.import', $event)}}"--}}
-			           {{--class="btn btn-sm btn-outline-success pull-right mr-1">Import</a>--}}
-			        <a href="{{route('events.delegates.export', $event)}}"
-			           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
-			        <a href="{{route('events.delegates.duplicates', $event)}}"
-			           class="btn btn-sm btn-warning pull-right mr-1">Duplicates</a>
-	            </div>
-		        <div class="card-body">
-			        <div class="row">
-				        <div class="col-6">
-					        <form class="form"
-					              action="{{route('events.delegates.index', $event)}}">
-						        <div class="input-group">
-								    <input class="form-control"
-								           name="keyword"
-								           value="{{request()->query('keyword')}}"
-								           placeholder="search" />
-								        <div class="">
-									        <button class="btn btn-success">Search</button>
-								        </div>
-							        </div>
-					        </form>
-				        </div>
-			        </div>
-		        </div>
-	            <div class="table-responsive">
+		        <div class="card-header">Waived Delegates for Event: {{$event->title}}</div>
+		        {{--<div class="card-body">--}}
+		        {{--<div class="row">--}}
+		        {{--<div class="col-6">--}}
+		        {{--<form class="form"--}}
+		        {{--action="{{route('events.delegates.index', $event)}}">--}}
+		        {{--<div class="input-group">--}}
+		        {{--<input class="form-control"--}}
+		        {{--name="keyword"--}}
+		        {{--value="{{request()->query('keyword')}}"--}}
+		        {{--placeholder="search" />--}}
+		        {{--<div class="">--}}
+		        {{--<button class="btn btn-success">Search</button>--}}
+		        {{--</div>--}}
+		        {{--</div>--}}
+		        {{--</form>--}}
+		        {{--</div>--}}
+		        {{--</div>--}}
+		        {{--</div>--}}
+		        <div class="table-responsive">
 	              <table class="table">
 	                <thead>
 	                    <th>

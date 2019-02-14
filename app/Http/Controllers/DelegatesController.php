@@ -261,7 +261,7 @@ class DelegatesController extends Controller
         //
         //        $this->dispatch($job);
 
-        return redirect()->route('events.delegates.index', $event);
+        return redirect()->route('events.delegates.new', $event);
     }
 
     public function getImport(Event $event, Request $request) {
@@ -432,5 +432,21 @@ class DelegatesController extends Controller
 
             return response()->json($delegates);
         }
+    }
+
+    public function sponsored(Event $event) {
+
+        $delegates = $event->delegates()->sponsored()->paginate();
+
+        return view("admin.events.delegates.sponsored",
+            compact('delegates', 'event'));
+    }
+
+    public function waived(Event $event) {
+
+        $delegates = $event->delegates()->waived()->paginate();
+
+        return view("admin.events.delegates.waived",
+            compact('delegates', 'event'));
     }
 }

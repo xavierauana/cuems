@@ -66,6 +66,10 @@ class Event extends Model
         return $this->hasMany(Sponsor::class);
     }
 
+    public function sponsorRecords(): Relation {
+        return $this->hasMany(SponsorRecord::class);
+    }
+
     public function uploadFiles(): Relation {
         return $this->hasMany(UploadFile::class);
     }

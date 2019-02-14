@@ -34,19 +34,19 @@
 			    </div>
 			    <div class="mb-3 col-sm-6 col-md-4">
 				    <div class="card">
-					    <a href="{{route("events.delegates.new", $event)}}"><h4
+					    <a href="{{route("events.delegates.sponsored", $event)}}"><h4
 								    class="card-header">Sponsor</h4></a>
 					    <div class="card-body">
-						    <h5>{{number_format($event->delegates()->tickets()->where('tickets.note','like','%sponsored%')->count())}}</h5>
+						    <h5>{{number_format($event->delegates()->sponsored()->count())}}</h5>
 					    </div>
 				    </div>
 			    </div>
 			    <div class="mb-3 col-sm-6 col-md-4">
 				    <div class="card">
-					    <a href="{{route("events.delegates.new", $event)}}"><h4
+					    <a href="{{route("events.delegates.waived", $event)}}"><h4
 								    class="card-header">Waived</h4></a>
 					    <div class="card-body">
-						    <h5>{{number_format($event->delegates()->tickets()->where('tickets.note','like','%waived%')->count())}}</h5>
+						    <h5>{{number_format($event->delegates()->waived()->count())}}</h5>
 					    </div>
 				    </div>
 			    </div>
@@ -75,7 +75,7 @@
 			    </div>
 			    <div class="mb-3 col-sm-6 col-md-4">
 				    <div class="card">
-					    <a href="{{route('events.sessions.index', $event)}}"><h4
+					    <a href="{{route('events.talks.all', $event)}}"><h4
 								    class="card-header">Talks</h4></a>
 					    <div class="card-body">
 						    <h5>{{number_format($event->sessions->reduce(function(int $carry, \App\Session $session){

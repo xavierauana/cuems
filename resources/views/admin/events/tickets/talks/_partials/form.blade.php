@@ -31,6 +31,6 @@
     <input class="btn btn-success"
            type="submit"
            value="{{$buttonText}}" />
-    <a href="{{url()->previous()}}"
+    <a href="{{route('events.sessions.talks.index',[$event, $session])}}"
        class="btn btn-info text-light">Back</a>
 </div>

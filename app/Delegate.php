@@ -79,6 +79,7 @@ class Delegate extends Model
         } elseif (is_string($role)) {
             $roleCode = $role;
         }
+
         return $query->whereIn('id', function ($query) use ($roleCode) {
             $query->select('delegate_delegate_role.delegate_id')
                   ->from('delegate_delegate_role')
@@ -108,16 +109,34 @@ class Delegate extends Model
     }
 
     public function scopeTickets($query): Builder {
-        return $query->select('tickets.*')
+        return $query->select('delegates.*')
                      ->join('transactions', 'payee_id', '=', 'delegates.id')
                      ->where('payee_type', Delegate::class)
                      ->join('tickets', 'transactions.ticket_id', "=",
                          "tickets.id");
     }
 
+    /**
+     * Delegate whose ticket is sponsored
+     * @param $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSponsored($query): Builder {
+        return $query->tickets()->where('tickets.note', 'like', '%sponsored%');
+    }
+
+    /**
+     * Delegate whose ticket is wavied
+     * @param $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWaived($query): Builder {
+        return $query->tickets()->where('tickets.note', 'like', '%waived%');
+    }
+
     // Accessor
     public function getNameAttribute(): string {
-        return $this->prefix . " " . $this->last_name . " " . $this->first_name;
+        return $this->prefix . " " . $this->first_name . " " . $this->last_name;
     }
 
     public function getTicketIdAttribute(): int {

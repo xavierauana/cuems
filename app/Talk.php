@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +21,12 @@ class Talk extends Model
         'order'    => 'nullable|min:0|numeric',
     ];
     const ErrorMessages = [];
+
+    // Relation
+
+    public function session(): Relation {
+        return $this->belongsTo(Session::class);
+    }
 
 
     // scope
