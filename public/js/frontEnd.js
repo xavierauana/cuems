@@ -6157,7 +6157,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
   methods: {
     showTicket: function showTicket(ticket) {
-      return ticket.note.toLowerCase().indexOf('trainee') > -1 ? this.selectType === "trainee" : this.selectType === "practitioner";
+      return ticket.note && ticket.note.toLowerCase().indexOf('trainee') > -1 ? this.selectType === "trainee" : this.selectType === "practitioner";
     },
     changeType: function changeType(type) {
       this.selectType = type;
