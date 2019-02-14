@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Event;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -43,5 +44,19 @@ class Controller extends BaseController
         }
 
         return $query;
+    }
+
+    protected function abortIfNotEventSubEntity(Model $model, Event $event
+    ): void {
+        try {
+            if ($model->event->isNot($event)) {
+                {
+                    abort(403);
+                }
+            }
+        } catch (\Exception $e) {
+            abort(403);
+        }
+
     }
 }

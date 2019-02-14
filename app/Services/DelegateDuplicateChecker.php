@@ -23,6 +23,7 @@ class DelegateDuplicateChecker implements DuplicateCheckerInterface
         $predicates = $this->fetchPredicates($field, $value);
 
         return $this->event->delegates()
+                           ->with('event')
                            ->where($predicates)
                            ->orderBy('created_at', 'asc')
                            ->get();

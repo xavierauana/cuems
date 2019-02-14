@@ -126,8 +126,7 @@ class DelegatesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Event $event, Delegate $delegate) {
-
-        //        $checker = new DelegateDuplicateChecker($event);
+        $this->abortIfNotEventSubEntity($delegate, $event);
         $checker = app(DuplicateCheckerInterface::class)->setEvent($event);
 
         $duplicates = $checker->find('email', $delegate->email)
@@ -170,6 +169,7 @@ class DelegatesController extends Controller
      * @throws \ReflectionException
      */
     public function edit(Event $event, Delegate $delegate) {
+        $this->abortIfNotEventSubEntity($delegate, $event);
         $reflection = new \ReflectionClass(TransactionStatus::class);
 
         $status = array_flip($reflection->getConstants());
@@ -192,6 +192,8 @@ class DelegatesController extends Controller
         DelegateUpdateRequest $request, Event $event, Delegate $delegate,
         Transaction $transaction
     ) {
+        $this->abortIfNotEventSubEntity($delegate, $event);
+
         $validatedData = $request->validated();
 
         DB::beginTransaction();
@@ -222,7 +224,7 @@ class DelegatesController extends Controller
      */
     public function destroy(Event $event, Delegate $delegate
     ) {
-        $delegate = $event->delegates()->find($delegate->id);
+        $this->abortIfNotEventSubEntity($delegate, $event);
 
         $delegate->delete();
 
@@ -248,11 +250,12 @@ class DelegatesController extends Controller
         $collection = Excel::toCollection(new DelegatesImport,
             $request->file('file'));
 
-//        $service->create($event, $collection->first(),
+        //        $service->create($event, $collection->first(),
         //            $request->user());
 
-        ImportDelegates::dispatch($event, $collection->first(), $request->user());
-//        $job = new ImportDelegates($event, $collection->first(),
+        ImportDelegates::dispatch($event, $collection->first(),
+            $request->user());
+        //        $job = new ImportDelegates($event, $collection->first(),
         //            $request->user());
         //
         //
