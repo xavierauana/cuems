@@ -4,6 +4,13 @@
          @include("admin._partials.alert")
 	        <div class="card">
 		        <div class="card-header">Newly registered delegates for Event: {{$event->title}}
+			
+			
+			        <a href="{{route('events.delegates.create', $event)}}"
+			           class="btn btn-sm btn-success pull-right">New</a>
+			        <a href="{{route('delegates.import_template')}}"
+			           target="_blank"
+			           class="btn btn-sm btn-outline-primary pull-right mr-1">Download Import Template</a>
 			        <a href="{{route('events.delegates.new.export', $event)}}"
 			           class="btn btn-sm btn-outline-primary pull-right mr-1">Export</a>
 			        <a href="{{route('events.delegates.new.import', $event)}}"
