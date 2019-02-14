@@ -30,7 +30,7 @@ class InputMutator
         $fields = is_array($fields) ? $fields : [$fields];
 
         collect($fields)->each(function ($field) {
-            $this->inputs[$field] = isset($this->inputs[$field]) ? $this->inputs[$field] : false;
+            $this->inputs[$field] = isset($this->inputs[$field]) ? !!$this->inputs[$field] : false;
         });
 
         return $this;

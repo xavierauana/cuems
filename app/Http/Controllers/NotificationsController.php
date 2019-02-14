@@ -67,6 +67,7 @@ class NotificationsController extends Controller
         $validatedData = $request->validated();
 
         $newNotification = $event->notifications()->create($validatedData);
+        
         if (isset($validatedData['files'])) {
             $newNotification->uploadFiles()->sync($validatedData['files']);
         } else {
