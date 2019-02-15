@@ -5,7 +5,7 @@ $qrCode = base64_encode(\QrCode::format('png')->size(150)
 
 $isWaived = strpos(strtolower($ticket->note), 'waived') > -1;
 $isSponsored = strpos(strtolower($ticket->note), 'sponsored') > -1;
-$isWaivedOrSponsored = $isWaived or $isSponsored;
+$isWaivedOrSponsored = ($isWaived or $isSponsored);
 ?>
 		<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -52,7 +52,8 @@ The Chinese University of Hong Kong <br>
 		<td>
 			<p>{{\Carbon\Carbon::now()->format("j F Y")}}</p>
 			<p>
-				{{$delegate->prefix}}, {{$delegate->first_name}} {{$delegate->last_name}}
+				{{$delegate->prefix}}
+				, {{$delegate->first_name}} {{$delegate->last_name}}
 				<br>
 				{{$delegate->department}} <br>
 				{{$delegate->institution}} <br>
@@ -136,9 +137,8 @@ The Chinese University of Hong Kong <br>
 
 <p>Should you have any questions, please feel free to contact the Conference Secretariat by email at aim@cuhk.edu.hk.</p>
 
-<img width="100" src="imgs/stamp.png" />
-
 <p>
+	<img width="150" src="imgs/stamp.png" />
 	Conference Secretariat, AIM 2019 <br>
 	Department of Medicine & Therapeutics <br>
 	The Chinese University of Hong Kong <br>
