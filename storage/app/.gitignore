@@ -1,0 +1,15 @@
+*
+!templates
+!templates/tickets_template.csv
+!templates/delegates_template.xlsx
+!templates/sponsors_template.xlsx
+!public/
+!events/
+!files/
+!countries.json
+!names_female.json
+!names_male.json
+!.gitignore
+
+
+

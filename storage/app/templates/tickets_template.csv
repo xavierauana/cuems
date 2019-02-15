@@ -1,0 +1,14 @@
+name,code,price,start_at,end_at,vacancy,is_public,note
+Ticket name which will be shown,unique_ticket_code_for_system,100,1/10/2018 0:00,3/12/2018 23:59,,FALSE,
+Early Bird - Trainee - Full Registration,eb_t_full,300,1/10/2018 0:00,31/10/2018 23:59,,TRUE,trainee
+Early Bird - Trainee - 1st Day,eb_t_1,200,1/10/2018 0:00,31/10/2018 23:59,,TRUE,trainee
+Early Bird - Trainee - 2nd Day,eb_t_2,200,1/10/2018 0:00,31/10/2018 23:59,,TRUE,trainee
+Early Bird - Practitioner - Full Registration,eb_p_full,500,1/10/2018 0:00,31/10/2018 23:59,,TRUE,
+Early Bird - Practitioner - 1st Day,eb_p_1,300,1/10/2018 0:00,31/10/2018 23:59,,TRUE,
+Early Bird - Practitioner - 2nd Day,eb_p_2,300,1/10/2018 0:00,31/10/2018 23:59,,TRUE,
+Normal - Trainee - Full Registration,n_t_full,600,1/11/2018 0:00,4/12/2018 0:00,,TRUE,trainee
+Normal  - Trainee - 1st Day,n_t_1,400,1/11/2018 0:00,4/12/2018 0:00,,TRUE,trainee
+Normal  - Trainee - 2nd Day,n_t_2,400,1/11/2018 0:00,4/12/2018 0:00,,TRUE,trainee
+Normal - Practitioner - Full Registration,n_p_full,1000,1/11/2018 0:00,4/12/2018 0:00,,TRUE,
+Normal - Practitioner - 1st Day,n_p_1,600,1/11/2018 0:00,4/12/2018 0:00,,TRUE,
+Normal - Practitioner - 2nd Day,n_p_2,600,1/11/2018 0:00,4/12/2018 0:00,,TRUE,

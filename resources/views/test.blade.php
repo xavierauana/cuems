@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="{{ app()->getLocale() }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>EMS</title>
+	
+	    <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600"
+              rel="stylesheet" type="text/css" />
+        
+        <link href="{{asset("css/app.css")}}" rel="stylesheet"
+              type="text/css" />
+        
+        <style>
+            body{
+                background-color: lightgrey;
+            }
+        </style>
+	
+
+    </head>
+    <body>
+        <div class="container" id="registration">
+           
+           <img src="data:image/png;base64,{{$imgData}}" width="200px"
+                height="200px">
+        </div>
+    </body>
+</html>

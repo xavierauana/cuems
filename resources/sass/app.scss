@@ -1,0 +1,28 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:200,200i,400,400i');
+// Variables
+@import 'variables';
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+@import "~flatpickr/dist/flatpickr.min.css";
+@import "~select2/dist/css/select2.min.css";
+@import "~dropzone/dist/dropzone.css";
+@import './components/switch';
+
+.navbar-laravel {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.invalid-feedback {
+  display: none;
+}
+
+.form-control.date[readonly] {
+  background-color: transparent;
+}
+
+.invalid-feedback {
+  display: block;
+}

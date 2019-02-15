@@ -1,0 +1,1 @@
+Thank You {{$delegate->name}} for joining the event: {{$event->title}}.
