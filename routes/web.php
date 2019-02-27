@@ -28,22 +28,25 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+\Log::info(request()->fullUrl());
 
 Route::get('/test_record', function (Request $request) {
-    if ($request->get('from') == "xaiver") {
-
-        $records = \App\PaymentRecord::all();
-
+    if ($request->get('from') === "xavier") {
+	    if($invoiceId = $request->get('invoice_id')){
+	    $records = DB::table('payment_records')->where('invoice_id',$invoiceId)->get();
+	    }else{
+		    $records = DB::table('payment_records')
+                     ->get();
+	    }
 
         return view("record", compact('records'));
     }
 });
-Route::get('/test_refId', function (Request $request) {
-    dd(base64_decode($request->get('ref_id')));
-});
+
 
 
 Route::get('/', function (Request $request) {
+
     $id = $request->get('event');
     $event = Event::findOrFail($id);
 
@@ -164,23 +167,4 @@ Route::group(
         PaymentRecordsController::class . "@convert")
          ->name('events.payment_records.convert');
 
-
-    Route::post('/checkin/{token}/delegate', function ($token) {
-        $data = (new \App\Transaction)->parseUuid($token);
-
-        $delegate = \App\Delegate::find($data['delegate_id']);
-
-        return new \App\Http\Resources\CheckinDelegateResource($delegate);
-    })->name('checkin.getDelegate');
-    Route::post('/checkin/{token}', function ($token) {
-        $data = (new \App\Transaction)->parseUuid($token);
-
-        $transcation = \App\Transaction::find($data['delegate_id']);
-
-        $transcation->checkIn();
-
-        return response()->json(['status' => true]);
-    })->name('checkin.delegate');
 });
-
-

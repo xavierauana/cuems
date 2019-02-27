@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Admin Login') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="/admin/login">
+		    <form method="POST" action="{{url("/admin/login")}}">
                         @csrf
 	
 	                    <div class="form-group row">

@@ -1,3 +1,6 @@
+<?php 
+        $delegate = isset($delegate) ? $delegate : $transaction->payee;
+?>
 <p>Dear {{$delegate->name}},</p>
 <p>
 	Payment is confirmed.

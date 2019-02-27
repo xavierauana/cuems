@@ -86,12 +86,12 @@ class ImportDelegates implements ShouldQueue
 
                 return false;
             }
-
+            
             return true;
         })
                          ->each(function ($data) use ($service) {
-                             if ($newDelegate = $service->adminImport($this->event,
-                                 $data)) {
+				 if ($newDelegate = $service->adminImport($this->event,
+    				     $data)) {
                                  Log::info('fire event: ' . $newDelegate->name);
 
                                  event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,

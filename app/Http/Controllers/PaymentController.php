@@ -126,7 +126,7 @@ class PaymentController extends Controller
                 $ticket->price);
 
             $formData['institution'] = $formData['other_institution'] ?? $formData['institution'];
-            $formData['training_organisation'] = $formData['training_other_organisation'] ?? ($formData['training_organisation'] ?? null);
+            $formData['training_organisation'] = $formData['training_other_organisation'] ?? ($formData['training_organisation']??null);
 
             $newDelegate = $creationService->selfCreate($event, $formData,
                 $chargeResponse, $record);

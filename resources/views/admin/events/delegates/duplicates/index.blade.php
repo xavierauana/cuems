@@ -10,6 +10,7 @@
 					<div class="table-responsive">
                   <table class="table">
 	                  <thead>
+                        <th>Registration Id</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Mobile</th>
@@ -22,6 +23,7 @@
 	                  <tbody>
 	                  @foreach($delegates as $delegate)
 		                  <tr>
+		                  	<td>{{$delegate->getRegistrationId()}}</td>
 			                  <td><a href="{{route('events.delegates.show',[$event,$delegate])}}">{{$delegate->name}}</a> </td>
 			                  <td>{{$delegate->email}}</td>
 			                  <td>{{$delegate->mobile}}</td>

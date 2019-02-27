@@ -1,5 +1,5 @@
 <?php
-$delegate = $delegate ?? $transaction->payee;
+	$delegate = isset($delegate) ? $delegate : $transaction->payee;
 ?>
 
 <p>Dear {{$delegate->prefix}} {{$delegate->last_name}},</p>
@@ -12,11 +12,11 @@ $delegate = $delegate ?? $transaction->payee;
 
 <p>Best regards,</p>
 
-<p><b><span color="#660066">
+<p><b style="color:#660066">
 Wingman Wong <br>
-Department of Medicine & Therapeutics <br>
+Department of Medicine and Therapeutics <br>
 Faculty of Medicine <br>
 The Chinese University of Hong Kong
-</span></b></p>
+</b></p>
 
 <img src="{{asset('imgs/logo.png')}}" style="max-width: 600px; height:auto">

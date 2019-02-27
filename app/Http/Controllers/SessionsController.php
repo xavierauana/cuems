@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Delegate;
 use App\Event;
 use App\Http\Resources\SessionResource;
 use App\Session;
@@ -43,7 +44,6 @@ class SessionsController extends Controller
      * Show the form for creating a new resource.
      *
      * @param Event         $event
-     * @param \App\Delegate $delegate
      * @return \Illuminate\Http\Response
      */
     public function create(Event $event) {
@@ -105,12 +105,11 @@ class SessionsController extends Controller
      *
      * @param Event         $event
      * @param  Session      $session
-     * @param \App\Delegate $delegate
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Event $event, Session $session) {
 
-        $delegates = $event->delegates()->excludeRole('default')->get();
+       $delegates = $event->delegates()->excludeRole('default')->get();
 
         return view("admin.events.sessions.edit",
             compact('event', 'session', 'delegates'));

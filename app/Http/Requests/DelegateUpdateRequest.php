@@ -32,16 +32,14 @@ class DelegateUpdateRequest extends FormRequest
     }
 
     public function validated() {
-
-        $data = (new InputMutator(parent::validated()))
+	$data =  (new InputMutator(parent::validated()))
             ->boolean([
                 'is_verified',
-            ])
+           ])
             ->get();
 
-        $data['is_duplicated'] = $data['is_duplicated'] ?? DelegateDuplicationStatus::NO;
+	$data['is_duplicated'] = $data['is_duplicated'] ?? DelegateDuplicationStatus::NO;
 
-        return $data;
-
+	return $data;
     }
 }

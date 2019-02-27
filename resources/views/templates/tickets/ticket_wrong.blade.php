@@ -5,7 +5,7 @@ $qrCode = base64_encode(\QrCode::format('png')->size(150)
 
 $isWaived = strpos(strtolower($ticket->note), 'waived') > -1;
 $isSponsored = strpos(strtolower($ticket->note), 'sponsored') > -1;
-$isWaivedOrSponsored = $isWaived or $isSponsored;
+$isWaivedOrSponsored = ($isWaived or $isSponsored);
 ?>
 		<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -30,13 +30,13 @@ $isWaivedOrSponsored = $isWaived or $isSponsored;
 			<img width="100" src="imgs/cu_logo.png">
 		</td>
 		<td style="text-align: center">
-			<h1 style="font-size: 20px;margin-bottom: 1px">ADVANCES IN MEDICINE (AIM) 2019</h1>
+			<h1 style="font-size: 20px;margin-bottom: 1px">ADVANCES IN MEDICINE 2019</h1>
 <strong><i>
 	25-26 May 2019 <br />
 	Hong Kong Convention & Exhibition Centre <br />
 	</i></strong>
 
-Department of Medicine and Therapeutics <br>
+Department of Medicine & Therapeutics <br>
 Faculty of Medicine <br>
 The Chinese University of Hong Kong <br>
 		</td>
@@ -52,7 +52,9 @@ The Chinese University of Hong Kong <br>
 		<td>
 			<p>{{\Carbon\Carbon::now()->format("j F Y")}}</p>
 			<p>
-				{{$delegate->prefix}}. {{$delegate->first_name}} {{$delegate->last_name}}<br>
+				{{$delegate->prefix}}
+				, {{$delegate->first_name}} {{$delegate->last_name}}
+				<br>
 				{{$delegate->department}} <br>
 				{{$delegate->institution}} <br>
 				{{$delegate->address_1}} <br>
@@ -92,7 +94,7 @@ The Chinese University of Hong Kong <br>
 				@endif
 			</td>
 			<td style="padding-bottom: 15px; text-align: center; border-collapse: separate; border-spacing: 5px 5px; border-bottom: 1px solid black">
-				{{number_format($ticket->price,0,".",",")}}
+				${{number_format($ticket->price,1,".",",")}}
 			</td>
 			<td style="padding-bottom: 15px; text-align: center; border-collapse: separate; border-spacing: 5px 5px; border-bottom: 1px solid black">1</td>
 			<td style="padding-bottom: 15px; text-align: center; border-collapse: separate; border-spacing: 5px 5px; border-bottom: 1px solid black">
@@ -101,7 +103,7 @@ The Chinese University of Hong Kong <br>
 				@elseif($isSponsored)
 					Sponsored
 				@else
-					{{number_format($ticket->price,0,".",",")}}
+					${{number_format($ticket->price,1,".",",")}}
 				@endif
 
 			</td>
@@ -112,38 +114,33 @@ The Chinese University of Hong Kong <br>
 		</td>
 		<td style="text-align: center; border-bottom-style: double; border-collapse: separate; border-spacing: 5px 5px">
 			<strong>
-				@if($isWaived)
-					Waived
-				@elseif($isSponsored)
-					Sponsored
+				@if($isWaivedOrSponsored)
+					NULL
 				@else
-					{{number_format($ticket->price,0,".",",")}}
+					${{number_format($ticket->price,0,".",",")}}
 				@endif
 					</strong>
 		</td>
 	</tr>
 </table>
 
-<p>				@if($isWaived)
-					
-				@elseif($isSponsored)
-					
-				@else
-					Paid by : {{$transaction->transactionType->label}}
-				@endif</p>
+<p>Paid by : {{$isWaivedOrSponsored? "NULL" : $transaction->transactionType->label}}</p>
 <p><strong>*Lunch box will be served at the venue on a first-come-first-served basis.</strong></p>
 <p>Remarks:</p>
-<ol>
-<li>Please quote your registration number above in all communications.</li>
-<li>This confirmation is an official receipt of your registration. </li>
-<li>Should there be any amendments of your registration details, please inform Ms. Celia Lin by email at <u>aim@cuhk.edu.hk</u> as soon as possible. </li>
-<li>Please present this letter (hard copy or electronic copy is acceptable) at the Conference registration counter to obtain your registration kit. </li>
-</ol>
-<br>
 <p>
-<img width="150" src="imgs/stamp.png" /><br>
+
+1)  Please quote your registration number above in all communications. <br>
+2)  This confirmation is an official receipt of your registration. <br>
+3)  Should there be any amendments regarding your registration, please inform Ms. Celia Lin at at 3505-1299 as soon as possible. <br>
+4)	Please present this letter at the Conference registration counter to obtain your registration kit. <br>
+</p>
+
+<p>Should you have any questions, please feel free to contact the Conference Secretariat by email at aim@cuhk.edu.hk.</p>
+
+<p>
+	<img width="150" src="imgs/stamp.png" />
 	Conference Secretariat, AIM 2019 <br>
-	Department of Medicine and Therapeutics <br>
+	Department of Medicine & Therapeutics <br>
 	The Chinese University of Hong Kong <br>
 </p>
 

@@ -37,7 +37,6 @@ class AppServiceProvider extends ServiceProvider
             function ($attribute, $value, $parameters, $validator) {
 
                 $ticketId = $validator->getData()['ticket_id'];
-                
                 if ($ticket = Ticket::find($ticketId)) {
                     if (strpos(strtolower($ticket->note), "trainee") > -1) {
                         return !empty($value);
@@ -65,8 +64,8 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function register() {
-        if ($this->app->isLocal()) {
-            $this->app->register(TelescopeServiceProvider::class);
-        }
+    	$this->app->bind('path.public', function() {
+    		return base_path().'/../html/ems';
+  	});
     }
 }

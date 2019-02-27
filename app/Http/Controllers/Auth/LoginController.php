@@ -38,9 +38,8 @@ class LoginController extends Controller
      * @return void
      */
     public function __construct() {
-        $this->middleware('guest')->except('logout');
-
-        $this->redirectTo = url("/dashboard");
+	    $this->middleware('guest')->except('logout');
+	    $this->redirectTo = url("/dashboard");
     }
 
     public function attemptLogin(Request $request) {
@@ -98,7 +97,7 @@ class LoginController extends Controller
     }
 
     protected function authenticated(Request $request, $user) {
-        return redirect()->intended();
+        return redirect()->intended($this->redirectTo);
     }
 
 }

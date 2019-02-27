@@ -33,6 +33,7 @@
                 </div>
              </div>
          </div>
+
         <slot name="errorMessage"></slot>
 </fieldset>
 </template>

@@ -1,3 +1,7 @@
+<?php 
+        $delegate = isset($delegate) ? $delegate : $transaction->payee;
+?>
+
 <p>Dear {{$delegate->name}},</p>
 <p>
 	Thank you very much for registering for the Advances in Medicine conference which will be held on 25-26 May 2019 at the Hong Kong Convention and Exhibition Centre.

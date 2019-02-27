@@ -12,6 +12,7 @@ if (!function_exists('setting')) {
         $cacheKey = "settings_{$event->id}_{$key}";
 
         if (cache()->has($cacheKey)) {
+            \Debugbar::info('load from cache');
             return cache($cacheKey);
         } else {
             \Debugbar::info('load from db');

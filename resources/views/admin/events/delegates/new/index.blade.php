@@ -22,6 +22,7 @@
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
+                        <th>Registration Id</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Institution</th>
@@ -31,6 +32,7 @@
 	                  <tbody>
 	                  @foreach($delegates as $delegate)
 		                  <tr data-id="{{$delegate->id}}">
+		                  	<td>{{$delegate->getRegistrationId()}}</td>
 			                  <td><a target="_blank"
 			                         href="{{route('events.delegates.show',[$event, $delegate])}}">{{$delegate->name}}</a></td>
 			                  <td>{{$delegate->email}}</td>

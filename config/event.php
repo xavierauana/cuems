@@ -9,5 +9,3 @@ return [
     'payment_prefix' => env('JETCO_PREFIX', null),
     'invoice_prefix' => env('INVOICE_PREFIX', 'test')
 ];
-
-
