@@ -30,22 +30,22 @@ const app = new Vue({
                       },
                       mounted() {
                         $('div#other_position_container').hide()
+                        $('.other_institution_container').hide();
                         $('.select2').select2();
                         $('.select2-tag').select2({
                                                     tags: true
                                                   });
-                        $('.other_institution_container').hide();
-                        $('.select2[name=institution]').on('select2:close', e => {
+                        $('.select2[name="institution"]').on('select2:close', e => {
                           if (e.target.value === 'Others') {
                             $('.other_institution_container').show();
-                            $('input[name=other_institution]').attr('require', true)
+                            $('input[name="other_institution"]').attr('require', true)
                           } else {
                             $('.other_institution_container').hide();
-                            $('input[name=other_institution]').attr('require', false)
+                            $('input[name="other_institution"]').attr('require', false)
                           }
                         })
 
-                        $('select[name="position"]').on('change', function (e) {
+                        $('.select2[name="position"]').on('select2:close', function (e) {
                           const val = e.target.value,
                                 $el = $('div#other_position_container')
 
@@ -55,15 +55,13 @@ const app = new Vue({
                             $el.hide()
                           }
                         })
-
-
                       },
-                      methods   :  {
+                      methods   : {
                         update(type) {
                           this.isTraineeTicket = type === 'trainee'
                           if (type === 'trainee') {
                             Vue.nextTick(() => {
-                              $('.select2').select2();
+                              $('select[name="training_organisation"]').select2();
                             });
                           }
                         },

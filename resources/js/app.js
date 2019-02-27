@@ -12,6 +12,7 @@ window.Dropzone = require('dropzone');
 require('select2')
 
 import flatpickr from "flatpickr"
+import request from "./request"
 
 
 /**
@@ -72,26 +73,12 @@ const app = new Vue({
 
                           if (el) {
                             el.addEventListener('change', () => {
-                              this.searchDelegate(el)
+                              request.searchDelegate(el)
+                                     .then(data => console.log(data))
+                                     .catch(error => console.log("this is error, ", error.response))
+
                             })
                           }
-                        },
-                        searchDelegate(el) {
-                          let name = el.getAttribute('name')
-                          let value = el.value
-
-                          let data = {}
-                          data[name] = value
-
-                          console.log(data)
-
-                          axios.post('/events/1/delegates/search', data)
-                               .then(({data}) => {
-                                 if (data.length > 0) {
-                                   let message = data.map(delegate => delegate.first_name + " " + delegate.last_name).reduce((carry, name) => carry += name + "<br/>", "")
-                                   swal('', 'There are ' + data.length + ' delegate with same ' + name + '<br/> ' + message)
-                                 }
-                               })
                         },
                         update(payload) {
                           this.selectedTicket = payload

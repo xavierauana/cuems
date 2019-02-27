@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Delegate;
+use App\Enums\DelegateDuplicationStatus;
 use App\Services\InputMutator;
 use App\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
@@ -32,12 +33,15 @@ class DelegateUpdateRequest extends FormRequest
 
     public function validated() {
 
-        return (new InputMutator(parent::validated()))
+        $data = (new InputMutator(parent::validated()))
             ->boolean([
                 'is_verified',
-                'is_duplicated',
             ])
             ->get();
+
+        $data['is_duplicated'] = $data['is_duplicated'] ?? DelegateDuplicationStatus::NO;
+
+        return $data;
 
     }
 }

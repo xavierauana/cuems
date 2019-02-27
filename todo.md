@@ -1,6 +1,11 @@
 # TODO List
 
-- [ ] Payment Gateway integation
-- [ ] LDAP Integration
-- [ ] Fetch Data API
-- [ ] Registration wrok flow
+- [ ] Turn it into a package with following functions:
+    -  [ ] stripe integration
+    -  [ ] ticket pdf template
+    -  [ ] custom front end view
+- [x] Payment Gateway integration
+- [x] LDAP Integration
+- [x] Fetch Data API
+- [x] Registration work flow
+

@@ -86,7 +86,7 @@ class ImportDelegates implements ShouldQueue
 
                 return false;
             }
-            
+
             return true;
         })
                          ->each(function ($data) use ($service) {

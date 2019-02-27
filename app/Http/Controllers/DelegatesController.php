@@ -12,6 +12,7 @@ use App\Events\SystemEvent;
 use App\Exports\DelegateExport;
 use App\Exports\NewDelegate;
 use App\Http\Requests\DelegateUpdateRequest;
+use App\Http\Requests\StoreDelegateRequest;
 use App\Imports\DelegatesImport;
 use App\Imports\NewDelegateImport;
 use App\Jobs\ImportDelegates;
@@ -96,15 +97,13 @@ class DelegatesController extends Controller
      * @throws \ReflectionException
      */
     public function store(
-        Event $event, Request $request,
+        Event $event, StoreDelegateRequest $request,
         DelegateCreationService $service
     ): RedirectResponse {
 
-        $rules = $this->getStoreValidationRules();
+        $validatedData = $request->validated();
 
-        $validatedData = $this->validate($request, $rules);
-
-        if ($recordId = $request->query('conversion') and $record = PaymentRecord::findOrFail($recordId)) {
+        if ($record = $this->isFailedPaymentConverted($request)) {
             $newDelegate = $service->adminCreateWithFailedTransaction($event,
                 $validatedData, $record);
         } else {
@@ -250,16 +249,8 @@ class DelegatesController extends Controller
         $collection = Excel::toCollection(new DelegatesImport,
             $request->file('file'));
 
-        //        $service->create($event, $collection->first(),
-        //            $request->user());
-
         ImportDelegates::dispatch($event, $collection->first(),
             $request->user());
-        //        $job = new ImportDelegates($event, $collection->first(),
-        //            $request->user());
-        //
-        //
-        //        $this->dispatch($job);
 
         return redirect()->route('events.delegates.new', $event);
     }
@@ -309,9 +300,7 @@ class DelegatesController extends Controller
     private function updateDelegate(
         Delegate $delegate, array $validatedData
     ): Delegate {
-
         $validatedData['duplicated_with'] = $validatedData['is_duplicated'] ? $validatedData['duplicated_with'] : null;
-
         $delegate->update($validatedData);
 
         $delegate->transactions()->latest()->first()
@@ -448,5 +437,20 @@ class DelegatesController extends Controller
 
         return view("admin.events.delegates.waived",
             compact('delegates', 'event'));
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     */
+    private function isFailedPaymentConverted(Request $request) {
+        if ($recordId = $request->query('conversion') and $record = PaymentRecord::findOrFail($recordId)) {
+            return $record;
+        }
+
+        return null;
+    }
+
+    private function sanitizeData(array $data): array {
+
     }
 }
