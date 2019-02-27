@@ -145,6 +145,66 @@ class ManageDelegateTest extends TestCase
 
     }
 
+    /**
+     * @test
+     */
+    public function delegate_with_other_institution() {
+
+        $this->actingAs(factory(User::class)->create());
+
+        $event = factory(Event::class)->create();
+
+        $data = $this->createData($event);
+
+        $data['other_institution'] = "testing institute";
+
+        $uri = route('events.delegates.store', $event->id);
+
+        $this->post($uri, $data);
+
+        $delegate = Delegate::where(
+            [
+                'first_name' => $data['first_name'],
+                'last_name'  => $data['last_name'],
+            ]
+        )->first();
+
+        $this->assertEquals($data['other_institution'],
+            $delegate->institution);
+    }
+
+    /**
+     * @test
+     */
+    public function create_trainee() {
+        $this->actingAs(factory(User::class)->create());
+
+        $event = factory(Event::class)->create();
+
+        $ticket = factory(Ticket::class)->create([
+            'event_id' => $event->id,
+            'note'     => 'trainee'
+        ]);
+
+        $data = $this->createData($event);
+
+        $data['ticket_id'] = $ticket->id;
+
+        $uri = route('events.delegates.store', $event->id);
+
+        $this->post($uri, $data);
+
+        $delegate = Delegate::where(
+            [
+                'first_name' => $data['first_name'],
+                'last_name'  => $data['last_name'],
+            ]
+        )->first();
+
+        $this->assertEquals($data['training_other_organisation'],
+            $delegate->training_organisation);
+    }
+
     private function createData(
         Event $event = null, int $status = TransactionStatus::AUTHORIZED
     ): array {

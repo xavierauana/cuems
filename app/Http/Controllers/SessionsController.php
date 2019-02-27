@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Delegate;
 use App\Event;
 use App\Http\Resources\SessionResource;
 use App\Session;
@@ -47,8 +46,8 @@ class SessionsController extends Controller
      * @param \App\Delegate $delegate
      * @return \Illuminate\Http\Response
      */
-    public function create(Event $event, Delegate $delegate) {
-        $delegates = $delegate->excludeRole('default')->get();
+    public function create(Event $event) {
+        $delegates = $event->delegates()->excludeRole('default')->get();
 
         return view('admin.events.sessions.create',
             compact('event', 'delegates'));
@@ -109,16 +108,9 @@ class SessionsController extends Controller
      * @param \App\Delegate $delegate
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(Event $event, Session $session, Delegate $delegate) {
+    public function edit(Event $event, Session $session) {
 
-        $delegates = $delegate->excludeRole('default')->get()->reduce(function (
-            $carry, $item
-        ) {
-            $carry[$item->name] = $item->id;
-
-            return $carry;
-        }, []);
-        $delegates = $delegate->excludeRole('default')->get();
+        $delegates = $event->delegates()->excludeRole('default')->get();
 
         return view("admin.events.sessions.edit",
             compact('event', 'session', 'delegates'));

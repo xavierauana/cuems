@@ -43,7 +43,7 @@ class RoleApiTest extends TestCase
      */
     public function get_default_with_empty_result() {
         $response = $this->json('GET',
-            route('api.delegates', [$this->event->id,'role'=>'default']));
+            route('api.delegates', [$this->event->id, 'role' => 'default']));
 
         $this->assertEquals("", $response->content());
 
@@ -77,32 +77,32 @@ class RoleApiTest extends TestCase
             route('api.delegates',
                 [$this->event->id, 'role' => $this->role1->code]));
 
-        $response->assertJson([
-            'data' => [
-                $this->getJsonData($delegate1),
-                $this->getJsonData($delegate2),
-            ]
-        ]);
+        $data = $this->sortBy([
+            $this->getJsonData($delegate1),
+            $this->getJsonData($delegate2)
+        ], 'surname');
+
+        $response->assertJson(compact('data'));
     }
 
     /**
      * @test
      */
-    public function test_2_delegates_and_1_other() {
+    public function test_2_delegates_and_1_other_with_surname_ordering() {
         $delegate1 = $this->createDelegateWithRole($this->role1);
         $delegate2 = $this->createDelegateWithRole($this->role1);
-        $delegate3 = $this->createDelegateWithRole($this->role2);
+        $this->createDelegateWithRole($this->role2);
 
         $response = $this->json('GET',
             route('api.delegates',
                 [$this->event->id, 'role' => $this->role1->code]));
 
-        $response->assertJson([
-            'data' => [
-                $this->getJsonData($delegate1),
-                $this->getJsonData($delegate2)
-            ]
-        ]);
+        $data = $this->sortBy([
+            $this->getJsonData($delegate1),
+            $this->getJsonData($delegate2)
+        ], 'surname');
+
+        $response->assertJson(compact('data'));
     }
 
     /**
@@ -148,5 +148,17 @@ class RoleApiTest extends TestCase
             'given_name' => $delegate->first_name,
             'country'    => $delegate->country
         ];
+    }
+
+    /**
+     * @param $delegate1
+     * @param $delegate2
+     * @return mixed
+     */
+    private function sortBy(array $delegates, string $key): array {
+        return collect($delegates)
+            ->sortBy($key)
+            ->values()
+            ->toArray();
     }
 }

@@ -59,7 +59,9 @@ class PaymentController extends Controller
                 throw new \Exception("JETCO PREFIX setting error.");
             }
 
-            $invoiceId = config('event.invoice_prefix') . str_random(5);
+            $delegateCount = Event::find(request('event'))
+                                  ->delegates()->count();
+            $invoiceId = config('event.invoice_prefix') . $delegateCount . str_random(5);
 
             $invoiceNumber = $prefix . $invoiceId;
 
@@ -122,6 +124,9 @@ class PaymentController extends Controller
 
             $chargeResponse = $service->charge((string)$response->InvoiceNo,
                 $ticket->price);
+
+            $formData['institution'] = $formData['other_institution'] ?? $formData['institution'];
+            $formData['training_organisation'] = $formData['training_other_organisation'] ?? ($formData['training_organisation'] ?? null);
 
             $newDelegate = $creationService->selfCreate($event, $formData,
                 $chargeResponse, $record);

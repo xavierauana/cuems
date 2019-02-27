@@ -35,7 +35,7 @@
 			    <div class="mb-3 col-sm-6 col-md-4">
 				    <div class="card">
 					    <a href="{{route("events.delegates.sponsored", $event)}}"><h4
-								    class="card-header">Sponsor</h4></a>
+								    class="card-header">Sponsored</h4></a>
 					    <div class="card-body">
 						    <h5>{{number_format($event->delegates()->sponsored()->count())}}</h5>
 					    </div>

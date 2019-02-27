@@ -27,7 +27,7 @@ $isWaivedOrSponsored = ($isWaived or $isSponsored);
 <table width="100%">
 	<tr>
 		<td style="text-align: center">
-			<img width="100" src="imgs/cu_logo.png">
+			<img width="100" src="{{public_path('imgs/cu_logo.png')}}">
 		</td>
 		<td style="text-align: center">
 			<h1 style="font-size: 20px;margin-bottom: 1px">ADVANCES IN MEDICINE 2019</h1>

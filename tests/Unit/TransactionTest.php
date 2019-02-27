@@ -22,4 +22,14 @@ class TransactionTest extends TestCase
             $transaction->transactionType);
 
     }
+
+    /**
+     * @test
+     */
+    public function check_in(){
+
+        
+
+
+    }
 }

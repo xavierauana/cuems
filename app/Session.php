@@ -35,7 +35,7 @@ class Session extends Model
         'subtitle'        => 'nullable',
         'sponsor'         => 'nullable',
         'moderation_type' => 'nullable|numeric',
-        'moderators'      => 'nullable',
+        'moderators'      => 'required|min:1',
         'start_at'        => 'required|date',
         'end_at'          => 'required|date|date_gt:start_at',
         'order'           => 'nullable|numeric|min:0',
