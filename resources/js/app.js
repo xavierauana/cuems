@@ -25,6 +25,7 @@ Vue.component('delete-button', require('./components/basic/BasicDeleteButton'));
 Vue.component('b-table', require('./components/basic/BasicTable'));
 Vue.component('p-table', require('./components/PaginatedTable'));
 Vue.component('tickets', require('./components/frontEnd/Tickets'));
+Vue.component('check-in', require('./components/CheckIn'));
 
 const app = new Vue({
                       el      : '#app',

@@ -3,9 +3,11 @@
 namespace App;
 
 use App\Enums\TransactionStatus;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Transaction extends Model
@@ -33,6 +35,10 @@ class Transaction extends Model
     ];
 
     protected static $logOnlyDirty = true;
+
+    protected $appends = [
+        'uuid'
+    ];
 
     /**
      * @return array
@@ -63,6 +69,7 @@ class Transaction extends Model
         return $this->belongsTo(Ticket::class);
     }
 
+    // Helpers
     public function routeNotificationForMail(): string {
         return $this->payee->email;
     }
@@ -79,5 +86,24 @@ class Transaction extends Model
     public function parseUuid($data): array {
 
         return unserialize(base64_decode($data));
+    }
+
+    public function checkIn(User $user) {
+        DB::table('check_in')->insert([
+            'transaction_id' => $this->id,
+            'created_at'     => Carbon::now(),
+            'user_id'        => $user->id
+        ]);
+    }
+
+    public function getCheckInRecords(): array {
+        return DB::table("check_in")->latest()
+                 ->where('transaction_id', $this->id)
+                 ->get()->map(function ($record) {
+                return [
+                    'timestamp' => $record->created_at,
+                    'user'      => User::find($record->user_id),
+                ];
+            })->toArray();
     }
 }

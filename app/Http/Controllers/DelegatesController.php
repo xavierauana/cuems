@@ -301,6 +301,12 @@ class DelegatesController extends Controller
         Delegate $delegate, array $validatedData
     ): Delegate {
         $validatedData['duplicated_with'] = $validatedData['is_duplicated'] ? $validatedData['duplicated_with'] : null;
+        $validatedData['institution'] = $validatedData['institution'] == "Others" ? $validatedData['other_institution'] : $validatedData['institution'];
+        $validatedData['position'] = $validatedData['position'] == "Others" ? $validatedData['other_position'] : $validatedData['position'];
+        $validatedData['training_organisation'] = isset($validatedData['training_organisation']) and $validatedData['training_organisation'] == "Others" ?
+            ($validatedData['training_other_organisation'] ?? null) :
+            ($validatedData['training_organisation'] ?? null);
+
         $delegate->update($validatedData);
 
         $delegate->transactions()->latest()->first()
@@ -308,7 +314,7 @@ class DelegatesController extends Controller
 
         $delegate->roles()->sync($validatedData['roles_id']);
 
-        if (isset($validatedData['sponsor']['sponsor_id'])) {
+        if (isset($validatedData['sponsor']) and isset($validatedData['sponsor']['sponsor_id'])) {
             $sponsorData = $validatedData['sponsor'];
 
             $delegate->sponsorRecord()

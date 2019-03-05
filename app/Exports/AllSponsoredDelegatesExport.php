@@ -34,7 +34,7 @@ class AllSponsoredDelegatesExport
      * @return \Illuminate\Support\Collection
      */
     public function collection() {
-        return $this->event->sponsors->map->delegates->flatten();
+        return $this->event->sponsors->map->delegates->flatten()->values();
     }
 
     /**

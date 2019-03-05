@@ -32,18 +32,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/test_record', function (Request $request) {
     if ($request->get('from') === "xavier") {
-	    if($invoiceId = $request->get('invoice_id')){
-	    $records = DB::table('payment_records')->where('invoice_id',$invoiceId)->get();
-	    }else{
-		    $records = DB::table('payment_records')
-                     ->get();
-	    }
+        if ($invoiceId = $request->get('invoice_id')) {
+            $records = DB::table('payment_records')
+                         ->where('invoice_id', $invoiceId)->get();
+        } else {
+            $records = DB::table('payment_records')
+                         ->get();
+        }
 
         return view("record", compact('records'));
     }
 });
-
-
 
 Route::get('/', function (Request $request) {
 
@@ -96,7 +95,6 @@ Route::group(
     Route::resource("events.sessions", SessionsController::class);
     Route::resource("events.sessions.talks", TalksController::class);
 
-
     // Tickets
     @include('routes/tickets.php');
 
@@ -133,7 +131,6 @@ Route::group(
          ->name('positions.search');
     Route::resource('positions', PositionsController::class);
 
-
     // Templates
     Route::resource('events.templates', TemplatesController::class);
 
@@ -167,4 +164,6 @@ Route::group(
         PaymentRecordsController::class . "@convert")
          ->name('events.payment_records.convert');
 
+    // Check in
+    @include('routes/checkin.php');
 });

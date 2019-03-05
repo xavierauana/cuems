@@ -33,7 +33,8 @@ class StoreDelegateRequest extends FormRequest
 
     private function convertData(array $data) {
         $data['institution'] = $data['other_institution'] ?? $data['institution'];
-        $data['training_organisation'] = $data['training_other_organisation'] ?? $data['training_organisation'];
+        $data['training_organisation'] = $data['training_other_organisation'] ?? ($data['training_organisation'] ?? null);
+        $data['position'] = $data['position'] == "Others" ? $data['other_position'] : $data['position'];
 
         return $data;
     }

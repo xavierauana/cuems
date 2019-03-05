@@ -172,6 +172,34 @@ class ManageDelegateTest extends TestCase
         $this->assertEquals($data['other_institution'],
             $delegate->institution);
     }
+    /**
+     * @test
+     */
+    public function delegate_with_other_position() {
+$this->withoutExceptionHandling();
+        $this->actingAs(factory(User::class)->create());
+
+        $event = factory(Event::class)->create();
+
+        $data = $this->createData($event);
+
+        $data['position'] = "Others";
+        $data['other_position'] = "other position";
+
+        $uri = route('events.delegates.store', $event->id);
+
+        $this->post($uri, $data);
+
+        $delegate = Delegate::where(
+            [
+                'first_name' => $data['first_name'],
+                'last_name'  => $data['last_name'],
+            ]
+        )->first();
+
+        $this->assertEquals($data['other_position'],
+            $delegate->position);
+    }
 
     /**
      * @test
@@ -203,6 +231,84 @@ class ManageDelegateTest extends TestCase
 
         $this->assertEquals($data['training_other_organisation'],
             $delegate->training_organisation);
+    }
+
+    /**
+     * @test
+     */
+    public function update_delegate_institution_with_others() {
+        $this->actingAs(factory(User::class)->create());
+
+        $event = factory(Event::class)->create();
+
+        $data = $this->createData($event);
+
+        $data['other_institution'] = "original institute";
+
+        $uri = route('events.delegates.store', $event->id);
+
+        $this->post($uri, $data);
+
+        $delegate = Delegate::where(
+            [
+                'first_name' => $data['first_name'],
+                'last_name'  => $data['last_name'],
+            ]
+        )->first();
+
+        $data['institution'] = "Others";
+        $data['other_institution'] = "brand new institute";
+
+        $uri = route('events.delegates.update', [$event->id, $delegate->id]);
+
+        $this->put($uri, $data);
+
+        $this->assertEquals($data['other_institution'],
+            $delegate->refresh()->institution);
+
+        $uri = route('events.delegates.edit', [$event->id, $delegate->id]);
+
+        $this->get($uri, $data)->assertSee($data['other_institution']);
+
+    }
+
+    /**
+     * @test
+     */
+    public function update_delegate_institution_with_position() {
+        $this->actingAs(factory(User::class)->create());
+
+        $event = factory(Event::class)->create();
+
+        $data = $this->createData($event);
+
+        $data['position'] = "original position";
+
+        $uri = route('events.delegates.store', $event->id);
+
+        $this->post($uri, $data);
+
+        $delegate = Delegate::where(
+            [
+                'first_name' => $data['first_name'],
+                'last_name'  => $data['last_name'],
+            ]
+        )->first();
+
+        $data['position'] = "Others";
+        $data['other_position'] = "brand new position";
+
+        $uri = route('events.delegates.update', [$event->id, $delegate->id]);
+
+        $this->put($uri, $data);
+
+        $this->assertEquals($data['other_position'],
+            $delegate->refresh()->position);
+
+        $uri = route('events.delegates.edit', [$event->id, $delegate->id]);
+
+        $this->get($uri, $data)->assertSee($data['other_position']);
+
     }
 
     private function createData(

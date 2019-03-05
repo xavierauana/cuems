@@ -8,7 +8,7 @@
                 <select name="sponsor[sponsor_id]" class="form-control"
                         class="select2">
                     <option value=""> Select Sponsor if appropriate</option>
-	                @foreach(\App\Sponsor::orderBy('name')->pluck('name','id') as $id=>$name)
+	                @foreach($event->sponsors()->orderBy('name')->pluck('name','id') as $id=>$name)
 		                <option value="{{$id}}"
 		                        @if(old('sponsor_id') == $id or (isset($delegate) and optional($delegate->sponsorRecord)->sponsor_id == $id )) selected @endif>{{$name}}</option>
 	                @endforeach

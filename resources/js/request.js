@@ -5,7 +5,7 @@
 import swal from 'sweetalert2'
 import _ from 'lodash'
 
-const isProduction = true;
+const isProduction = false;
 const baseUrl = isProduction ? "/ems/" : "/"
 
 export default {
@@ -26,5 +26,18 @@ export default {
                   }
                   return response
                 })
+  },
+  getDelegateByToken(eventId, token) {
+    return axios.get(baseUrl + 'events/' + eventId + '/checkin/' + token + '/delegate')
+                .then(response => {
+                  console.log(response)
+                  return response
+                })
+  },
+  checkIn(eventId, token) {
+    return axios.post(baseUrl + 'events/' + eventId + '/checkin/' + token)
+  },
+  checkInManualSearch(eventId, keyword) {
+    return axios.get(baseUrl + 'events/' + eventId + '/checkin/search?keyword=' + keyword)
   }
 }

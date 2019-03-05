@@ -174,6 +174,7 @@ class Delegate extends Model
             'last_name'                     => "required",
             'is_male'                       => "required|boolean",
             'position'                      => "required",
+            'other_position'                => "nullable|required_if:position,Others",
             'department'                    => "required",
             'institution'                   => "required",
             'other_institution'             => "nullable|required_if:institution,Others",
@@ -192,6 +193,7 @@ class Delegate extends Model
             'is_duplicated'                 => 'nullable|in:' . implode(",",
                     array_values(DelegateDuplicationStatus::getStatus())),
             'is_verified'                   => 'nullable|boolean',
+            'roles_id'                      => 'nullable',
             'roles_id.*'                    => 'nullable|exists:delegate_roles,id',
             'duplicated_with'               => 'nullable',
 
