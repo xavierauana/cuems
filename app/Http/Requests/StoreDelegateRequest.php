@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Delegate;
+use App\Services\AdminCreateDataTransformer;
 use App\Transaction;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,8 +24,12 @@ class StoreDelegateRequest extends FormRequest
      * @return array
      */
     public function rules() {
-        return array_merge((new Delegate)->getStoreRules(),
+        $rules = array_merge((new Delegate)->getStoreRules(),
             (new Transaction)->getRules());
+
+        $rules = AdminCreateDataTransformer::transformRules($rules);
+
+        return $rules;
     }
 
     public function validated() {
@@ -32,6 +37,8 @@ class StoreDelegateRequest extends FormRequest
     }
 
     private function convertData(array $data) {
+        $data = AdminCreateDataTransformer::transformInputs($data);
+
         $data['institution'] = $data['other_institution'] ?? $data['institution'];
         $data['training_organisation'] = $data['training_other_organisation'] ?? ($data['training_organisation'] ?? null);
         $data['position'] = $data['position'] == "Others" ? $data['other_position'] : $data['position'];

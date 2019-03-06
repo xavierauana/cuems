@@ -5,7 +5,7 @@
 import swal from 'sweetalert2'
 import _ from 'lodash'
 
-const isProduction = false;
+const isProduction = true;
 const baseUrl = isProduction ? "/ems/" : "/"
 
 export default {

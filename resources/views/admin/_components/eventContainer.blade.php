@@ -57,6 +57,10 @@
 					      href="{{route('events.expenses.index', $event)}}">Expenses</a>
 				    </div>
 				  </li>
+				<li class="nav-item dropdown">
+					<a class="nav-link"
+					   href="{{route('events.checkin.index', $event)}}">Check In</a>
+				</li>
 			</ul>
 	    </div>
 	    <div class="col-12 col-sm-10">

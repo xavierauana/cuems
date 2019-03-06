@@ -8,6 +8,7 @@ use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
 use App\Event;
 use App\Events\SystemEvent;
+use App\Services\AdminCreateDataTransformer;
 use App\Services\DelegateCreationService;
 use App\Ticket;
 use App\Transaction;
@@ -81,17 +82,20 @@ class ImportDelegates implements ShouldQueue
             $validator = $this->getValidator($item, $rules);
 
             if ($validator->fails()) {
-                Log::info("import validation failed",
-                    (array)$validator->errors());
+                Log::channel('import')
+                   ->info(sprintf("import validation failed: first_name: %s, last_name:%s, email:%s",
+                       $item['first_name'] ?? null, $item['last_name'] ?? null,
+                       $item['email'] ?? null),
+                       (array)$validator->errors());
 
                 return false;
             }
-            
+
             return true;
         })
                          ->each(function ($data) use ($service) {
-				 if ($newDelegate = $service->adminImport($this->event,
-    				     $data)) {
+                             if ($newDelegate = $service->adminImport($this->event,
+                                 $data)) {
                                  Log::info('fire event: ' . $newDelegate->name);
 
                                  event(new SystemEvent(SystemEvents::ADMIN_CREATE_DELEGATE,
@@ -123,7 +127,7 @@ class ImportDelegates implements ShouldQueue
     ): array {
         $rules = $delegate->getStoreRules();
 
-        $rules = $rules = array_merge($rules, $transaction->getRules());
+        $rules = array_merge($rules, $transaction->getRules());
 
         return $rules;
     }
@@ -147,6 +151,8 @@ class ImportDelegates implements ShouldQueue
                 return optional(DelegateRole::whereCode($code)->first())->id;
             })
             ->reject(null)->toArray();
+
+        $data = array_map('trim', $data);
 
         $new = [];
         $new['prefix'] = $data['title'] ?? null;
@@ -182,6 +188,8 @@ class ImportDelegates implements ShouldQueue
         $new['sponsor']['email'] = $data['sponsor_correspondent_email'] ?? null;
         $new['sponsor']['tel'] = $data['sponsor_correspondent_tel'] ?? null;
         $new['sponsor']['address'] = $data['sponsor_correspondent_address'] ?? null;
+
+        $new = AdminCreateDataTransformer::transformInputs($new);
 
         return $new;
     }

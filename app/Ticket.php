@@ -62,29 +62,25 @@ class Ticket extends Model
         ];
 
         if ($event_id) {
-            $rules['code'][] = Rule::unique('tickets')->where(function ($query
-            ) use (
-                $event_id
-            ) {
-                return $query->where('event_id', $event_id);
-            });
+            $rules['code'][] = Rule::unique('tickets')
+                                   ->where(function ($query) use ($event_id) {
+                                       return $query->where('event_id',
+                                           $event_id);
+                                   });
         }
 
         return $rules;
     }
 
-    public function getUpdateRules($event_id = null): array {
+    public function getUpdateRules(): array {
         // TODO set code to be unique for each Event'
 
         $rules = [
             'name'      => 'required',
             'code'      => [
                 'required',
-                Rule::unique('tickets')->where(function ($query
-                ) use (
-                    $event_id
-                ) {
-                    return $query->where('event_id', $event_id);
+                Rule::unique('tickets')->where(function ($query) {
+                    return $query->where('event_id', $this->event_id);
                 })->ignore($this->id),
             ],
             'price'     => 'required|min:0|numeric',

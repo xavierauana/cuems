@@ -41101,7 +41101,7 @@ if (false) {
 
 
 
-var isProduction = false;
+var isProduction = true;
 var baseUrl = isProduction ? "/ems/" : "/";
 
 /* harmony default export */ __webpack_exports__["a"] = ({

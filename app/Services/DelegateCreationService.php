@@ -53,7 +53,6 @@ class DelegateCreationService
     ): Delegate {
 
         $data = $this->addRegistrationId($event, $data);
-
         $transactionData = [
             'status'              => $data['status'],
             'ticket_id'           => $data['ticket_id'],
@@ -75,7 +74,7 @@ class DelegateCreationService
 
             $this->recordAdminActivity($newDelegate);
 
-            $this->markDelegateIsVerified($newDelegate);
+//            $this->markDelegateIsVerified($newDelegate);
 
             DB::commit();
 
