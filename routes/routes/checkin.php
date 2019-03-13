@@ -83,7 +83,7 @@ Route::get('events/{event}/checkin/search',
             $result = Delegate::whereEventId($event->id)
                               ->with('transactions.ticket')
                               ->where(function ($query) use ($event, $keyword) {
-                                  $registrationId = str_replace(setting($event,
+                                  $registrationId = (int)str_replace(setting($event,
                                       'registration_id_prefix'), "", $keyword);
                                   $query->where('registration_id', 'like',
                                       "%{$registrationId}%")

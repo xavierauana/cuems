@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Delegate;
 use App\DelegateRole;
 use App\Entities\ChargeResponse;
+use App\Enums\CarbonCopyType;
 use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Enums\TransactionStatus;
@@ -128,7 +129,6 @@ class SystemNotificationsTest extends MailCatcherTestCase
         }
     }
 
-
     public function test_notification_not_trigger() {
         factory(Notification::class)->create([
             'event'    => SystemEvents::TRANSACTION_COMPLETED,
@@ -149,7 +149,10 @@ class SystemNotificationsTest extends MailCatcherTestCase
         ]);
     }
 
-    public function test_transaction_notification_with_role_trigger() {
+    /**
+     * @test
+     */
+    public function transaction_notification_with_role_trigger() {
         $subject = "AOnbther subject";
         $role = factory(DelegateRole::class)->create();
 
@@ -186,7 +189,7 @@ class SystemNotificationsTest extends MailCatcherTestCase
     /**
      * @test
      */
-    public function test_delegate_notification_with_role_trigger() {
+    public function delegate_notification_with_role_trigger() {
         $subject = "Subject 1";
         $role = factory(DelegateRole::class)->create();
 
@@ -223,7 +226,10 @@ class SystemNotificationsTest extends MailCatcherTestCase
 
     }
 
-    public function test_notification_with_role_not_trigger() {
+    /**
+     * @test
+     */
+    public function notification_with_role_not_trigger() {
 
         $role1 = factory(DelegateRole::class)->create();
         $role2 = factory(DelegateRole::class)->create();
@@ -252,7 +258,10 @@ class SystemNotificationsTest extends MailCatcherTestCase
         ]);
     }
 
-    public function test_notification_email_sent() {
+    /**
+     * @test
+     */
+    public function notification_email_sent() {
 
         $from = "xavier";
         $fromEmail = "xavier.au@anacreation.com";
@@ -521,7 +530,6 @@ class SystemNotificationsTest extends MailCatcherTestCase
 
     }
 
-
     /**
      * @test
      */
@@ -616,6 +624,69 @@ class SystemNotificationsTest extends MailCatcherTestCase
 
     }
 
+    /**
+     * @test
+     */
+    public function cc() {
+        $from = "xavier";
+        $fromEmail = "xavier.au@anacreation.com";
+        $subject = "Transaction Created";
+
+        $notification = factory(Notification::class)->create([
+            'template'   => 'test_transaction',
+            'from_name'  => $from,
+            'from_email' => $fromEmail,
+            'cc'         => "testing@abc.com",
+            'subject'    => $subject,
+            'event'      => SystemEvents::TRANSACTION_COMPLETED,
+            'event_id'   => $this->event->id,
+            'role_id'    => null
+        ]);
+
+        $delegate = factory(Delegate::class)->create([
+            'event_id' => $this->event->id,
+        ]);
+
+        $ticket = factory(Ticket::class)->create([
+            'event_id' => $this->event->id
+        ]);
+
+        factory(Transaction::class)->create([
+            "status"     => TransactionStatus::COMPLETED,
+            "payee_type" => get_class($delegate),
+            "payee_id"   => $delegate->id,
+            'ticket_id'  => $ticket->id
+        ]);
+
+        $cc = "xavier.au+cc@anacreation.com";
+        $bcc = "xavier.au+bcc@anacreation.com";
+
+        $notification->addCc($cc);
+        $notification->addBcc($bcc);
+
+        $this->assertDatabaseHas("carbon_copies", [
+            'notification_id' => $notification->id,
+            'type'            => CarbonCopyType::CC()->getValue(),
+            'email'           => $cc,
+            'name'            => null,
+        ]);
+
+        $this->assertDatabaseHas("carbon_copies", [
+            'notification_id' => $notification->id,
+            'type'            => CarbonCopyType::BCC()->getValue(),
+            'email'           => $bcc,
+            'name'            => null,
+        ]);
+
+        $email = $this->getLastEmail();
+        $this->assertEmailBodyContains("testing transaction", $email);
+        $this->assertHasCc($email, $cc);
+        $this->assertHasBcc($email, $bcc);
+        $this->assertEmailWasSentTo($delegate->email, $email);
+        $this->assertEmailWasSentFrom($fromEmail, $email);
+        $this->assertEmailSubjectContains($subject, $email);
+
+    }
 
     private function createData(
         Event $event = null, int $status = TransactionStatus::AUTHORIZED,

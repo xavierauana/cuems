@@ -56,12 +56,10 @@ class DelegatesController extends Controller
 
         $queries = $request->query();
 
-        $query = $this->constructSearchQuery($this->repo, $request, $query,
-            'keyword');
+        $query = $this->constructSearchQuery($this->repo, $query,
+            $request->query('keyword'), $event);
 
         unset($queries['keyword']);
-
-        $query = $this->orderByQuery($queries, $query);
 
         $delegates = $query->paginate();
 

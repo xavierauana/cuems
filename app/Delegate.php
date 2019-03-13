@@ -15,8 +15,9 @@ class Delegate extends Model
     use Notifiable, SoftDeletes, FormAccessible;
 
     protected $searchableColumns = [
-        'first_name',
+        'registration_id',
         'last_name',
+        'first_name',
         'mobile',
         'email',
         'institution',
@@ -51,6 +52,16 @@ class Delegate extends Model
     protected $casts = [
         'is_verified' => 'boolean',
     ];
+
+    public function searchableAs() {
+        return 'posts_index';
+    }
+
+    public function toSearchableArray() {
+        $array = $this->toArray();
+
+        return $array;
+    }
 
     // Relation
     public function event(): Relation {

@@ -52,12 +52,20 @@ The Chinese University of Hong Kong <br>
 		<td>
 			<p>{{\Carbon\Carbon::now()->format("j F Y")}}</p>
 			<p>
-				{{$delegate->prefix}}. {{$delegate->first_name}} {{$delegate->last_name}}<br>
+				{{$delegate->prefix}}
+				. {{$delegate->first_name}} {{$delegate->last_name}}<br>
 				{{$delegate->department}} <br>
-				{{$delegate->institution}} <br>
-				{{$delegate->address_1}} <br>
-				{{$delegate->address_2}} <br>
-				{{$delegate->address_3}} <br>
+				@if($delegate->institution != "empty") {{$delegate->institution}}
+				@else
+					{{$delegate->email}}
+				@endif
+				<br>
+				@if($delegate->address_1 != "empty") {{$delegate->address_1}}
+				<br> @endif
+				@if($delegate->address_1 != "empty" and $delegate->address_2 != "empty") {{$delegate->address_2}}
+				<br> @endif
+				@if($delegate->address_1 != "empty" and $delegate->address_3 != "empty") {{$delegate->address_3}}
+				<br> @endif
 				{{$delegate->country}} <br>
 			</p>
 		</td>
@@ -125,12 +133,12 @@ The Chinese University of Hong Kong <br>
 </table>
 
 <p>				@if($isWaived)
-					
-				@elseif($isSponsored)
-					
-				@else
-					Paid by : {{$transaction->transactionType->label}}
-				@endif</p>
+	
+	@elseif($isSponsored)
+	
+	@else
+		Paid by : {{$transaction->transactionType->label}}
+	@endif</p>
 <p><strong>*Lunch box will be served at the venue on a first-come-first-served basis.</strong></p>
 <p>Remarks:</p>
 <ol>

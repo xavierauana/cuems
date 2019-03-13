@@ -28,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/test_record', function (Request $request) {
     if ($request->get('from') === "xavier") {
         if ($invoiceId = $request->get('invoice_id')) {

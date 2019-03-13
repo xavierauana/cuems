@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -17,12 +18,13 @@ class TransactionController extends Controller
      */
     public function index(Request $request, Event $event) {
 
-        $query = Transaction::whereIn('transactions.ticket_id',
-            function ($query) use ($event) {
-                $query->select('id')
-                      ->from("tickets")
-                      ->where('event_id', $event->id);
-            })->with(['payee', 'ticket']);
+        $query = Transaction::select('transactions.*')
+                            ->whereIn('transactions.ticket_id',
+                                function ($query) use ($event) {
+                                    $query->select('id')
+                                          ->from("tickets")
+                                          ->where('event_id', $event->id);
+                                })->with(['payee', 'ticket']);
 
         $queries = $request->query();
         $query = $this->joinTables($query);
@@ -30,6 +32,8 @@ class TransactionController extends Controller
         $query = $this->searchQuery($request->query('keyword'), $query);
 
         $transactions = $query->with('payee.event')->paginate();
+
+        //        dd($transactions->last()->created_at);
 
         return view('admin.events.transactions.index',
             compact('transactions', 'event'));

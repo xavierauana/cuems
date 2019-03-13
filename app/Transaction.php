@@ -14,6 +14,10 @@ class Transaction extends Model
 {
     use LogsActivity, Notifiable;
 
+    protected $casts = [
+        'created_at' => 'datetime'
+    ];
+
     protected $fillable = [
         'charge_id',
         'card_brand',

@@ -10,6 +10,7 @@ use App\Notification;
 use App\Services\TestNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class NotificationsController extends Controller
@@ -64,14 +65,33 @@ class NotificationsController extends Controller
      * @return void
      */
     public function store(NotificationStoreRequest $request, Event $event) {
+
         $validatedData = $request->validated();
 
-        $newNotification = $event->notifications()->create($validatedData);
-        
-        if (isset($validatedData['files'])) {
-            $newNotification->uploadFiles()->sync($validatedData['files']);
-        } else {
-            $newNotification->uploadFiles()->sync([]);
+        DB::beginTransaction();
+
+        try {
+
+            $newNotification = $event->notifications()->create($validatedData);
+
+            foreach (Notification::parseEmailString($validatedData['cc']) as $email) {
+                $newNotification->addCc($email);
+            }
+
+            foreach (Notification::parseEmailString($validatedData['bcc']) as $email) {
+                $newNotification->addBcc($email);
+            }
+
+            if (isset($validatedData['files'])) {
+                $newNotification->uploadFiles()->sync($validatedData['files']);
+            } else {
+                $newNotification->uploadFiles()->sync([]);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
 
 
@@ -120,12 +140,27 @@ class NotificationsController extends Controller
 
         $validatedData = $request->validated();
 
-        $notification->update($validatedData);
+        DB::beginTransaction();
 
-        if (isset($validatedData['files'])) {
-            $notification->uploadFiles()->sync($validatedData['files']);
-        } else {
-            $notification->uploadFiles()->sync([]);
+        try {
+
+            $notification->update($validatedData);
+
+            $notification->syncCc(Notification::parseEmailString($validatedData['cc']));
+
+            $notification->syncBcc(Notification::parseEmailString($validatedData['bcc']));
+
+            if (isset($validatedData['files'])) {
+                $notification->uploadFiles()->sync($validatedData['files']);
+            } else {
+                $notification->uploadFiles()->sync([]);
+            }
+
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
 
 

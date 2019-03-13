@@ -2,16 +2,22 @@
 
 namespace App;
 
+use App\Enums\CarbonCopyType;
 use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
 use App\Mail\NotificationMailable;
 use App\Mail\TransactionMail;
+use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Mail;
 
 class Notification extends Model
 {
+    use FormAccessible;
+
+
     protected $fillable = [
         'name',
         'event',
@@ -20,8 +26,6 @@ class Notification extends Model
         'schedule',
         'from_name',
         'from_email',
-        'cc',
-        'bcc',
         'subject',
         'include_ticket',
         'verified_only',
@@ -50,6 +54,10 @@ class Notification extends Model
         return $this->belongsToMany(UploadFile::class);
     }
 
+    public function copies(): HasMany {
+        return $this->hasMany(CarbonCopy::class, 'notification_id');
+    }
+
     // Accessor
     public function getEventNameAttribute(): string {
         $systemEvents = array_flip((new \ReflectionClass(SystemEvents::class))->getConstants());
@@ -66,6 +74,22 @@ class Notification extends Model
         $result = $this->uploadFiles()->pluck('id')->toArray();
 
         return $result;
+    }
+
+    // Form accessable
+
+    public function formCcAttribute(): string {
+        $emails = $this->copies()->whereType(CarbonCopyType::CC()->getValue())
+                       ->pluck('email')->toArray();
+
+        return implode(',', $emails);
+    }
+
+    public function formBccAttribute(): string {
+        $emails = $this->copies()->whereType(CarbonCopyType::BCC()->getValue())
+                       ->pluck('email')->toArray();
+
+        return implode(',', $emails);
     }
 
 
@@ -97,8 +121,8 @@ class Notification extends Model
             'verified_only'      => "nullable|boolean",
             'include_duplicated' => "nullable|boolean",
             'include_ticket'     => "nullable|boolean",
-            'cc'                 => "nullable|email",
-            'bcc'                => "nullable|email",
+            'cc'                 => "nullable|emailsString",
+            'bcc'                => "nullable|emailsString",
             'files'              => "nullable",
             'files.*'            => "exists:upload_files,id",
         ];
@@ -152,6 +176,35 @@ class Notification extends Model
         }
     }
 
+    public function addCc(string $email, string $name = null): CarbonCopy {
+        $data = [
+            'email' => $email,
+            'name'  => $name,
+            'type'  => CarbonCopyType::CC(),
+        ];
+
+        return $this->copies()->create($data);
+    }
+
+    public function addBcc(string $email, string $name = null) {
+        $data = [
+            'email' => $email,
+            'name'  => $name,
+            'type'  => CarbonCopyType::BCC(),
+        ];
+
+        return $this->copies()->create($data);
+    }
+
+    public function syncCc(array $emails) {
+        $this->syncCopies($emails, CarbonCopyType::CC());
+    }
+
+    public function syncBcc(array $emails) {
+        $this->syncCopies($emails, CarbonCopyType::BCC());
+    }
+
+
     /**
      * @param $notifiable
      * @return \App\Mail\NotificationMailable|\App\Mail\TransactionMail
@@ -178,6 +231,46 @@ class Notification extends Model
         }
 
         return [$email, $mail];
+    }
+
+    /**
+     * @param array                     $emails
+     * @param \App\Enums\CarbonCopyType $type
+     */
+    private function syncCopies(array $emails, CarbonCopyType $type): void {
+        $query = $this->copies()
+                      ->whereType($type->getValue());
+
+        $ccs = $query->get();
+
+        $ccs->each(function (CarbonCopy $copy) use ($emails) {
+            if (!in_array($copy->email, $emails)) {
+                $copy->delete();
+            }
+        });
+
+
+        foreach ($emails as $email) {
+            if ($this->copies()
+                     ->whereType($type->getValue())->whereEmail($email)->first() === null) {
+                $this->copies()->create([
+                    'email' => $email,
+                    'type'  => $type->getValue()
+                ]);
+            }
+        }
+    }
+
+    // Helps
+
+    public static function parseEmailString(string $emailsString = null
+    ): array {
+        $emails = [];
+        if ($emailsString) {
+            $emails = array_map('trim', explode(',', $emailsString));
+        }
+
+        return $emails;
     }
 
 

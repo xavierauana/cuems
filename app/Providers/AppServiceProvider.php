@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\DuplicateCheckerInterface;
 use App\Contracts\PaymentServiceInterface;
+use App\Notification;
 use App\Observers\TransactionObserver;
 use App\Services\DelegateDuplicateChecker;
 use App\Ticket;
@@ -19,6 +20,19 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot() {
+        Validator::extend("emailsString",
+            function ($attribute, $value, $parameters, $validator) {
+
+                foreach (Notification::parseEmailString($value) as $email) {
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        return false;
+                    }
+                }
+
+                return true;
+
+            }, "Please verify the emails.");
+
         Validator::extend("date_gt",
             function ($attribute, $value, $parameters, $validator) {
 

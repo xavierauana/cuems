@@ -74,8 +74,10 @@ class ImportDelegates implements ShouldQueue
     ) {
 
         $rules = $this->getValidationRules($transaction, $delegate, $role);
-
         $this->conversion();
+        $this->collection = $this->collection->map(function ($data) {
+            return AdminCreateDataTransformer::transformInputs($data);
+        });
 
         $this->collection->filter(function ($item) use ($rules) {
 
@@ -188,8 +190,6 @@ class ImportDelegates implements ShouldQueue
         $new['sponsor']['email'] = $data['sponsor_correspondent_email'] ?? null;
         $new['sponsor']['tel'] = $data['sponsor_correspondent_tel'] ?? null;
         $new['sponsor']['address'] = $data['sponsor_correspondent_address'] ?? null;
-
-        $new = AdminCreateDataTransformer::transformInputs($new);
 
         return $new;
     }

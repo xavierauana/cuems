@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Event;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
@@ -15,21 +15,27 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     protected function constructSearchQuery(
-        Model $repo, Request $request, $query, $keyword = 'keyword'
+        Model $repo, $query, string $keyword = null, Event $event
     ) {
-        $columns = $repo->getSearchableColumns();
-        if ($searchKeyword = $request->query($keyword)) {
-            $query->where(function ($q) use ($columns, $searchKeyword
+        if ($keyword) {
+            $query->where(function (Builder $q) use ($repo, $keyword, $event
             ) {
-                foreach ($columns as $index => $column) {
+                $prefix = setting($event, 'registration_id_prefix');
+                $sql = "CONCAT('" . $prefix . "',lpad(CAST(registration_id AS CHAR), 4, '0'))  like '%" . $keyword . "%'";
+
+                foreach ($repo->getSearchableColumns() as $index => $column) {
                     if ($index === 0) {
                         $q->where($column, "like",
-                            "%{$searchKeyword}%");
+                            "%{$keyword}%");
                     } else {
                         $q->orWhere($column, "like",
-                            "%{$searchKeyword}%");
+                            "%{$keyword}%");
                     }
                 }
+
+
+                $q->orWhereRaw($sql);
+
             });
         }
 

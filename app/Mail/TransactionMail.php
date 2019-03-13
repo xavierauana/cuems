@@ -6,7 +6,7 @@ use App\Event;
 use App\Notification;
 use Illuminate\Bus\Queueable;
 
-class TransactionMail extends AbstractEventNotificationMail
+class TransactionMail extends EventNotificationMail
 {
     use Queueable;
     /**
@@ -57,6 +57,8 @@ class TransactionMail extends AbstractEventNotificationMail
                             $this->notification->from_name)
                         ->subject($this->notification->subject);
 
-        $this->addAttachments($builder);
+        $this->addCarbonCopies($this->notification);
+
+        $this->addAttachments();
     }
 }

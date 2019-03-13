@@ -6,7 +6,7 @@ use App\Event;
 use App\Notification;
 use Illuminate\Support\Facades\Log;
 
-class NotificationMailable extends AbstractEventNotificationMail
+class NotificationMailable extends EventNotificationMail
 {
     /**
      * @var \App\Delegate
@@ -56,16 +56,7 @@ class NotificationMailable extends AbstractEventNotificationMail
             $this->notification->from_name)
              ->subject($this->notification->subject);
 
-        if ($cc = $this->notification->cc) {
-            $this->cc($cc);
-        }
-
-        if ($bcc = $this->notification->bcc) {
-            $this->bcc($bcc);
-        }
-
-
-        Log::info('going to check notification has ticket or not');
+        $this->addCarbonCopies($this->notification);
 
         $this->addAttachments();
     }
