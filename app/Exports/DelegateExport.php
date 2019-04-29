@@ -71,7 +71,11 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
      */
 
     public function collection() {
-        $query = $this->event->delegates();
+        $query = $this->event->delegates()->with([
+            'transactions.ticket',
+            'roles',
+            'sponsorRecord'
+        ]);
 
         switch ($this->delegateType) {
             case 'duplicated':
@@ -114,7 +118,7 @@ class DelegateExport implements FromCollection, WithHeadings, WithMapping
                 return $carry . $role->label . ", ";
             }, ""),
             $transaction ? optional($transaction->ticket)->name : null,
-            $transaction ? TransactionStatus::getStatusKey($delegate->transactions->first()->status) : null,
+            $transaction ? TransactionStatus::getStatusKey($transaction->status) : null,
             $delegate->is_duplicated == DelegateDuplicationStatus::DUPLICATED ? "DUPLICATED" : "NA",
             $delegate->duplicated_with,
             $sponsorRecord ? $sponsorRecord->sponsor->name : null,

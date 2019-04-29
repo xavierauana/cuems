@@ -30,10 +30,9 @@ class MailCatcherTestCase extends TestCase
     }
 
     protected function getAllEmail() {
-        $emails = $this->mailCatcher->get("/messages");;
+        $emails = $this->mailCatcher->get("/messages");
 
         if (empty($emails)) {
-
             $this->fail("No Emails");
         }
 
@@ -48,8 +47,24 @@ class MailCatcherTestCase extends TestCase
         return $this->mailCatcher->get("/messages/{$emailId}.json");
     }
 
+    protected function getFirstEmail() {
+        $emails = $this->getAllEmail();
+        $emailId = $emails[0]['id'];
+
+        return $this->mailCatcher->get("/messages/{$emailId}.json");
+    }
+
     protected function assertEmailBodyContains($body, $email) {
-        $this->assertContains($body, (string)$email->getBody());
+
+        $body = json_decode((string)$email->getBody());
+
+        if ($body->type === 'text/html') {
+            $email = $this->mailCatcher->get("/messages/{$body->id}.html");
+            $content = (string)$email->getBody();
+            $this->assertContains($content, (string)$email->getBody());
+        } else {
+            $this->assertContains($body, (string)$email->getBody());
+        }
     }
 
     protected function assertEmailBodyNotContains($body, $email) {
@@ -119,15 +134,22 @@ class MailCatcherTestCase extends TestCase
         }
     }
 
-    protected function assertHasCc($email, $address) {
-        $data = json_decode((string)$email->getBody(), true);
-        $this->assertTrue(strpos($data['source'],
-                "Cc: " . strtolower($address)) > -1, "Cannot find CC");
+    protected function assertHasCc($address) {
+        $firstEmail = $this->getAllEmail()[0];
+        $this->assertTrue(in_array("<{$address}>", $firstEmail['recipients']),
+            "Cannot find CC address in recipient list");
     }
-    protected function assertHasBcc($email, $address) {
-        $data = json_decode((string)$email->getBody(), true);
-        $this->assertTrue(strpos($data['source'],
-                "Bcc: " . strtolower($address)) > -1, "Cannot find BCC");
+
+    protected function assertHasBcc($address) {
+        $number = count($this->getAllEmail());
+
+        $this->assertTrue($number === 2,
+            "There should have 2 emails for bcc testing, but {$number}");
+
+        $lastEmail = $this->getAllEmail()[1];
+
+        $this->assertTrue(in_array("<{$address}>", $lastEmail['recipients']),
+            "Cannot find BCC address in recipient list");
     }
 
 

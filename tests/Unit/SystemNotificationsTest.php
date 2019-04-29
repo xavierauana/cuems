@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\CarbonCopy;
 use App\Delegate;
 use App\DelegateRole;
 use App\Entities\ChargeResponse;
@@ -651,6 +652,12 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'event_id' => $this->event->id
         ]);
 
+        $cc = "xavier.au+cc@anacreation.com";
+        $bcc = "xavier.au+bcc@anacreation.com";
+
+        $notification->addCc($cc);
+        $notification->addBcc($bcc);
+
         factory(Transaction::class)->create([
             "status"     => TransactionStatus::COMPLETED,
             "payee_type" => get_class($delegate),
@@ -658,11 +665,11 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'ticket_id'  => $ticket->id
         ]);
 
-        $cc = "xavier.au+cc@anacreation.com";
-        $bcc = "xavier.au+bcc@anacreation.com";
+        $this->assertEquals(2, $notification->copies->count());
 
-        $notification->addCc($cc);
-        $notification->addBcc($bcc);
+        $notification->copies->each(function ($copy) {
+            $this->assertInstanceOf(CarbonCopy::class, $copy);
+        });
 
         $this->assertDatabaseHas("carbon_copies", [
             'notification_id' => $notification->id,
@@ -678,10 +685,12 @@ class SystemNotificationsTest extends MailCatcherTestCase
             'name'            => null,
         ]);
 
+
         $email = $this->getLastEmail();
         $this->assertEmailBodyContains("testing transaction", $email);
-        $this->assertHasCc($email, $cc);
-        $this->assertHasBcc($email, $bcc);
+        $this->assertHasCc($cc);
+        $this->assertHasBcc($bcc);
+        $email = $this->getFirstEmail();
         $this->assertEmailWasSentTo($delegate->email, $email);
         $this->assertEmailWasSentFrom($fromEmail, $email);
         $this->assertEmailSubjectContains($subject, $email);

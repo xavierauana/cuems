@@ -48,9 +48,20 @@ const app = new Vue({
                       },
                       mounted() {
                         $(".select2").select2()
+
                         $(".select2-tag").select2({
                                                     tags: true
                                                   })
+
+                        $(".select2-not-sort").on("select2:select", function (e) {
+                          var element = e.params.data.element;
+                          var $element = $(element);
+
+                          $element.detach();
+                          $(this).append($element);
+                          $(this).trigger("change");
+                        });
+
                         flatpickr(".date-time", {
                           enableTime: true,
                           dateFormat: "d M Y H:i"

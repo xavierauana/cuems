@@ -11,13 +11,13 @@ class SessionResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function toArray($request) {
-        $moderators = $this->moderators->map(function (int $delegateId) {
+        $moderators = $this->moderators->map(function (Delegate $delegate) {
             return [
-                'name' => Delegate::find($delegateId)->name
+                'name' => $delegate->name
             ];
         });
 

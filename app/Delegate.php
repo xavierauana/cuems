@@ -2,17 +2,26 @@
 
 namespace App;
 
+use App\Contracts\SearchableModel;
 use App\Enums\DelegateDuplicationStatus;
+use App\Traits\Searchable;
 use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 
-class Delegate extends Model
+/**
+ * Class Delegate
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ *
+ */
+class Delegate extends Model implements SearchableModel
 {
-    use Notifiable, SoftDeletes, FormAccessible;
+    use Notifiable, SoftDeletes, FormAccessible, Searchable;
 
     protected $searchableColumns = [
         'registration_id',
@@ -83,13 +92,18 @@ class Delegate extends Model
     }
 
     // Scope
+
+    public function scopeNotDuplicated(Builder $q): Builder {
+        return $q->where('is_duplicated', '<>',
+            DelegateDuplicationStatus::DUPLICATED);
+    }
+
     public function scopeExcludeRole($query, $role): Builder {
-        $roleCode = null;
-        if ($role instanceof DelegateRole) {
-            $roleCode = $role->code;
-        } elseif (is_string($role)) {
-            $roleCode = $role;
-        }
+        $roleCode = $role instanceof DelegateRole ?
+            $role->code :
+            (is_string($role) ?
+                $role :
+                null);
 
         return $query->whereIn('id', function ($query) use ($roleCode) {
             $query->select('delegate_delegate_role.delegate_id')
@@ -147,12 +161,16 @@ class Delegate extends Model
 
     // Accessor
     public function getNameAttribute(): string {
-        return $this->prefix . " " . $this->first_name . " " . $this->last_name;
+        $prefix = (strtolower($this->prefix) === 'dr' or strtolower($this->prefix) === 'prof') ?
+            $this->prefix . "." :
+            $this->prefix;
+
+        return $prefix . " " . $this->first_name . " " . $this->last_name;
     }
 
     public function getTicketIdAttribute(): int {
-        return $this->transactions()->with('ticket')->latest()
-                    ->first()->ticket->id;
+        return $this->transactions->sortBy('created_at')
+                                  ->first()->ticket->id;
     }
 
     public function getTicketAttribute(): Transaction {
@@ -184,10 +202,10 @@ class Delegate extends Model
             'first_name'                    => "required",
             'last_name'                     => "required",
             'is_male'                       => "required|boolean",
-            'position'                      => "required",
+            'position'                      => "required|not_in:0",
             'other_position'                => "nullable|required_if:position,Others",
             'department'                    => "required",
-            'institution'                   => "required",
+            'institution'                   => "required|not_in:0",
             'other_institution'             => "nullable|required_if:institution,Others",
             'address_1'                     => "required",
             'address_2'                     => "nullable",
@@ -196,7 +214,7 @@ class Delegate extends Model
             'mobile'                        => "required",
             'fax'                           => 'nullable',
             'country'                       => 'required',
-            'training_organisation'         => 'nullable|traineeInfoRequired',
+            'training_organisation'         => 'nullable|traineeInfoRequired|not_in:0',
             'training_other_organisation'   => 'nullable|required_if:training_organisation,Others',
             'training_organisation_address' => 'nullable|traineeInfoRequired',
             'supervisor'                    => 'nullable|traineeInfoRequired',
@@ -230,7 +248,6 @@ class Delegate extends Model
     }
 
     public function getRegistrationId(): string {
-
         $prefix = setting($this->event, 'registration_id_prefix') ?? "";
 
         return $prefix . str_pad($this->registration_id, 4, 0,
@@ -244,5 +261,10 @@ class Delegate extends Model
         return $this->searchableColumns;
     }
 
+    protected function keywordRegistrationIdMutator($keyword, Event $event) {
+        $prefix = setting($event, 'registration_id_prefix') ?? "";
+        $number = (int)str_replace($prefix, "", $keyword);
 
+        return $number > 0 ? $number : $keyword;
+    }
 }

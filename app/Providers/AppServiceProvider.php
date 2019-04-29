@@ -61,6 +61,20 @@ class AppServiceProvider extends ServiceProvider
 
                 return false;
             });
+        Validator::extend('traineeInfoRequired',
+            function ($attribute, $value, $parameters, $validator) {
+
+                $ticketId = $validator->getData()['ticket_id'];
+                if ($ticket = Ticket::find($ticketId)) {
+                    if (strpos(strtolower($ticket->note), "trainee") > -1) {
+                        return !empty($value);
+                    };
+
+                    return true;
+                }
+
+                return false;
+            });
 
         app()->bind(PaymentServiceInterface::class,
             config('app.payment_service'));

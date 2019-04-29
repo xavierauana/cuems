@@ -2,17 +2,25 @@
 
 namespace App;
 
+use App\Contracts\SearchableModel;
 use App\Enums\TransactionStatus;
+use App\Traits\Searchable;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class Transaction extends Model
+/**
+ * Class Transaction
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
+class Transaction extends Model implements SearchableModel
 {
-    use LogsActivity, Notifiable;
+    use LogsActivity, Notifiable, Searchable;
 
     protected $casts = [
         'created_at' => 'datetime'
@@ -44,6 +52,16 @@ class Transaction extends Model
         'uuid'
     ];
 
+    public $searchableColumns = [
+        'transactions.status',
+        'transactions.charge_id',
+        'd.registration_id',
+        'd.first_name',
+        'd.last_name',
+        'd.email',
+        't.name',
+    ];
+
     /**
      * @return array
      * @throws \ReflectionException
@@ -71,6 +89,28 @@ class Transaction extends Model
 
     public function ticket(): Relation {
         return $this->belongsTo(Ticket::class);
+    }
+
+    // Scope
+
+    public function scopeJoinTables(Builder $query): Builder {
+        return $query;
+
+    }
+
+    public function scopeForEvent(Builder $query, Event $event): Builder {
+        return $query->select(['transactions.*', 'd.*', 't.name'])
+                     ->join('delegates as d', 'transactions.payee_id', '=',
+                         'd.id')
+                     ->where('transactions.payee_type', Delegate::class)
+                     ->join('tickets as t', 'transactions.ticket_id', '=',
+                         't.id')
+                     ->whereIn('transactions.ticket_id',
+                         function (Builder $query) use ($event) {
+                             $query->select('id')
+                                   ->from("tickets")
+                                   ->where('event_id', $event->id);
+                         });
     }
 
     // Helpers
@@ -110,4 +150,18 @@ class Transaction extends Model
                 ];
             })->toArray();
     }
+
+    protected function keywordDRegistrationIdMutator(
+        $keyword, Event $event = null
+    ) {
+        if (is_null($event)) {
+            return $keyword;
+        }
+
+        $prefix = setting($event, 'registration_id_prefix') ?? "";
+        $number = (int)str_replace($prefix, "", $keyword);
+
+        return $number > 0 ? $number : $keyword;
+    }
+
 }

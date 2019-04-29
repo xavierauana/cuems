@@ -60,14 +60,16 @@ class TransactionTest extends TestCase
 
         $records = $transaction->getCheckInRecords();
 
+        $user = User::find($user->id);
+
         $this->assertEquals([
             [
                 'timestamp' => $knownDate2->toDateTimeString(),
-                'user'      => $user->refresh()
+                'user'      => $user
             ],
             [
                 'timestamp' => $knownDate1->toDateTimeString(),
-                'user'      => $user->refresh()
+                'user'      => $user
             ],
         ], $records);
 

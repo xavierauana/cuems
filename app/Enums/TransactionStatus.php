@@ -15,6 +15,7 @@ class TransactionStatus
     const REFUNDED   = 2;
     const FAILED     = 3;
     const AUTHORIZED = 4;
+    const VOID       = 5;
 
     public static function getStatus(): array {
         $reflection = new \ReflectionClass(static::class);

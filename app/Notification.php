@@ -131,49 +131,21 @@ class Notification extends Model
     public function send($notifiable = null): void {
 
         if ($notifiable) {
-
             $this->sendNotificationToDelegate($notifiable);
-
         } elseif ($this->role) {
-
-            $query = $this->role->delegates();
-
-            if (!$this->include_duplicated) {
-                $query->where('is_duplicated', "<>",
-                    DelegateDuplicationStatus::DUPLICATED);
-            }
-
-            if ($this->verified_only) {
-                $query->where('is_verified', true);
-            }
-
-            $delegates = $query->get();
-
-            $delegates->each(function (Delegate $delegate) {
-                $this->sendNotificationToDelegate($delegate);
-            });
-
+            $this->getDelegatesWIthRole()
+                 ->each(function (Delegate $delegate) {
+                     $this->sendNotificationToDelegate($delegate);
+                 });
         } else {
-
-            $query = Delegate::latest();
-
-            if (!$this->include_duplicated) {
-                $query->where('is_duplicated', DelegateDuplicationStatus::NO);
-            }
-
-            if ($this->verified_only) {
-                $query->where('is_verified', true);
-            }
-
-            $delegates = $query->get();
-
-            $delegates->each(function ($d) {
-                $this->sendNotificationToDelegate($d);
-            });
-
-            $this->is_sent = true;
-            $this->save();
+            $this->getAllDelegates()
+                 ->each(function ($d) {
+                     $this->sendNotificationToDelegate($d);
+                 });
         }
+
+        $this->is_sent = true;
+        $this->save();
     }
 
     public function addCc(string $email, string $name = null): CarbonCopy {
@@ -252,7 +224,8 @@ class Notification extends Model
 
         foreach ($emails as $email) {
             if ($this->copies()
-                     ->whereType($type->getValue())->whereEmail($email)->first() === null) {
+                     ->whereType($type->getValue())->whereEmail($email)
+                     ->first() === null) {
                 $this->copies()->create([
                     'email' => $email,
                     'type'  => $type->getValue()
@@ -271,6 +244,54 @@ class Notification extends Model
         }
 
         return $emails;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getDelegatesWIthRole() {
+
+        $query = Delegate::where('event_id', $this->event_id);
+
+        if ($this->role_id) {
+            $query->whereIn('id', function ($query) {
+                $query->select('delegate_id')
+                      ->from('delegate_delegate_role')
+                      ->where('delegate_role_id', $this->role_id);
+            });
+        }
+
+        if (!$this->include_duplicated) {
+            $query->where('is_duplicated', "<>",
+                DelegateDuplicationStatus::DUPLICATED);
+        }
+
+        if ($this->verified_only) {
+            $query->where('is_verified', true);
+        }
+
+        $delegates = $query->get();
+
+        return $delegates;
+    }
+
+    /**
+     * @return \App\Delegate[]|\Illuminate\Database\Eloquent\Collection
+     */
+    private function getAllDelegates() {
+        $query = Delegate::where('event_id', $this->event_id);
+
+        if (!$this->include_duplicated) {
+            $query->where('is_duplicated', DelegateDuplicationStatus::NO);
+        }
+
+        if ($this->verified_only) {
+            $query->where('is_verified', true);
+        }
+
+        $delegates = $query->get();
+
+        return $delegates;
     }
 
 

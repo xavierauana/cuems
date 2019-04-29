@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Event;
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class EventsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request) {
+    public function index() {
 
         $events = $this->repo->get();
 
@@ -45,9 +46,10 @@ class EventsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \Exception
      */
     public function store(Request $request): RedirectResponse {
 
@@ -66,7 +68,7 @@ class EventsController extends Controller
             }
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -78,8 +80,8 @@ class EventsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Event $event
-     * @return \Illuminate\Http\Response
+     * @param \App\Event $event
+     * @return void
      */
     public function show(Event $event) {
         //
@@ -88,7 +90,7 @@ class EventsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Event $event
+     * @param \App\Event $event
      * @return \Illuminate\Http\Response
      */
     public function edit(Event $event) {
@@ -98,9 +100,10 @@ class EventsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \App\Event               $event
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Event               $event
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, Event $event) {
         $validatedData = $this->validate($request, Event::StoreRules,
@@ -108,14 +111,15 @@ class EventsController extends Controller
 
         $event->update($validatedData);
 
-        return redirect()->route("events.index")->withStatus("Event updated!");
+        return redirect()->route("events.index")
+                         ->with("status", "Event updated!");
 
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Event $event
+     * @param \App\Event $event
      * @return \Illuminate\Http\Response
      * @throws \Exception
      */

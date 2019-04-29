@@ -132,7 +132,6 @@ class ManageDelegateTest extends TestCase
             'transaction_type_id',
             'first_name',
             'last_name',
-            'institution'
         ];
 
         $uri = route('events.delegates.store', $event->id);

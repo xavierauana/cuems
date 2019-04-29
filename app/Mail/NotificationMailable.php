@@ -4,10 +4,11 @@ namespace App\Mail;
 
 use App\Event;
 use App\Notification;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NotificationMailable extends EventNotificationMail
 {
+
     /**
      * @var \App\Delegate
      */

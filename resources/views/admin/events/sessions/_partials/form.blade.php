@@ -50,7 +50,7 @@
 
 <div class="form-group">
     {!!  Form::label('moderators[]', 'Moderators'); !!}
-	{!!  Form::select('moderators[]',$delegates->pluck('name','id') , null,['class'=>'form-control select2', 'multiple']); !!}
+	{!!  Form::select('moderators[]',$delegates->pluck('name','id') , null,['class'=>'form-control select2 select2-not-sort', 'multiple']); !!}
 	@if ($errors->has('moderators'))
 		<span class="invalid-feedback" role="alert">
             <strong>{{ $errors->first('moderators') }}</strong>

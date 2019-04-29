@@ -2,12 +2,16 @@
 
 namespace App;
 
+use App\Contracts\SearchableModel;
 use App\Listener\InvalidateSettingCache;
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-class Setting extends Model
+class Setting extends Model implements SearchableModel
 {
+    use Searchable;
+
     protected $fillable = [
         'key',
         'value'

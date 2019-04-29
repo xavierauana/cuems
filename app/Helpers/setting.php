@@ -13,6 +13,7 @@ if (!function_exists('setting')) {
 
         if (cache()->has($cacheKey)) {
             \Debugbar::info('load from cache');
+
             return cache($cacheKey);
         } else {
             \Debugbar::info('load from db');
@@ -23,5 +24,24 @@ if (!function_exists('setting')) {
 
             return $value;
         }
+    }
+}
+
+if (!function_exists('sortUrl')) {
+    function sortUrl(string $key): string {
+        $request = request();
+
+        $queries = $request->query();
+        $queries['orderBy'] = $key;
+        $queries['order'] = ((($request->query('orderBy') == $key) and $request->has('order') and $request->query('order') == 'asc') ? 'desc' : 'asc');
+
+        if (isset($queries['page'])) {
+            unset($queries['page']);
+        }
+
+
+        $queryString = http_build_query($queries);
+
+        return $request->url() . "?" . $queryString;
     }
 }

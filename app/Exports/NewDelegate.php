@@ -35,11 +35,17 @@ class NewDelegate implements FromCollection, WithHeadings, WithMapping
     public function headings(): array {
         return [
             'id',
+            'registration_id',
             'first_name',
             'last_name',
             'email',
             'mobile',
             'fax',
+            'department',
+            'institution',
+            'address_1',
+            'address_2',
+            'address_3',
             'roles',
             'ticket',
             'transaction_status',
@@ -62,11 +68,17 @@ class NewDelegate implements FromCollection, WithHeadings, WithMapping
 
         return [
             $delegate->id,
+            $delegate->getRegistrationId(),
             $delegate->first_name,
             $delegate->last_name,
             $delegate->email,
             $delegate->mobile,
             $delegate->fax,
+            $delegate->department,
+            $delegate->institution,
+            $delegate->address_1,
+            $delegate->address_2,
+            $delegate->address_3,
             $delegate->roles->reduce(function (string $carry, DelegateRole $role
             ) {
                 return $carry . $role->label . ", ";

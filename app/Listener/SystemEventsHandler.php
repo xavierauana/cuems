@@ -28,7 +28,7 @@ class SystemEventsHandler
     /**
      * Handle the event.
      *
-     * @param  SystemEvent $event
+     * @param SystemEvent $event
      * @return void
      */
     public function handle(SystemEvent $event) {
@@ -166,6 +166,9 @@ class SystemEventsHandler
                 break;
             case SystemEvents::TRANSACTION_REFUND:
                 $query = $query->whereEvent(SystemEvents::TRANSACTION_REFUND);
+                break;
+            case SystemEvents::TRANSACTION_VOID:
+                $query = $query->whereEvent(SystemEvents::TRANSACTION_VOID);
                 break;
             default:
                 throw new \Exception("Invalided system event!");

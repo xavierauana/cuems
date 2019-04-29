@@ -22,6 +22,7 @@ class SystemEvents
     const TRANSACTION_REFUND    = 92;
     const TRANSACTION_PENDING   = 93;
     const TRANSACTION_FAILED    = 94;
+    const TRANSACTION_VOID      = 95;
 
     public static function getEvents(): array {
         return (new \ReflectionClass(static::class))->getConstants();

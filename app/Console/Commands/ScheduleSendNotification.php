@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Notification;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class ScheduleSendNotification extends Command
@@ -44,14 +45,20 @@ class ScheduleSendNotification extends Command
      */
     public function handle() {
         $now = Carbon::now();
-        Log::info('going to send schedule notification');
+
         Log::info('now:' . $now->toDateTimeString());
         $notifications = $this->notification->whereIsSent(false)
                                             ->where('schedule', '<', $now)
                                             ->get();
 
-        Log::info('notificaitons id:', $notifications->pluck('id')->toArray());
+        $notifications->tap(function (Collection $collection) {
+            Log::info("there are {$collection->count()} notifications");
+            Log::info('going to send schedule notification');
+        })->each(function (Notification $notification) {
+            Log::info('notification id:',
+                $notification->pluck('id')->toArray());
+            $notification->send();
+        });
 
-        $notifications->each->send();
     }
 }

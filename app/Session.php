@@ -4,6 +4,7 @@ namespace App;
 
 use App\Traits\FlatpickrConversion;
 use Carbon\Carbon;
+use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class Session extends Model
 {
-    use FlatpickrConversion;
+    use FlatpickrConversion, FormAccessible;
 
     protected $fillable = [
         'title',
@@ -35,7 +36,7 @@ class Session extends Model
         'subtitle'        => 'nullable',
         'sponsor'         => 'nullable',
         'moderation_type' => 'nullable|numeric',
-        'moderators'      => 'required|min:1',
+        'moderators'      => 'nullable',
         'start_at'        => 'required|date',
         'end_at'          => 'required|date|date_gt:start_at',
         'order'           => 'nullable|numeric|min:0',
@@ -53,15 +54,15 @@ class Session extends Model
         return $this->hasMany(Talk::class);
     }
 
+    public function moderators(): Relation {
+        return $this->belongsToMany(Delegate::class, 'moderators')
+                    ->withPivot(['order', 'created_at'])
+                    ->orderBy('pivot_order');
+    }
+
     // Access
     public function getDurationAttribute(): string {
         return (new Carbon($this->start_at))->format("d M Y H:i") . " - " . (new Carbon($this->end_at))->format("H:i");
-    }
-
-    public function getModeratorsAttribute(): Collection {
-        return DB::table('moderators')
-                 ->where('session_id', $this->id)
-                 ->pluck('delegate_id');
     }
 
     public function getModeratorDelegatesAttribute(): Collection {
@@ -102,24 +103,20 @@ class Session extends Model
         });
     }
 
-    public function updateModerators(array $moderatorIds) {
-        $oIds = DB::table('moderators')
-                  ->whereSessionId($this->id)
-                  ->pluck("delegate_id")->toArray();
-        $nIds = $moderatorIds;
+    public function updateModerators(array $moderatorIds = null) {
+        $data = [];
 
-        $removeIds = array_diff($oIds, $nIds);
-        $addIds = array_diff($nIds, $oIds);
+        if (!is_null($moderatorIds)) {
+            foreach ($moderatorIds as $index => $id) {
+                $data[$id] = ['order' => $index];
+            }
+        }
 
-        DB::table('moderators')->whereSessionId($this->id)
-          ->whereIn("delegate_id", $removeIds)->delete();
+        $this->moderators()->sync($data);
+    }
 
-        array_walk($addIds, function ($moderatorId) {
-            DB::table('moderators')->insert([
-                'delegate_id' => $moderatorId,
-                'session_id'  => $this->id,
-            ]);
-        });
+    public function formModeratorsAttribute() {
+        return $this->moderators()->orderBy("pivot_order", 'desc')->get();
     }
 
 

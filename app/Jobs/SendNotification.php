@@ -7,6 +7,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class SendNotification implements ShouldQueue
 {
@@ -41,6 +43,27 @@ class SendNotification implements ShouldQueue
      * @return void
      */
     public function handle() {
-        $this->notification->send($this->notifiable);
+        $queue = config('queue.default', null);
+        if ($queue === 'redis') {
+            $number = env('MAIL_THROTTLE_NUMBER');
+            $duration = env('MAIL_THROTTLE_TIME');
+
+            Redis::throttle('SendEmail')
+                 ->allow($number)
+                 ->every($duration)
+                 ->then(function () {
+                     $email = $this->notifiable->email;
+                     Log::info('send ' . $email);
+                     $this->notification->send($this->notifiable);
+
+                 }, function () {
+                     $email = $this->notifiable->email;
+                     Log::info('postpone ' . $email);
+
+                     return $this->release(10);
+                 });
+        } else {
+            $this->notification->send($this->notifiable);
+        }
     }
 }

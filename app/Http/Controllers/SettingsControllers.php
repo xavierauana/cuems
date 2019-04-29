@@ -30,11 +30,9 @@ class SettingsControllers extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, Event $event) {
-        $query = $event->settings();
-        if ($keyword = $request->query('keyword')) {
-            $query = $this->constructSearchQuery($this->repo, $request, $query);
-        }
-        $settings = $query->paginate(100);
+        $settings = $event->settings()
+                          ->search($request->query('keywords'))
+                          ->paginate(100);
 
         return view("admin.events.settings.index",
             compact('event', 'settings'));
@@ -56,6 +54,7 @@ class SettingsControllers extends Controller
      * @param  \Illuminate\Http\Request $request
      * @param  \App\Event               $event
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request, Event $event) {
         $validatedData = $this->validate($request, [
@@ -103,6 +102,7 @@ class SettingsControllers extends Controller
      * @param  \App\Event               $event
      * @param  \App\Setting             $setting
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, Event $event, Setting $setting) {
         $validatedData = $this->validate($request, [
@@ -128,6 +128,7 @@ class SettingsControllers extends Controller
      * @param  \App\Event   $event
      * @param  \App\Setting $setting
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy(Event $event, Setting $setting) {
         $event->settings()->find($setting->id)->delete();
@@ -136,14 +137,13 @@ class SettingsControllers extends Controller
     }
 
     public function search(Request $request, Event $event) {
-        $settings = $this->constructSearchQuery($this->repo, $request,
-            $event->settings(), 'keywords')->paginate(100);
+        $settings = $event->settings()
+                          ->search($request->query('keywords'))
+                          ->paginate(100);
 
-        if ($request->ajax()) {
-            return response()->json($settings);
-        }
-
-        return view("admin.events.settings.index",
-            compact('event', 'settings'));
+        return $request->ajax() ?
+            response()->json($settings) :
+            view("admin.events.settings.index",
+                compact('event', 'settings'));
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\DelegateRole;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CheckinTransactionResource extends JsonResource
@@ -16,10 +15,21 @@ class CheckinTransactionResource extends JsonResource
     public function toArray($request) {
 
         return [
-            'event'     => $this->ticket->event->title,
-            'delegate'  => new DelegateResource($this->payee),
-            'ticket'    => $this->ticket->name,
-            'check_in'  => $this->getCheckInRecords(),
+            'event'    => $this->ticket->event->title,
+            'delegate' => [
+                'registration_id' => $this->payee->getRegistrationId(),
+                'name'            => $this->payee->name,
+                'email'           => $this->payee->email,
+                'mobile'          => $this->payee->mobile,
+                'role'            => implode(", ",
+                    $this->payee->roles()->pluck('label')->toArray()),
+                'institution'     => $this->payee->institution,
+                'position'        => $this->payee->position,
+                'department'      => $this->payee->department,
+                'sponsor'         => ($record = $this->payee->sponsorRecord) ? $record->sponsor : null
+            ],
+            'ticket'   => $this->ticket->name,
+            'check_in' => $this->getCheckInRecords(),
         ];
     }
 }

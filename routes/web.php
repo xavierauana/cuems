@@ -24,9 +24,89 @@ use App\Http\Controllers\SettingsControllers;
 use App\Http\Controllers\TalksController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\UploadFilesController;
+use App\Services\CreateTicketService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
+$test = function () {
+    /** @var CreateTicketService $service */
+    $service = app(CreateTicketService::class);
+
+    $transaction = \App\Delegate::whereRegistrationId(8)->first()
+                                ->transactions()->first();
+
+    return $service->setPageSize('a4')
+                   ->setOrientation('portrait')
+                   ->createPDF($transaction);
+
+    dd($result);
+};
+
+$sendNotification = function () {
+    /** @var \App\Notification $notification */
+    $notification = \App\Notification::find(1);
+
+    $delegate = \App\Delegate::whereEventId(1)
+                             ->whereEmail('xavier.au@anacreation.com')->first();
+
+    $event = Event::find($notification->event_id);
+
+    for ($i = 0; $i < 10; $i++) {
+        $email = "test_user_{$i}@gmail.com";
+        $data = [
+            'prefix'          => 'Mr.',
+            'first_name'      => 'Xavier',
+            'last_name'       => 'Au',
+            'is_male'         => true,
+            'email'           => $email,
+            'mobile'          => 66281556,
+            'position'        => "Developer",
+            'department'      => "IT",
+            'institution'     => "A & A Creation Co.",
+            'address_1'       => "Address 1",
+            'address_2'       => "Address 2",
+            'address_3'       => "Address 3",
+            'country'         => "Hong Kong",
+            'registration_id' => $i,
+            'event_id'        => $notification->event_id,
+        ];
+
+        $delegate = $event->delegates()->create($data);
+
+        dispatch(new \App\Jobs\SendNotification($notification, $delegate));
+    }
+};
+
+Route::get('test_event', function () use ($sendNotification) {
+    $sendNotification();
+
+    return "Done";
+});
+
+
+Route::get('testpdf', function () use ($test) {
+
+    $headers = [
+        "Content-Type"        => [
+            "application/pdf"
+        ],
+        "Content-Disposition" => [
+            "attachment; filename = \"test.pdf\""
+        ],
+    ];
+
+    $path = public_path('test.pdf');
+
+    file_put_contents($path, $test());
+
+    return response()->file($path, $headers);
+
+    return response()->streamDownload(function () use ($test) {
+        return $test();
+    }, 'test.pdf');
+});
 
 
 Route::get('/test_record', function (Request $request) {
@@ -41,10 +121,11 @@ Route::get('/test_record', function (Request $request) {
 
         return view("record", compact('records'));
     }
+
+    return response('notmessage');
 });
 
 Route::get('/', function (Request $request) {
-
     $id = $request->get('event');
     $event = Event::findOrFail($id);
 
@@ -71,8 +152,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
 Route::post('delegates', PaymentController::class . "@pay");
 
-Route::group(
-    ['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'auth'], function () {
 
     Route::redirect('/home', '/dashboard');
 

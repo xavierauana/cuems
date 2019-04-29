@@ -30,6 +30,10 @@ class TransactionObserver
                 event(new SystemEvent(SystemEvents::TRANSACTION_PENDING,
                     $transaction));
                 break;
+            case TransactionStatus::VOID:
+                event(new SystemEvent(SystemEvents::TRANSACTION_VOID,
+                    $transaction));
+                break;
             default:
                 break;
         }

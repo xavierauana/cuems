@@ -19,6 +19,7 @@ use App\Services\JETCOPaymentService;
 use App\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
@@ -38,32 +39,50 @@ class PaymentController extends Controller
 
     public function token(Request $request, JETCOPaymentService $service) {
 
-        $validatedData = $this->validate($request,
-            array_merge($this->delegate->getStoreRules(), [
-                'ticket_id' => [
-                    'required',
-                    Rule::exists('tickets', 'id')->where(function ($query) {
-                        $query->where('is_public', true);
-                    })
-                ],
-                [
-                    'event_id' => 'required|exists:events,id'
-                ]
-            ]));
+        Log::info('Payment Token');
+
+        $rules = array_merge($this->delegate->getStoreRules(), [
+            'ticket_id' => [
+                'required',
+                Rule::exists('tickets', 'id')->where(function ($query) {
+                    $query->where('is_public', true);
+                })
+            ],
+            [
+                'event_id' => 'required|exists:events,id'
+            ]
+        ]);
+
+        $messages = [
+            'ticket_id.required'                        => "Please select a ticket.",
+            'institution.not_in'                        => "Please select an institution.",
+            'position.not_in'                           => "Please select a position.",
+            'training_organisation.trainee_info_required' => "Please select a training institution.",
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        $validatedData = $validator->validate();
 
         $validatedData = $this->sanitizeInputData($validatedData);
 
+        Log::info('Payment Token: check gateway availability.');
         if ($service->checkPaymentGatewayStatus()) {
+            Log::info('Payment Token: gateway available.');
 
+            Log::info('Payment Token: check payment prefix.');
             if (!$prefix = config('event.payment_prefix', null)) {
                 throw new \Exception("JETCO PREFIX setting error.");
             }
 
+            Log::info('Payment Token: prefix okay.');
+
             $delegateCount = Event::find(request('event'))
                                   ->delegates()->count();
+
             $invoiceId = config('event.invoice_prefix') . $delegateCount . str_random(5);
 
             $invoiceNumber = $prefix . $invoiceId;
+
+            Log::info('Payment Token: create payment record.');
 
             $record = PaymentRecord::updateOrCreate([
                 'invoice_id' => $invoiceNumber,
@@ -74,7 +93,7 @@ class PaymentController extends Controller
             ]);
 
             $ticket = Ticket::findOrFail($validatedData['ticket_id']);
-
+            Log::info('Payment Token: create digital order.');
             $DORequest = new DigitalOrderRequest(
                 $invoiceNumber,
                 $ticket->price,
@@ -84,9 +103,15 @@ class PaymentController extends Controller
                         'ref_id' => base64_encode($record->id)
                     ])
             );
+            Log::info('Payment Token: try get DO from gateway.');
+            try {
+                $data = $service->getDigitalOrder($DORequest);
+            } catch (\Exception $e) {
+                abort(502);
+            }
+            Log::info('Payment Token: DO  received.');
 
-            $data = $service->getDigitalOrder($DORequest);
-
+            Log::info('Payment Token: update payment record.');
             PaymentRecord::updateOrCreate([
                 'invoice_id' => $invoiceNumber,
             ], [
@@ -96,6 +121,8 @@ class PaymentController extends Controller
             return response()->json($data);
 
         }
+
+        abort(502);
     }
 
     /**
@@ -126,7 +153,7 @@ class PaymentController extends Controller
                 $ticket->price);
 
             $formData['institution'] = $formData['other_institution'] ?? $formData['institution'];
-            $formData['training_organisation'] = $formData['training_other_organisation'] ?? ($formData['training_organisation']??null);
+            $formData['training_organisation'] = $formData['training_other_organisation'] ?? ($formData['training_organisation'] ?? null);
 
             $newDelegate = $creationService->selfCreate($event, $formData,
                 $chargeResponse, $record);

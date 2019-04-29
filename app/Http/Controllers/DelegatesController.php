@@ -52,14 +52,10 @@ class DelegatesController extends Controller
         $query = $event->delegates()
                        ->with('event')
                        ->where("is_duplicated",
-                           "<>", DelegateDuplicationStatus::DUPLICATED);
-
-        $queries = $request->query();
-
-        $query = $this->constructSearchQuery($this->repo, $query,
-            $request->query('keyword'), $event);
-
-        unset($queries['keyword']);
+                           "<>", DelegateDuplicationStatus::DUPLICATED)
+                       ->search($request->query('keyword'), [$event])
+                       ->orderBy($request->get('orderBy', 'registration_id'),
+                           $request->get('order', 'dec'));
 
         $delegates = $query->paginate();
 
@@ -87,12 +83,11 @@ class DelegatesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Event                            $event
-     * @param  \Illuminate\Http\Request             $request
-     * @param \App\Services\DelegateCreationService $service
+     * @param \App\Event                              $event
+     * @param \App\Http\Requests\StoreDelegateRequest $request
+     * @param \App\Services\DelegateCreationService   $service
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
-     * @throws \ReflectionException
+     * @throws \Exception
      */
     public function store(
         Event $event, StoreDelegateRequest $request,
@@ -118,8 +113,8 @@ class DelegatesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Event     $event
-     * @param  \App\Delegate $delegate
+     * @param \App\Event    $event
+     * @param \App\Delegate $delegate
      * @return \Illuminate\Http\Response
      */
     public function show(Event $event, Delegate $delegate) {
@@ -160,13 +155,15 @@ class DelegatesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Event     $event
-     * @param  \App\Delegate $delegate
+     * @param \App\Event    $event
+     * @param \App\Delegate $delegate
      * @return \Illuminate\Http\Response
      * @throws \ReflectionException
      */
     public function edit(Event $event, Delegate $delegate) {
         $this->abortIfNotEventSubEntity($delegate, $event);
+
+        $delegate->load(['transactions.ticket', 'transactions.payee']);
         $reflection = new \ReflectionClass(TransactionStatus::class);
 
         $status = array_flip($reflection->getConstants());
@@ -180,7 +177,7 @@ class DelegatesController extends Controller
      *
      * @param \App\Http\Requests\DelegateUpdateRequest $request
      * @param \App\Event                               $event
-     * @param  \App\Delegate                           $delegate
+     * @param \App\Delegate                            $delegate
      * @param \App\Transaction                         $transaction
      * @return \Illuminate\Http\Response
      * @throws \Exception
@@ -214,8 +211,8 @@ class DelegatesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Event     $event
-     * @param  \App\Delegate $delegate
+     * @param \App\Event    $event
+     * @param \App\Delegate $delegate
      * @return \Illuminate\Http\Response
      * @throws \Exception
      */
@@ -253,41 +250,13 @@ class DelegatesController extends Controller
         return redirect()->route('events.delegates.new', $event);
     }
 
-    public function getImport(Event $event, Request $request) {
-        return view("admin.events.delegates.import", compact('event'));
-    }
-
-
     /**
      * @param \App\Event               $event
      * @param \Illuminate\Http\Request $request
-     * @param                          $validatedData
-     * @return $this|\Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    private function createDelegate(
-        Event $event, Request $request, $validatedData
-    ) {
-        $registrationId = ($event->delegates()
-                                 ->max('registration_id') ?? 0) + 1;
-        $validatedData['registration_id'] = $registrationId;
-        $newDelegate = $event->delegates()->create($validatedData);
-
-        $newDelegate->transactions()->create($validatedData);
-
-        $newDelegate->roles()->sync($validatedData['roles_id']);
-
-        DB::table('delegate_creations')->insert([
-            'delegate_id' => $newDelegate->id,
-            'user_id'     => $request->user()->id
-        ]);
-
-        if (isset($validatedData['sponsor']['sponsor_id'])) {
-            $sponsorData = $validatedData['sponsor'];
-
-            $newDelegate->sponsorRecord()->create($sponsorData);
-        }
-
-        return $newDelegate;
+    public function getImport(Event $event, Request $request) {
+        return view("admin.events.delegates.import", compact('event'));
     }
 
     /**
@@ -325,6 +294,11 @@ class DelegatesController extends Controller
         return $delegate;
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Event               $event
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function search(Request $request, Event $event) {
 
         if ($keyword = $request->query('keyword')) {
@@ -339,6 +313,11 @@ class DelegatesController extends Controller
 
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Event               $event
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function export(Request $request, Event $event) {
         $event->load('delegates.transactions.ticket');
         $event->load('delegates.roles');
@@ -352,23 +331,40 @@ class DelegatesController extends Controller
         }
     }
 
+    /**
+     * @param \App\Event $event
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function new(Event $event) {
-        $delegates = $event->delegates()->whereIsVerified(false)->get();
+        $delegates = $event->delegates()
+                           ->with('event')
+                           ->whereIsVerified(false)
+                           ->orderBy('registration_id', 'desc')
+                           ->get();
 
         return view("admin.events.delegates.new.index",
             compact('delegates', 'event'));
     }
 
+    /**
+     * @param \App\Event $event
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function duplicates(Event $event) {
         $delegates = $event->delegates()
                            ->with('transactions.ticket')
                            ->whereIsDuplicated(DelegateDuplicationStatus::DUPLICATED)
+                           ->orderBy('registration_id', 'desc')
                            ->get();
 
         return view("admin.events.delegates.duplicates.index",
             compact('delegates', 'event'));
     }
 
+    /**
+     * @param \App\Event $event
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function exportNew(Event $event) {
         $event->load('delegates.transactions.ticket');
         $event->load('delegates.roles');
@@ -377,11 +373,21 @@ class DelegatesController extends Controller
             'new_delegates.xls');
     }
 
+    /**
+     * @param \App\Event $event
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function getImportNew(Event $event) {
 
         return view('admin.events.delegates.new.import', compact('event'));
     }
 
+    /**
+     * @param \App\Event               $event
+     * @param \Illuminate\Http\Request $request
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function importNew(Event $event, Request $request) {
 
         $this->validate($request, [
@@ -399,6 +405,9 @@ class DelegatesController extends Controller
                          ->withStatus("delegates verified!");
     }
 
+    /**
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function template() {
         return response()->download(storage_path('app/templates/delegates_template.xlsx'));
     }
@@ -413,6 +422,9 @@ class DelegatesController extends Controller
             (new Transaction)->getRules());
     }
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function searchDuplicate() {
         if ($email = request('email')) {
             $delegates = Delegate::whereEmail($email)->get();
@@ -427,17 +439,34 @@ class DelegatesController extends Controller
         }
     }
 
-    public function sponsored(Event $event) {
+    /**
+     * @param \App\Event $event
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function sponsored(Event $event, Request $request) {
 
-        $delegates = $event->delegates()->sponsored()->paginate();
+        $delegates = $event->delegates()->sponsored()
+                           ->orderBy($request->get('orderBy',
+                               'registration_id'),
+                               $request->get('order', 'desc'))
+                           ->paginate();
 
         return view("admin.events.delegates.sponsored",
             compact('delegates', 'event'));
     }
 
-    public function waived(Event $event) {
+    /**
+     * @param \App\Event               $event
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function waived(Event $event, Request $request) {
 
-        $delegates = $event->delegates()->waived()->paginate();
+        $delegates = $event->delegates()->waived()
+                           ->orderBy($request->get('orderBy',
+                               'registration_id'),
+                               $request->get('order', 'desc'))
+                           ->paginate();
 
         return view("admin.events.delegates.waived",
             compact('delegates', 'event'));
@@ -445,6 +474,7 @@ class DelegatesController extends Controller
 
     /**
      * @param \Illuminate\Http\Request $request
+     * @return null
      */
     private function isFailedPaymentConverted(Request $request) {
         if ($recordId = $request->query('conversion') and $record = PaymentRecord::findOrFail($recordId)) {
@@ -454,7 +484,4 @@ class DelegatesController extends Controller
         return null;
     }
 
-    private function sanitizeData(array $data): array {
-
-    }
 }

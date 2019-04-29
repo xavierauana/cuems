@@ -4,9 +4,9 @@
 
 import swal from 'sweetalert2'
 import _ from 'lodash'
+import env from './env'
 
-const isProduction = true;
-const baseUrl = isProduction ? "/ems/" : "/"
+const baseUrl = env('baseUrl')
 
 export default {
   searchDelegate(el) {

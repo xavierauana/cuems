@@ -1,48 +1,30 @@
-
 @component('admin._components.eventContainer', ['event'=>$event])
 	<div class="row justify-content-center">
         <div class="col">
 	         @include("admin._partials.alert")
 	        <div class="card">
 		        <div class="card-header">Waived Delegates for Event: {{$event->title}}</div>
-		        {{--<div class="card-body">--}}
-		        {{--<div class="row">--}}
-		        {{--<div class="col-6">--}}
-		        {{--<form class="form"--}}
-		        {{--action="{{route('events.delegates.index', $event)}}">--}}
-		        {{--<div class="input-group">--}}
-		        {{--<input class="form-control"--}}
-		        {{--name="keyword"--}}
-		        {{--value="{{request()->query('keyword')}}"--}}
-		        {{--placeholder="search" />--}}
-		        {{--<div class="">--}}
-		        {{--<button class="btn btn-success">Search</button>--}}
-		        {{--</div>--}}
-		        {{--</div>--}}
-		        {{--</form>--}}
-		        {{--</div>--}}
-		        {{--</div>--}}
-		        {{--</div>--}}
+		       
 		        <div class="table-responsive">
 	              <table class="table">
 	                <thead>
 	                    <th>
-	                        <a href="{{request()->url()."?registration_id=".((request()->has('registration_id') and request()->query('registration_id') === 'asc')?"desc":"asc")}}">
+	                        <a href="{{sortUrl('registration_id')}}">
 	                        Registration ID
 	                        </a>
 	                    </th>
 	                    <th>
-	                        <a href="{{request()->url()."?first_name=".((request()->has('first_name') and request()->query('first_name') === 'asc')?"desc":"asc")}}">
+	                        <a href="{{sortUrl('first_name')}}">
 	                        Name
 	                        </a>
 	                    </th>
 	                    <th>
-	                        <a href="{{request()->url()."?last_name=".((request()->has('last_name') and request()->query('last_name') === 'asc')?"desc":"asc")}}">
+	                        <a href="{{sortUrl('email')}}">
 		                        Email
 	                        </a>
 	                    </th>
 	                    <th>
-	                        <a href="{{request()->url()."?institution=".((request()->has('institution') and request()->query('institution') === 'asc')?"desc":"asc")}}">
+	                        <a href="{{sortUrl('institution')}}">
 		                        Institution
 	                        </a>
 	                    </th>

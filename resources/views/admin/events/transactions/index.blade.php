@@ -32,32 +32,32 @@ $status = array_flip((new \ReflectionClass(\App\Enums\TransactionStatus::class))
                   <table class="table">
                     <thead>
                         <th>
-	                        <a href="{{request()->url()."?registration_id=".((request()->has('registration_id') and request()->query('registration_id') === 'asc')?"desc":"asc")}}">
+	                        <a href="{{sortUrl('d.registration_id')}}">
 		                        Registration Id
 	                        </a>
                         </th>
                         <th>
-	                        <a href="{{request()->url()."?first_name=".((request()->has('first_name') and request()->query('first_name') === 'asc')?"desc":"asc")}}">
+	                        <a href="{{sortUrl('d.first_name')}}">
 		                        Delegate Name
 	                        </a>
                         </th>
                         <th>
-	                         <a href="{{request()->url()."?ticket=".((request()->has('ticket') and request()->query('ticket') === 'asc')?"desc":"asc")}}">
+	                         <a href="{{sortUrl('t.name') }}">
 		                       Ticket
 	                        </a>
                         </th>
                         <th>
-	                        <a href="{{request()->url()."?charge_id=".((request()->has('charge_id') and request()->query('charge_id') === 'asc')?"desc":"asc")}}">
+	                        <a href="{{sortUrl("transactions.charge_id")}}">
 		                       Transaction Id
 	                        </a>
                         </th>
                         <th>
-	                        <a href="{{request()->url()."?created_at=".((request()->has('created_at') and request()->query('created_at') === 'asc')?"desc":"asc")}}">
+	                        <a href="{{sortUrl("transactions.created_at")}}">
 		                       Timestamp
 	                        </a>
                         </th>
                         <th>
-	                        <a href="{{request()->url()."?status=".((request()->has('status') and request()->query('status') === 'asc')?"desc":"asc")}}">
+	                        <a href="{{sortUrl("transactions.status")}}">
 		                       Status
 	                        </a>
                         </th>

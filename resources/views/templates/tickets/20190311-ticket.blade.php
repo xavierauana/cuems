@@ -1,8 +1,7 @@
 <?php
 $ticket = $transaction->ticket;
 $qrCode = base64_encode(\QrCode::format('png')->size(150)
-//                               ->generate($transaction->uuid));
-                               ->generate(\Illuminate\Support\Str::random(256)));
+                               ->generate($transaction->uuid));
 
 $isWaived = strpos(strtolower($ticket->note), 'waived') > -1;
 $isSponsored = strpos(strtolower($ticket->note), 'sponsored') > -1;
@@ -17,7 +16,7 @@ $isWaivedOrSponsored = $isWaived or $isSponsored;
 		}
 		
 		@page {
-			margin: 1cm 1.5cm 
+			margin: 0.5cm 0.5cm
 		}
 	</style>
 </head>
@@ -42,7 +41,7 @@ Faculty of Medicine <br>
 The Chinese University of Hong Kong <br>
 		</td>
 		<td style="text-align: center">
-			<img width="85" src="imgs/medical_logo.png">
+			<img width="90" src="imgs/medical_logo.png">
 		</td>
 	</tr>
 </table>
@@ -54,8 +53,7 @@ The Chinese University of Hong Kong <br>
 			<p>{{\Carbon\Carbon::now()->format("j F Y")}}</p>
 			<p>
 				{{$delegate->prefix}}. {{$delegate->first_name}} {{$delegate->last_name}}<br>
-				@if($delegate->department != "empty") {{$delegate->department}} <br>
-            	@endif
+				{{$delegate->department}} <br>
 				@if($delegate->institution != "empty") {{$delegate->institution}}<br>
 				@endif
 				
@@ -139,8 +137,8 @@ The Chinese University of Hong Kong <br>
 	
 	@else
 		Paid by : {{$transaction->transactionType->label}}
-	@endif<br>
-<strong>*Lunch box will be served at the venue on a first-come-first-served basis.</strong></p>
+	@endif</p>
+<p><strong>*Lunch box will be served at the venue on a first-come-first-served basis.</strong></p>
 <p>Remarks:</p>
 <ol>
 <li>Please quote your registration number above in all communications.</li>
@@ -148,6 +146,7 @@ The Chinese University of Hong Kong <br>
 <li>Should there be any amendments of your registration details, please inform Ms. Celia Lin by email at <u>aim@cuhk.edu.hk</u> as soon as possible. </li>
 <li>Please present this letter (hard copy or electronic copy is acceptable) at the Conference registration counter to obtain your registration kit. </li>
 </ol>
+<br>
 <p>
 <img width="150" src="imgs/stamp.png" /><br>
 	Conference Secretariat, AIM 2019 <br>

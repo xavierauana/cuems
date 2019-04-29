@@ -12,6 +12,12 @@
         
         <link href="{{asset("css/app.css")}}" rel="stylesheet"
               type="text/css" />
+	
+	    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+	    
+	    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+
         
         <style>
             .invalid-feedback {
@@ -48,7 +54,7 @@
         
         @include("_partials.alert")
 	    <p><strong>The field below with asterisk(*) must be filled.</strong></p>
-	    {{Form::open(['url' => "",'method'=>"POST", 'id'=>"payment-form", 'onsubmit'=>"pay(event)"])}}
+	    {{Form::open(['url' => "",'method'=>"POST", 'id'=>"payment-form"])}}
 	
 	    <input type="hidden" id="DO" name="DO" />
         <input type="hidden" id="token" name="token" />
@@ -82,28 +88,33 @@
         <script src="{{asset("js/vendor.js")}}"></script>
         <script src="{{asset("js/frontEnd.js")}}"></script>
         <script>
-        function pay(e) {
-          e.preventDefault()
+	        $("#payment-form").submit(function (e) {
+              e.preventDefault()
 
-          axios.post("{{url('/token?event='.$event->id)}}", new FormData(e.target))
-               .then(function (response) {
+              axios.post("{{url('/token?event='.$event->id)}}", new FormData(e.target))
+                   .then(function (response) {
 
-                 var tokenInput = document.getElementById("DO")
-                 tokenInput.value = response.data.token
-                 e.target.action = response.data.url
-                 e.target.submit()
-               })
-        }
+                     var tokenInput = document.getElementById("DO")
+                     tokenInput.value = response.data.token
+                     e.target.action = response.data.url
+                     e.target.submit()
+                   })
+                   .catch(function (error) {
+                     var msg = "Something wrong, please try again later."
+                     if (error.response.status === 422) {
+                       var errors = error.response.data.errors
+                       msg = Object.keys(errors).reduce(function (carry, key) {
+                         return carry += errors[key][0] + "\n"
+                       }, "")
+                     }
+                     alert(msg)
+                   })
+
+              return false
+            })
         </script>
 
-    {{--<div class="container">--}}
-    {{--<iframe src="http://dev.mect.cuhk.edu.hk?event=1" width="100%" height="800px"--}}
-    {{--style="border: none"></iframe>--}}
-    {{--</div>--}}
-
-
     @stack("scripts")
-    
     
     </body>
 </html>

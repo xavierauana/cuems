@@ -15,7 +15,7 @@ $required = (isset($isRequired) and $isRequired === false) ? "" : 'required'
 					   $options = array_merge($options, [$delegate->position => $delegate->position]);
 				   }
                 @endphp
-	            {{Form::select('position',$options  ,null, ['class'=>'form-control select2', 'required'])}}
+	            {{Form::select('position',$options  ,null, ['class'=>'form-control select2', 'required','pattern'=>"^((?!0).)*"])}}
 	            @if ($errors->has('position'))
 		            <span class="invalid-feedback" role="alert">
                             <strong>{{ $errors->first('position') }}</strong>
@@ -123,12 +123,11 @@ $required = (isset($isRequired) and $isRequired === false) ? "" : 'required'
             </div>
         </div>
     
-    
         <div class="form-group row">
             <label class="country col-sm-2 col-form-label"><span
 			            class="required-asterisk">*</span>Country/Region</label>
             <div class="col-sm-10">
-            {{Form::select('country',getCountiesList() ,'Hong Kong SAR China', ['class'=>'form-control select2', 'required'])}}
+            {{Form::select('country',getCountiesList() ,isset($delegate)?null:'Hong Kong SAR China', ['class'=>'form-control select2', 'required'])}}
 	            @if ($errors->has('country'))
 		            <span class="invalid-feedback" role="alert">
                         <strong>{{ $errors->first('country') }}</strong>

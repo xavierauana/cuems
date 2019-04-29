@@ -4,10 +4,16 @@ namespace App;
 
 use Carbon\Carbon;
 use Collective\Html\Eloquent\FormAccessible;
+use Illuminate\Database\Eloquent\Builder as BuilderAlias;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class Event
+ * @package App
+ * @mixin BuilderAlias
+ */
 class Event extends Model
 {
     use SoftDeletes, FormAccessible;

@@ -14,7 +14,7 @@ class ApiDelegateResource extends JsonResource
      */
     public function toArray($request) {
         return [
-            'title'      => $this->prefix,
+            'title'      => strtolower($this->prefix) == "prof" ? ucwords($this->prefix) . "." : $this->prefix,
             'surname'    => $this->last_name,
             'given_name' => $this->first_name,
             'country'    => $this->country

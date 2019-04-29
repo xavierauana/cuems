@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Delegate;
 use App\Event;
 use App\Http\Resources\SessionResource;
 use App\Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class SessionsController extends Controller
@@ -43,11 +43,11 @@ class SessionsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param Event         $event
+     * @param Event $event
      * @return \Illuminate\Http\Response
      */
     public function create(Event $event) {
-        $delegates = $event->delegates()->excludeRole('default')->get();
+        $delegates = $this->getDelegatesForModerators($event);
 
         return view('admin.events.sessions.create',
             compact('event', 'delegates'));
@@ -92,8 +92,8 @@ class SessionsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Event    $event
-     * @param  Session $session
+     * @param Event   $event
+     * @param Session $session
      * @return void
      */
     public function show(Event $event, Session $session) {
@@ -103,13 +103,13 @@ class SessionsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Event         $event
-     * @param  Session      $session
+     * @param Event   $event
+     * @param Session $session
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Event $event, Session $session) {
 
-       $delegates = $event->delegates()->excludeRole('default')->get();
+        $delegates = $this->getDelegatesForModerators($event);
 
         return view("admin.events.sessions.edit",
             compact('event', 'session', 'delegates'));
@@ -118,8 +118,8 @@ class SessionsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  Request $request
-     * @param  Session $session
+     * @param Request $request
+     * @param Session $session
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Event $event, Session $session) {
@@ -129,7 +129,7 @@ class SessionsController extends Controller
         $validatedData['order'] = $validatedData['order'] ?? (($max = Session::max('order')) ? ($max + 1) : 1);
 
         $session->update($validatedData);
-        $session->updateModerators($validatedData['moderators']);
+        $session->updateModerators($validatedData['moderators'] ?? null);
 
         return redirect()->route("events.sessions.index", [$event, $session])
                          ->withStatus("Session: {$session->title} is updated!");
@@ -139,7 +139,7 @@ class SessionsController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Event $event
-     * @param  Session   $session
+     * @param Session    $session
      * @return \Illuminate\Http\Response
      * @throws \Exception
      */
@@ -161,12 +161,28 @@ class SessionsController extends Controller
                           ->with([
                               'talks' => function ($query) {
                                   return $query->orderBy('order');
-                              }
+                              },
+                              'moderators'
                           ])
                           ->orderBy('order')
                           ->get();
         $data = SessionResource::collection($sessions);
 
         return $data;
+    }
+
+    /**
+     * @param \App\Event $event
+     * @return \Illuminate\Support\Collection
+     */
+    private function getDelegatesForModerators(Event $event): Collection {
+        return $event->delegates()
+                     ->excludeRole('default')
+                     ->get();
+        //        return $event->delegates()
+        //                     ->excludeRole('default')
+        //                     ->notDuplicated()
+        //                     ->get();
+
     }
 }

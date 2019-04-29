@@ -27,7 +27,7 @@
 			                  <td>{{$session->venue}}</td>
 			                  <td>{{$session->duration}}</td>
 			                  <td>
-				                  @foreach($session->moderatorDelegates as $delegate)
+				                  @foreach($session->moderators as $delegate)
 					                  <a href="{{route('events.delegates.show',[$event,$delegate])}}"><span
 								                  class="badge badge-success">{{$delegate->name}}</span></a>
 				                  @endforeach
