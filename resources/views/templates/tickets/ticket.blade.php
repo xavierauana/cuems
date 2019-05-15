@@ -138,7 +138,7 @@ The Chinese University of Hong Kong <br>
 	@elseif($isSponsored)
 	
 	@else
-		Paid by : {{$transaction->transactionType->label}}
+		Paid by : Testing Method
 	@endif<br>
 <strong>*Lunch box will be served at the venue on a first-come-first-served basis.</strong></p>
 <p>Remarks:</p>
