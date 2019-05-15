@@ -25,7 +25,7 @@ class ScheduleNotification implements ShouldQueue
     /**
      * @var \App\Notification
      */
-    private $notification;
+    public $notification;
 
     private $redisKey = "throttle_email";
 
