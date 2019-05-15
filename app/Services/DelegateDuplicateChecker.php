@@ -11,6 +11,7 @@ namespace App\Services;
 use App\Contracts\DuplicateCheckerInterface;
 use App\Event;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class DelegateDuplicateChecker implements DuplicateCheckerInterface
 {
@@ -76,9 +77,13 @@ class DelegateDuplicateChecker implements DuplicateCheckerInterface
     }
 
     public function convertRegistrationIdToInt(string $registration_id): int {
-        $newDuplicatedId = ltrim(str_replace(setting($this->event,
-                'registration_id_prefix') ?? "",
+
+        $prefix = setting($this->event, 'registration_id_prefix') ?? "";
+        $newDuplicatedId = ltrim(str_replace($prefix,
             "", $registration_id), "0");
+
+        Log::info("prefix is {$prefix} and " . $registration_id . " and " . $newDuplicatedId);
+
 
         return $newDuplicatedId;
 

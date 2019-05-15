@@ -27,10 +27,14 @@
 		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 		
 		<script>
-			_.forEach(document.querySelectorAll("input.date"), el => flatpickr(el, {
-              enableTime: true,
-              dateFormat: "d M Y H:i",
-            }))
+			var options = {
+              enableTime   : true,
+              dateFormat   : "d M Y H:i",
+				@if(isset($notification) and $date = optional($notification->schedule)->format("d M Y H:i"))
+                defaultDate: "{{$date}}"
+				@endif
+            }
+            _.forEach(document.querySelectorAll("input.date"), el => flatpickr(el, options))
 		</script>
 	@endpush
 

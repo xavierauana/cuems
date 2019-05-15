@@ -9,7 +9,7 @@ namespace Tests;
 
 use GuzzleHttp\Client;
 
-class MailCatcherTestCase extends TestCase
+class MailCatcherTestCase extends TestCase implements MailTestCase
 {
     protected $mailCatcher;
 
@@ -25,11 +25,11 @@ class MailCatcherTestCase extends TestCase
         $this->mailCatcher = new Client(['base_uri' => "http://127.0.0.1:1080"]);
     }
 
-    protected function removeAllEmails() {
+    public function removeAllEmails() {
         $this->mailCatcher->delete('/messages');
     }
 
-    protected function getAllEmail() {
+    public function getAllEmail() {
         $emails = $this->mailCatcher->get("/messages");
 
         if (empty($emails)) {
@@ -39,7 +39,7 @@ class MailCatcherTestCase extends TestCase
         return json_decode((string)$emails->getBody(), true);
     }
 
-    protected function getLastEmail() {
+    public function getLastEmail() {
         $emails = $this->getAllEmail();
         $emails[count($emails) - 1];
         $emailId = $emails[count($emails) - 1]['id'];
@@ -47,14 +47,14 @@ class MailCatcherTestCase extends TestCase
         return $this->mailCatcher->get("/messages/{$emailId}.json");
     }
 
-    protected function getFirstEmail() {
+    public function getFirstEmail() {
         $emails = $this->getAllEmail();
         $emailId = $emails[0]['id'];
 
         return $this->mailCatcher->get("/messages/{$emailId}.json");
     }
 
-    protected function assertEmailBodyContains($body, $email) {
+    public function assertEmailBodyContains($body, $email) {
 
         $body = json_decode((string)$email->getBody());
 
@@ -67,48 +67,48 @@ class MailCatcherTestCase extends TestCase
         }
     }
 
-    protected function assertEmailBodyNotContains($body, $email) {
+    public function assertEmailBodyNotContains($body, $email) {
         $this->assertNotContains($body, (string)$email->getBody());
     }
 
-    protected function assertEmailWasSentTo($recipient, $email) {
+    public function assertEmailWasSentTo($recipient, $email) {
         $recipients = json_decode(((string)$email->getBody()),
             true)['recipients'];
         $this->assertContains("<{$recipient}>", $recipients);
     }
 
-    protected function assertEmailWasNotSentTo($recipient, $email) {
+    public function assertEmailWasNotSentTo($recipient, $email) {
 
         $recipients = json_decode(((string)$email->getBody()),
             true)['recipients'];
         $this->assertNotContains("<{$recipient}>", $recipients);
     }
 
-    protected function assertEmailWasSentFrom($sender, $email) {
+    public function assertEmailWasSentFrom($sender, $email) {
         $data = json_decode(((string)$email->getBody()),
             true)['sender'];
         $this->assertContains("{$sender}", $data);
     }
 
-    protected function assertEmailWasNotSentFrom($sender, $email) {
+    public function assertEmailWasNotSentFrom($sender, $email) {
         $data = json_decode(((string)$email->getBody()),
             true)['sender'];
         $this->assertNotContains("{$sender}", $data);
     }
 
-    protected function assertEmailSubjectContains($subject, $email) {
+    public function assertEmailSubjectContains($subject, $email) {
         $data = json_decode(((string)$email->getBody()),
             true)['subject'];
         $this->assertContains("{$subject}", $data);
     }
 
-    protected function assertEmailSubjectNotContains($subject, $email) {
+    public function assertEmailSubjectNotContains($subject, $email) {
         $data = json_decode(((string)$email->getBody()),
             true)['subject'];
         $this->assertNotContains("{$subject}", $data);
     }
 
-    protected function assertEmailHasAttachment($attachmentFileName, $email) {
+    public function assertEmailHasAttachment($attachmentFileName, $email) {
 
         $attachments = $name = json_decode((string)$email->getBody(),
             true)['attachments'];
@@ -122,7 +122,7 @@ class MailCatcherTestCase extends TestCase
         $this->assertEquals($attachmentFileName, $name);
     }
 
-    protected function assertNoAttachment($email) {
+    public function assertNoAttachment($email) {
         $attachments = $name = json_decode((string)$email->getBody(),
             true)['attachments'];
 
@@ -134,13 +134,13 @@ class MailCatcherTestCase extends TestCase
         }
     }
 
-    protected function assertHasCc($address) {
+    public function assertHasCc($address) {
         $firstEmail = $this->getAllEmail()[0];
         $this->assertTrue(in_array("<{$address}>", $firstEmail['recipients']),
             "Cannot find CC address in recipient list");
     }
 
-    protected function assertHasBcc($address) {
+    public function assertHasBcc($address) {
         $number = count($this->getAllEmail());
 
         $this->assertTrue($number === 2,

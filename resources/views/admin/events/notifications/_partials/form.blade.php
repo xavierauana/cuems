@@ -140,7 +140,7 @@
 	</div>
 </div>
 
-@if(!isset($notificaiton))
+@if(!isset($notification))
 	@include("admin.events.notifications._partials.createDates")
 @else
 	@include("admin.events.notifications._partials.editDates")

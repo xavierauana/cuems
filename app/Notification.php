@@ -5,6 +5,7 @@ namespace App;
 use App\Enums\CarbonCopyType;
 use App\Enums\DelegateDuplicationStatus;
 use App\Enums\SystemEvents;
+use App\Jobs\ScheduleNotification;
 use App\Mail\NotificationMailable;
 use App\Mail\TransactionMail;
 use Collective\Html\Eloquent\FormAccessible;
@@ -17,6 +18,7 @@ class Notification extends Model
 {
     use FormAccessible;
 
+    private $isScheduleAction = false;
 
     protected $fillable = [
         'name',
@@ -33,7 +35,8 @@ class Notification extends Model
     ];
 
     protected $casts = [
-        'include_duplicated' => 'boolean'
+        'include_duplicated' => 'boolean',
+        'schedule'           => 'datetime'
     ];
 
 
@@ -97,7 +100,7 @@ class Notification extends Model
      * @param $notifiable
      * @throws \Exception
      */
-    private function sendNotificationToDelegate($notifiable): void {
+    public function sendNotificationToDelegate($notifiable): void {
 
         list($email, $mail) = $this->createMail($notifiable);
 
@@ -135,7 +138,12 @@ class Notification extends Model
         } elseif ($this->role) {
             $this->getDelegatesWIthRole()
                  ->each(function (Delegate $delegate) {
-                     $this->sendNotificationToDelegate($delegate);
+                     if ($this->isScheduleAction) {
+                         ScheduleNotification::dispatch($this, $delegate)
+                                             ->onQueue('email');
+                     } else {
+                         $this->sendNotificationToDelegate($delegate);
+                     }
                  });
         } else {
             $this->getAllDelegates()
@@ -143,9 +151,6 @@ class Notification extends Model
                      $this->sendNotificationToDelegate($d);
                  });
         }
-
-        $this->is_sent = true;
-        $this->save();
     }
 
     public function addCc(string $email, string $name = null): CarbonCopy {
@@ -294,5 +299,19 @@ class Notification extends Model
         return $delegates;
     }
 
+    public function markSent(): void {
+        $this->is_sent = true;
+        $this->save();
+    }
+
+    /**
+     * @param bool $isScheduleAction
+     * @return Notification
+     */
+    public function setIsScheduleAction(bool $isScheduleAction): Notification {
+        $this->isScheduleAction = $isScheduleAction;
+
+        return $this;
+    }
 
 }

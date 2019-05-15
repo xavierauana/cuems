@@ -34,7 +34,7 @@ class NotificationStoreRequest extends FormRequest
                 'verified_only',
                 'include_duplicated',
             ])
-            ->date("schedule", 'd M Y h:m')
+            ->date("schedule", 'd M Y H:i')
             ->get();
 
     }
