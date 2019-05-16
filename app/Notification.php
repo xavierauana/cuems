@@ -132,28 +132,23 @@ class Notification extends Model
         ];
     }
 
+    /**
+     * @param null $notifiable
+     * @throws \Exception
+     */
     public function send($notifiable = null): void {
-        Log::info('scheduled send');
+        Log::info('send');
         if ($notifiable) {
-            Log::info('with notifiable');
-            $this->sendNotificationToDelegate($notifiable);
+            $this->checkAndSendNotificationToDelegate($notifiable);
         } elseif ($this->role) {
             $this->getDelegatesWIthRole()
                  ->each(function (Delegate $delegate) {
-                     if ($this->isScheduleAction) {
-                         Log::info('scheduled send');
-                         ScheduleNotification::dispatch($this, $delegate)
-                                             ->onQueue('email');
-                     } else {
-                         Log::info('not scheduled send');
-                         $this->sendNotificationToDelegate($delegate);
-                     }
+                     $this->checkAndSendNotificationToDelegate($delegate);
                  });
         } else {
-            Log::info('without role');
             $this->getAllDelegates()
-                 ->each(function ($d) {
-                     $this->sendNotificationToDelegate($d);
+                 ->each(function (Delegate $delegate) {
+                     $this->checkAndSendNotificationToDelegate($delegate);
                  });
         }
     }
@@ -271,14 +266,7 @@ class Notification extends Model
             });
         }
 
-        if (!$this->include_duplicated) {
-            $query->where('is_duplicated', "<>",
-                DelegateDuplicationStatus::DUPLICATED);
-        }
-
-        if ($this->verified_only) {
-            $query->where('is_verified', true);
-        }
+        $this->filterOptions($query);
 
         $delegates = $query->get();
 
@@ -291,13 +279,7 @@ class Notification extends Model
     private function getAllDelegates() {
         $query = Delegate::where('event_id', $this->event_id);
 
-        if (!$this->include_duplicated) {
-            $query->where('is_duplicated', DelegateDuplicationStatus::NO);
-        }
-
-        if ($this->verified_only) {
-            $query->where('is_verified', true);
-        }
+        $this->filterOptions($query);
 
         $delegates = $query->get();
 
@@ -317,6 +299,36 @@ class Notification extends Model
         $this->isScheduleAction = $isScheduleAction;
 
         return $this;
+    }
+
+    /**
+     * @param $notifiable
+     * @throws \Exception
+     */
+    private function checkAndSendNotificationToDelegate($notifiable
+    ): void {
+        if ($this->isScheduleAction and $notifiable instanceof Delegate) {
+            Log::info('schedule send and delegate only');
+            ScheduleNotification::dispatch($this, $notifiable)
+                                ->onQueue('email');
+        } else {
+            Log::info('normal send');
+            $this->sendNotificationToDelegate($notifiable);
+        }
+    }
+
+    /**
+     * @param $query
+     */
+    private function filterOptions(&$query): void {
+        if (!$this->include_duplicated) {
+            $query->where('is_duplicated', "<>",
+                DelegateDuplicationStatus::DUPLICATED);
+        }
+
+        if ($this->verified_only) {
+            $query->where('is_verified', true);
+        }
     }
 
 }
