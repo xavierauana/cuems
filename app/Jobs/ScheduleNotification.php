@@ -58,8 +58,8 @@ class ScheduleNotification implements ShouldQueue
                  ->then(function () {
                      Log::info(Carbon::now()->toDateTimeString());
                      $this->notification->sendNotificationToDelegate($this->delegate);
-                 }, function () {
-                     return $this->release(10);
+                 }, function () use ($duration) {
+                     return $this->release($duration + 1);
                  });
 
         } else {
