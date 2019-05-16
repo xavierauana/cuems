@@ -48,6 +48,7 @@ class ScheduleSendNotification extends Command
 
         Log::info('now:' . $now->toDateTimeString());
         $this->notification
+            ->whereNotNull('schedule')
             ->whereIsSent(false)
             ->where('schedule', '<', $now)
             ->get()
@@ -56,8 +57,7 @@ class ScheduleSendNotification extends Command
                 Log::info('going to send schedule notification');
             })
             ->each(function (Notification $notification) {
-                Log::info('notification id:',
-                    $notification->pluck('id')->toArray());
+                Log::info('notification id: ' . $notification->id);
                 $notification->setIsScheduleAction(true)
                              ->send();
             })->each->markSent();

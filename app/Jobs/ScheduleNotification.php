@@ -51,7 +51,6 @@ class ScheduleNotification implements ShouldQueue
     public function handle() {
 
         if ($this->runRedisQueueJob()) {
-
             $allow = env('MAIL_THROTTLE_NUMBER', 2);
             $duration = env('MAIL_THROTTLE_TIME', 10);
             Redis::throttle($this->redisKey)
