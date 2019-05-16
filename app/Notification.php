@@ -135,6 +135,7 @@ class Notification extends Model
     public function send($notifiable = null): void {
         Log::info('scheduled send');
         if ($notifiable) {
+            Log::info('with notifiable');
             $this->sendNotificationToDelegate($notifiable);
         } elseif ($this->role) {
             $this->getDelegatesWIthRole()
@@ -149,6 +150,7 @@ class Notification extends Model
                      }
                  });
         } else {
+            Log::info('without role');
             $this->getAllDelegates()
                  ->each(function ($d) {
                      $this->sendNotificationToDelegate($d);
