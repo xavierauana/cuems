@@ -72,7 +72,6 @@ class ScheduleNotification implements ShouldQueue
     }
 
     private function runRedisQueueJob(): bool {
-        return env('QUEUE_CONNECTION') === 'redis';
-
+        return config('queue.default') === 'redis';
     }
 }
