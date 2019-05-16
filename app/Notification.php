@@ -133,13 +133,14 @@ class Notification extends Model
     }
 
     public function send($notifiable = null): void {
-
+        Log::info('scheduled send');
         if ($notifiable) {
             $this->sendNotificationToDelegate($notifiable);
         } elseif ($this->role) {
             $this->getDelegatesWIthRole()
                  ->each(function (Delegate $delegate) {
                      if ($this->isScheduleAction) {
+                         Log::info('scheduled send');
                          ScheduleNotification::dispatch($this, $delegate)
                                              ->onQueue('email');
                      } else {
