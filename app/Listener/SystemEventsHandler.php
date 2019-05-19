@@ -70,10 +70,7 @@ class SystemEventsHandler
                                   $role);
                           } else {
                               Log::info("without Role");
-                              Log::info("and dispatch");
-                              SendNotification::dispatch($notification,
-                                  $event->model);
-                              //                              $notification->send($event->model);
+                              $notification->send($event->model);
                           }
                       });
 

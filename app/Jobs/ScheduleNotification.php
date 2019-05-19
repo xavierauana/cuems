@@ -56,7 +56,8 @@ class ScheduleNotification implements ShouldQueue
                  ->allow($allow)
                  ->every($duration)
                  ->then(function () {
-                     Log::info(Carbon::now()->toDateTimeString());
+                     $email = $this->delegate->email;
+                     Log::info("Job:@ScheduleNotification: {$email}");
                      $this->notification->sendNotificationToDelegate($this->delegate);
                  }, function () use ($duration) {
                      return $this->release($duration + 1);

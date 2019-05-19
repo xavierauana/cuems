@@ -29,13 +29,13 @@ class UploadFilesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  \App\Event              $event
+     * @param \App\Event               $event
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, Event $event) {
 
-        $query = $this->model;
+        $query = $this->model->whereEventId($event->id);
 
         if ($keyword = $request->query("keyword")) {
             $query = $query->where('name', 'like', "%{$keyword}%");
@@ -50,7 +50,7 @@ class UploadFilesController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param  \App\Event $event
+     * @param \App\Event $event
      * @return \Illuminate\Http\Response
      */
     public function create(Event $event) {
@@ -61,7 +61,7 @@ class UploadFilesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreUploadFileRequest $request
+     * @param \App\Http\Requests\StoreUploadFileRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreUploadFileRequest $request, Event $event) {
@@ -89,8 +89,8 @@ class UploadFilesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Event      $event
-     * @param  \App\UploadFile $uploadFile
+     * @param \App\Event      $event
+     * @param \App\UploadFile $uploadFile
      * @return \Illuminate\Http\Response
      */
     public function show(Event $event, UploadFile $uploadFile) {
@@ -103,8 +103,8 @@ class UploadFilesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Event       $event
-     * @param  \App\UploadFile $uploadFile
+     * @param \App\Event      $event
+     * @param \App\UploadFile $uploadFile
      * @return \Illuminate\Http\Response
      */
     public function edit(Event $event, UploadFile $uploadFile) {
@@ -116,9 +116,9 @@ class UploadFilesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateUploadFileRequest $request $request
-     * @param  \App\UploadFile                            $uploadFile
-     * @param  \App\Event                                 $event
+     * @param \App\Http\Requests\UpdateUploadFileRequest $request $request
+     * @param \App\UploadFile                            $uploadFile
+     * @param \App\Event                                 $event
      * @return \Illuminate\Http\Response
      */
     public function update(
@@ -136,8 +136,8 @@ class UploadFilesController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param  \App\UploadFile         $uploadFile
-     * @param  \App\Event              $event
+     * @param \App\UploadFile          $uploadFile
+     * @param \App\Event               $event
      * @return \Illuminate\Http\Response
      * @throws \Exception
      */

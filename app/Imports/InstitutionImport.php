@@ -11,7 +11,7 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class InstitutionImport
-    implements ToCollection, ShouldQueue, WithChunkReading, WithHeadingRow
+    implements ToCollection, WithChunkReading, WithHeadingRow, ShouldQueue
 {
     /**
      * @param Collection $collection

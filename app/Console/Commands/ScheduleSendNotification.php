@@ -44,20 +44,16 @@ class ScheduleSendNotification extends Command
      * @return mixed
      */
     public function handle() {
-        $now = Carbon::now();
-
-        Log::info('now:' . $now->toDateTimeString());
         $this->notification
             ->whereNotNull('schedule')
             ->whereIsSent(false)
-            ->where('schedule', '<', $now)
+            ->where('schedule', '<', Carbon::now())
             ->get()
             ->tap(function (Collection $collection) {
-                Log::info("there are {$collection->count()} notifications");
-                Log::info('going to send schedule notification');
+                Log::info("Command:ScheduleSendNotification: there are {$collection->count()} notifications");
             })
             ->each(function (Notification $notification) {
-                Log::info('notification id: ' . $notification->id);
+                Log::info('Command:ScheduleSendNotification: notification id: ' . $notification->id);
                 $notification->setIsScheduleAction(true)
                              ->send();
             })->each->markSent();
