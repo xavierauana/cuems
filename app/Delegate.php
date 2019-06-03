@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class Delegate
@@ -116,11 +115,14 @@ class Delegate extends Model implements SearchableModel
     }
 
     public function scopeHasRole($query, $role): Builder {
+
         $roleCode = null;
         if ($role instanceof DelegateRole) {
             $roleCode = $role->code;
         } elseif (is_string($role)) {
             $roleCode = $role;
+        } elseif (is_int($role)) {
+            $roleCode = optional(DelegateRole::find($role))->code;
         }
 
         return $query->join('delegate_delegate_role',
@@ -140,6 +142,7 @@ class Delegate extends Model implements SearchableModel
                      ->join('tickets', 'transactions.ticket_id', "=",
                          "tickets.id");
     }
+
 
     /**
      * Delegate whose ticket is sponsored

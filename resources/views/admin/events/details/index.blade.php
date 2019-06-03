@@ -50,12 +50,22 @@
 					    </div>
 				    </div>
 			    </div>
+{{--			    <div class="mb-3 col-sm-6 col-md-4">--}}
+{{--				    <div class="card">--}}
+{{--					    <a href="{{route("events.tickets.index", $event)}}"><h4--}}
+{{--								    class="card-header">Tickets</h4></a>--}}
+{{--					    <div class="card-body">--}}
+{{--						    <h5>{{number_format($event->tickets()->count())}}</h5>--}}
+{{--					    </div>--}}
+{{--				    </div>--}}
+{{--			    </div>--}}
+			
 			    <div class="mb-3 col-sm-6 col-md-4">
 				    <div class="card">
-					    <a href="{{route("events.tickets.index", $event)}}"><h4
-								    class="card-header">Tickets</h4></a>
+					    <a href="{{route('events.checkinRecords', $event)}}"><h4
+								    class="card-header">Check In</h4></a>
 					    <div class="card-body">
-						    <h5>{{number_format($event->tickets()->count())}}</h5>
+						    <h5>{{number_format($event->getCheckInCount())}}</h5>
 					    </div>
 				    </div>
 			    </div>
@@ -73,17 +83,17 @@
 					    </div>
 				    </div>
 			    </div>
-			    <div class="mb-3 col-sm-6 col-md-4">
-				    <div class="card">
-					    <a href="{{route('events.talks.all', $event)}}"><h4
-								    class="card-header">Talks</h4></a>
-					    <div class="card-body">
-						    <h5>{{number_format($event->sessions->reduce(function(int $carry, \App\Session $session){
-						    return $carry + $session->talks()->count();
-						    },0))}}</h5>
-					    </div>
-				    </div>
-			    </div>
+			    			    <div class="mb-3 col-sm-6 col-md-4">
+			    				    <div class="card">
+			    					    <a href="{{route('events.talks.all', $event)}}"><h4
+											        class="card-header">Talks</h4></a>
+			    					    <div class="card-body">
+			    						    <h5>{{number_format($event->sessions->reduce(function(int $carry, \App\Session $session){
+			    						    return $carry + $session->talks()->count();
+			    						    },0))}}</h5>
+			    					    </div>
+			    				    </div>
+			    			    </div>
 		    </div>
 		    
 	    </div>

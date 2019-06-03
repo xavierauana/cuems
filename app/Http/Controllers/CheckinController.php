@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Delegate;
+use App\Enums\DelegateDuplicationStatus;
 use App\Event;
 use App\Http\Resources\CheckinTransactionResource;
 use App\Transaction;
@@ -20,6 +21,8 @@ class CheckinController extends Controller
 
             $result = Delegate::whereEventId($event->id)
                               ->with('transactions.ticket')
+                              ->where('is_duplicated', '<>',
+                                  DelegateDuplicationStatus::DUPLICATED)
                               ->where(function ($query) use ($event, $keyword) {
                                   $registrationId = (int)str_replace(setting($event,
                                       'registration_id_prefix'), "", $keyword);

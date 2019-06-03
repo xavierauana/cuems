@@ -40,7 +40,7 @@ class InputMutator
         $fields = is_array($fields) ? $fields : [$fields];
 
         collect($fields)->each(function ($field) use ($format) {
-            if ($this->inputs[$field]) {
+            if (isset($this->inputs[$field]) and $this->inputs[$field]) {
                 $this->inputs[$field] = Carbon::createFromFormat($format,
                     $this->inputs[$field]);
             }

@@ -49,6 +49,8 @@ export default {
                                            scanPeriod      : 5,
                                            refractoryPeriod: 5000
                                          });
+    
+    console.log(this.scanner)
     this.scanner.addListener("scan", (content, image) => this.$emit("scan", content));
     this.scanner.addListener("active", () => console.log("scanner is active"));
     this.scanner.addListener("inactive", () => console.log("scanner is inactive"));

@@ -60,8 +60,8 @@ class NotificationsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param \App\Event                $event
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Event               $event
      * @return void
      */
     public function store(NotificationStoreRequest $request, Event $event) {
@@ -102,8 +102,8 @@ class NotificationsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Event         $event
-     * @param  \App\Notification $notification
+     * @param \App\Event        $event
+     * @param \App\Notification $notification
      * @return void
      */
     public function show(Event $event, Notification $notification) {
@@ -113,8 +113,8 @@ class NotificationsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Event         $event
-     * @param  \App\Notification $notification
+     * @param \App\Event        $event
+     * @param \App\Notification $notification
      * @return void
      */
     public function edit(Event $event, Notification $notification) {
@@ -128,9 +128,9 @@ class NotificationsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param \App\Event                $event
-     * @param  \App\Notification        $notification
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Event               $event
+     * @param \App\Notification        $notification
      * @return void
      */
     public function update(
@@ -171,12 +171,20 @@ class NotificationsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Event         $event
-     * @param  \App\Notification $notification
+     * @param \App\Event        $event
+     * @param \App\Notification $notification
      * @return void
      */
     public function destroy(Event $event, Notification $notification) {
-        //
+
+        if (!Event::findOrFail($notification->event_id)->is($event)) {
+            abort(403);
+        }
+
+        $notification->delete();
+
+        return redirect()->route("events.notifications.index", $event)
+                         ->with('status', 'Notification is deleted!');
     }
 
     /**

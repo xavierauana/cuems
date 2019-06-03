@@ -40,7 +40,15 @@
 					                   <div class="btn-group btn-group-sm mr-2"
 					                        role="group"
 					                        aria-label="Second group">
-						                  <button class="btn btn-danger text-light">Delete</button>
+						                   <form class="action"
+						                         action="{{route("events.notifications.destroy",[$event, $notification])}}"
+						                         onsubmit="deleteItem(event)"
+						                         method="POST">
+							                   @method('delete')
+							                   @csrf
+							                   <button type="submit"
+							                           class="btn btn-sm btn-danger text-light">Delete</button>
+						                   </form>
 									  </div>
 				                  </div>
 			                  </td>
@@ -94,7 +102,14 @@
 	
 	@push('scripts')
 		<script>
-			function sendTest(e, notificationId) {
+			function deleteItem(e) {
+              e.preventDefault();
+              if (confirm("are you sure to delete the notificaiton?")) {
+                e.target.submit()
+              }
+            }
+
+            function sendTest(e, notificationId) {
               e.preventDefault()
               var el = document.getElementById("test_notification")
               $(el).modal('show')

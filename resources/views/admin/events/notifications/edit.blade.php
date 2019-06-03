@@ -3,7 +3,10 @@
         <div class="col">
              @include("admin._partials.alert")
 	        <div class="card">
-                <div class="card-header">Edit Notification: {{$notification->name}}</div>
+                <div class="card-header">Edit Notification: {{$notification->name}}
+	                @if($notification->type ==='attendee')
+	                                     (To Attendees)
+	                @endif</div>
                 
                 <div class="card-body">
 	                

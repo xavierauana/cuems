@@ -30,6 +30,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
+
+//$result = DB::table('check_in')
+//            ->joinSub(function ($query) {
+//                $query->selectRaw('transaction_id, MIN(id) first_id FROM check_in GROUP BY transaction_id');
+//            }, 'temp', 'temp.first_id', '=', 'check_in.id')
+//            ->get();
+//
+//dd($result);
+//
+//$result = DB::select('SELECT transaction_id, MIN(created_at) date FROM check_in GROUP BY transaction_id');
+//
+//dd($result);
+
 $test = function () {
     /** @var CreateTicketService $service */
     $service = app(CreateTicketService::class);
@@ -85,7 +98,6 @@ Route::get('test_event', function () use ($sendNotification) {
     return "Done";
 });
 
-
 Route::get('testpdf', function () use ($test) {
 
     $headers = [
@@ -107,7 +119,6 @@ Route::get('testpdf', function () use ($test) {
         return $test();
     }, 'test.pdf');
 });
-
 
 Route::get('/test_record', function (Request $request) {
     if ($request->get('from') === "xavier") {
@@ -140,12 +151,12 @@ Route::get('reg', function (Request $request) {
 });
 
 Route::view('admin/login', 'admin_login');
+
 Route::post('admin/login', LoginController::class . "@adminLogin");
 
 Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Auth::routes(['verify' => true]);
 });
-
 
 // JETCO Payment
 @include('routes/jetco_payment.php');
@@ -192,22 +203,30 @@ Route::group(['middleware' => 'auth'], function () {
     // Institution
     Route::get('institutions/import', InstitutionsController::class . '@import')
          ->name('institutions.import');
+
     Route::post('institutions/import',
         InstitutionsController::class . '@postImport');
+
     Route::get('institutions/export', InstitutionsController::class . '@export')
          ->name('institutions.export');
+
     Route::get('institutions/search', InstitutionsController::class . "@search")
          ->name('institutions.search');
+
     Route::resource('institutions', InstitutionsController::class);
 
     // Position
     Route::get('positions/import', PositionsController::class . '@import')
          ->name('positions.import');
+
     Route::post('positions/import', PositionsController::class . '@postImport');
+
     Route::get('positions/export', PositionsController::class . '@export')
          ->name('positions.export');
+
     Route::get('positions/search', PositionsController::class . "@search")
          ->name('positions.search');
+
     Route::resource('positions', PositionsController::class);
 
     // Templates
@@ -216,6 +235,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Event settings
     Route::get('events/{event}/settings/search',
         SettingsControllers::class . "@search")->name('events.settings.search');
+
     Route::resource('events.settings', SettingsControllers::class);
 
     // Expenses Related
@@ -229,6 +249,7 @@ Route::group(['middleware' => 'auth'], function () {
         return response()->json(['path' => $path]);
 
     });
+
     Route::resource('events.uploadFiles',
         UploadFilesController::class);
 
@@ -236,13 +257,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('events/{event}/paymentRecords',
         PaymentRecordsController::class . "@index")
          ->name('events.payment_records.index');
+
     Route::get('events/{event}/paymentRecords/{record}',
         PaymentRecordsController::class . "@show")
          ->name('events.payment_records.show');
+
     Route::get('events/{event}/paymentRecords/{record}/convert',
         PaymentRecordsController::class . "@convert")
          ->name('events.payment_records.convert');
 
     // Check in
     @include('routes/checkin.php');
+
+    @include('routes/checkinRecord.php');
 });

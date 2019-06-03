@@ -1,18 +1,13 @@
+{{Form::hidden('type','attendee')}}
+{{Form::hidden('keyword',request()->query('keyword'))}}
+{{Form::hidden('check_in_date',request()->query('date'))}}
+
 <div class="form-group">
 	{!!  Form::label('name', 'Name'); !!}
 	{!!  Form::text('name',null,['class'=>'form-control']); !!}
 	@if ($errors->has('name'))
 		<span class="invalid-feedback" role="alert">
             <strong>{{ $errors->first('name') }}</strong>
-        </span>
-	@endif
-</div>
-<div class="form-group">
-	{!!  Form::label('event', 'System Event'); !!}
-	{!!  Form::select('event',$events,null,['class'=>'form-control']); !!}
-	@if ($errors->has('event'))
-		<span class="invalid-feedback" role="alert">
-            <strong>{{ $errors->first('event') }}</strong>
         </span>
 	@endif
 </div>
@@ -74,7 +69,7 @@
 
 <div class="form-group">
     {!!  Form::label('files[]', 'Attachments'); !!}
-	{!!  Form::select('files[]',$files,null,['class'=>'form-control select2','multiple']); !!}
+	{!!  Form::select('files[]',$files,null,['class'=>'form-control select2','multiple', 'style'=>'width:100%']); !!}
 	@if ($errors->has('files[]'))
 		<span class="invalid-feedback" role="alert">
             <strong>{{ $errors->first('files[]') }}</strong>
@@ -92,86 +87,31 @@
 	@endif
 </div>
 
-
-@if(isset($notification) and $notification->type !=='attendee')
+<div class="form-group">
 	<div class="row">
-		<div class="col-md-6">
-			<div class="form-group">
-	 
-				 <span class="switch">
-				 {{Form::checkbox('include_ticket',1, null,['class'=>'switch','id'=>'switch-normal'])}}
-					 <label for="switch-normal">Include Ticket</label>
-				 </span>
-				
-				@if ($errors->has('include_ticket'))
-					<span class="invalid-feedback" role="alert">
-			            <strong>{{ $errors->first('include_ticket') }}</strong>
-			        </span>
-				@endif
-			</div>
+		<div class="col-6">
+			{!!  Form::label('check_in_date', 'Checkin Date'); !!}
+			{!!  Form::text('check_in_date',request()->query('date'),['class'=>'form-control','disabled' ]); !!}
+			@if ($errors->has('check_in_date'))
+				<span class="invalid-feedback" role="alert">
+		            <strong>{{ $errors->first('check_in_date') }}</strong>
+                </span>
+			@endif
 		</div>
-		<div class="col-md-6">
-			<div class="form-group">
-				 <span class="switch">
-				 {{Form::checkbox('verified_only',1, null,['class'=>'switch','id'=>'switch-1'])}}
-					 <label for="switch-1">Verified Delegates Only</label>
-				 </span>
-				
-				@if ($errors->has('verified_only'))
-					<span class="invalid-feedback" role="alert">
-			            <strong>{{ $errors->first('verified_only') }}</strong>
-			        </span>
-				@endif
-			</div>
-		</div>
-		<div class="col-md-6">
-			<div class="form-group">
-				 <span class="switch">
-				 {{Form::checkbox('include_duplicated',1, null,['class'=>'switch','id'=>'switch-2'])}}
-					 <label for="switch-2">Include Duplicated Delegates</label>
-				 </span>
-				
-				@if ($errors->has('include_duplicated'))
-					<span class="invalid-feedback" role="alert">
-			            <strong>{{ $errors->first('include_duplicated') }}</strong>
-			        </span>
-				@endif
-			</div>
+		<div class="col-6">
+			{!!  Form::label('keyword', 'Keyword'); !!}
+			{!!  Form::text('keyword',request()->query('keyword'),['class'=>'form-control','disabled' ]); !!}
+			@if ($errors->has('keyword'))
+				<span class="invalid-feedback" role="alert">
+		            <strong>{{ $errors->first('keyword') }}</strong>
+                </span>
+			@endif
 		</div>
 	</div>
-@endif
-
-@if(isset($notification) and $notification->type ==='attendee')
-	<div class="row">
-		<div class="col-md-6">
-			<div class="form-group">
-				<label>Check In Date</label>
-				<input class="form-control"
-				       value="{{$notification->check_in_date}}"
-				       disabled />
-			</div>
-		</div>
-		<div class="col-md-6">
-			<div class="form-group">
-				<label>Keyword</label>
-				<input class="form-control" value="{{$notification->keyword}}"
-				       disabled />
-			</div>
-		</div>
-	</div>
-@endif
+</div>
 
 @if(!isset($notification))
 	@include("admin.events.notifications._partials.createDates")
 @else
 	@include("admin.events.notifications._partials.editDates")
 @endif
-
-
-<div class="form-group">
-    <input class="btn btn-success"
-           type="submit"
-           value="{{$buttonText}}" />
-    <a href="{{route('events.notifications.index',$event)}}"
-       class="btn btn-info text-light">Back</a>
-</div>

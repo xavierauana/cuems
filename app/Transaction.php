@@ -106,7 +106,7 @@ class Transaction extends Model implements SearchableModel
                      ->join('tickets as t', 'transactions.ticket_id', '=',
                          't.id')
                      ->whereIn('transactions.ticket_id',
-                         function (Builder $query) use ($event) {
+                         function ($query) use ($event) {
                              $query->select('id')
                                    ->from("tickets")
                                    ->where('event_id', $event->id);

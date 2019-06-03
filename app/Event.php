@@ -92,6 +92,65 @@ class Event extends Model
         return (float)($total ?? 0);
     }
 
+    /**
+     * Get joined query check_in, transactions and ticket,
+     * filter by event_id
+     */
+    public function getCheckinJoinQuery() {
+
+        return Delegate::where('delegates.event_id', $this->id)
+                       ->join('transactions', 'delegates.id', '=',
+                           'transactions.payee_id')
+                       ->where('transactions.payee_type', Delegate::class)
+                       ->join('check_in', 'check_in.transaction_id', '=',
+                           'transactions.id')
+                       ->join('tickets', 'tickets.id', '=',
+                           'transactions.ticket_id')
+                       ->joinSub(function ($query) {
+                           $part = config('database.default') === 'sqlite' ? "transaction_id || DATE(created_at)" : "CONCAT(transaction_id, DATE(created_at))";
+                           $sql = "{$part} transaction_id_date , MIN(id) first";
+                           $query->selectRaw($sql)
+                                 ->from('check_in')
+                                 ->groupBy('transaction_id_date');
+                       }, 'temp', 'temp.first', '=', 'check_in.id');
+
+    }
+
+    public function getCheckInCount(): int {
+        return $this->getCheckinJoinQuery()
+                    ->count();
+    }
+
+    public function getExportCheckinFilename(): string {
+        return $this->name . "_checkin_records_" . Carbon::now()
+                                                         ->toDateTimeString() . '.xlsx';
+
+    }
+
+    public function getCheckinControllerQuery(
+        string $keyword = null, string $filterDate = null
+    ) {
+
+        $query = $this->getCheckinJoinQuery()
+                      ->orderBy('check_in.created_at', 'desc');
+
+        if ($filterDate and ($date = new Carbon($filterDate))) {
+            $query->whereDate('check_in.created_at', $date->toDateString());
+        }
+
+        if ($keyword) {
+            $query->where(function ($query) use ($keyword) {
+                $query->where('delegates.first_name', 'like', "%{$keyword}%")
+                      ->orWhere('delegates.last_name', 'like', "%{$keyword}%")
+                      ->orWhere('delegates.email', 'like', "%{$keyword}%")
+                      ->orWhere('tickets.name', 'like', "%{$keyword}%");
+            });
+        }
+
+
+        return $query;
+    }
+
     // Accessor
     public function formEndAtAttribute($value) {
         return (new Carbon($value))->format("d M Y");
