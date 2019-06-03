@@ -12,7 +12,7 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js')
-   .extract(['vue', 'jquery', 'lodash', 'popper.js', 'axios', 'sweetalert2', 'dropzone'])
+   .extract(['vue', 'jquery', 'lodash', 'popper.js', 'axios', 'sweetalert2', 'dropzone', 'instascan-last'])
    .sass('resources/sass/app.scss', 'public/css');
 
 mix.js('resources/js/frontEnd.js', 'public/js');
