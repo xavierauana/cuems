@@ -28,7 +28,8 @@ class CheckInRecordController extends Controller
     public function index(Event $event, Request $request) {
         $records = $event->getCheckinControllerQuery(
             $request->query('keyword'),
-            $request->query('date'))
+            $request->query('date'),
+            !!$request->query('isUnique'))
                          ->select($this->selectedFields)
                          ->paginate();
 
@@ -70,6 +71,7 @@ class CheckInRecordController extends Controller
 
     public function notification(NotificationStoreRequest $request, Event $event
     ) {
+
         $data = $request->validated();
 
         $event->notifications()->create($data);

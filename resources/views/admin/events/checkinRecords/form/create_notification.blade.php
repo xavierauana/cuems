@@ -88,6 +88,16 @@
 </div>
 
 <div class="form-group">
+    {!!  Form::label('options[unique_transaction]', 'Unique Transaction'); !!}
+	{!!  Form::select('options[unique_transaction]',[1=>'Yes',0=>'No'],null,['class'=>'form-control', 'step'=>"0.1"]); !!}
+	@if ($errors->has('options[unique_transaction]'))
+		<span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('options[unique_transaction]') }}</strong>
+        </span>
+	@endif
+</div>
+
+<div class="form-group">
 	<div class="row">
 		<div class="col-6">
 			{!!  Form::label('check_in_date', 'Checkin Date'); !!}

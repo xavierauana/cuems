@@ -60,9 +60,10 @@ class NotificationsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Event               $event
+     * @param \App\Http\Requests\NotificationStoreRequest $request
+     * @param \App\Event                                  $event
      * @return void
+     * @throws \Exception
      */
     public function store(NotificationStoreRequest $request, Event $event) {
 
@@ -174,6 +175,7 @@ class NotificationsController extends Controller
      * @param \App\Event        $event
      * @param \App\Notification $notification
      * @return void
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Event $event, Notification $notification) {
 

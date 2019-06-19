@@ -47,11 +47,12 @@
 								    <input type="hidden"
 								           name="date"
 								           value="{{request()->query('date')}}" />
+							        
 								    <input class="form-control"
 								           name="keyword"
 								           value="{{request()->query('keyword')}}"
 								           placeholder="search" />
-								        <div class="">
+								        <div class="input-group-append">
 									        <button class="btn btn-success">Search</button>
 									        <a href="{{route('events.checkinRecords', $event)}}"
 									           class="btn btn-info text-light">Reset</a>

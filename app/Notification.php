@@ -24,19 +24,20 @@ class Notification extends Model
 
     protected $fillable = [
         'name',
+        'type',
         'event',
         'role_id',
+        'options',
+        'subject',
+        'keyword',
         'template',
         'schedule',
         'from_name',
         'from_email',
-        'subject',
         'include_ticket',
         'verified_only',
-        'type',
         'check_in_date',
-        'keyword',
-        'include_duplicated'
+        'include_duplicated',
     ];
 
     protected $casts = [
@@ -83,6 +84,19 @@ class Notification extends Model
         $result = $this->uploadFiles()->pluck('id')->toArray();
 
         return $result;
+    }
+
+    public function getOptionsAttribute(?string $value): array {
+        return $value ? unserialize($value) : [];
+    }
+
+    // Mutator
+    public function setOptionsAttribute($value) {
+        $options = $this->options;
+        foreach ($value as $key => $val) {
+            $options[$key] = $val;
+        }
+        $this->attributes['options'] = serialize($options);
     }
 
     // Form accessable
@@ -137,6 +151,7 @@ class Notification extends Model
             'check_in_date'      => "nullable",
             'keyword'            => "nullable",
             'type'               => "nullable",
+            'options'            => 'nullable'
         ];
     }
 
@@ -149,16 +164,35 @@ class Notification extends Model
         if ($notifiable) {
             $this->checkAndSendNotificationToDelegate($notifiable);
         } elseif ($this->role) {
-            $this->getDelegatesWIthRole()
-                 ->each(function (Delegate $delegate) {
-                     $this->checkAndSendNotificationToDelegate($delegate);
-                 });
+            $collection = $this->getDelegatesWIthRole();
+
+            if (isset(($this->options)['unique_transaction']) and ($this->options)['unique_transaction']) {
+                $collection = $collection->unique('id');
+            }
+            $collection->each(function (Delegate $delegate) {
+                $this->checkAndSendNotificationToDelegate($delegate);
+            });
         } else {
-            $this->getFilteredDelegateQuery()
-                 ->get()
-                 ->each(function (Delegate $delegate) {
-                     $this->checkAndSendNotificationToDelegate($delegate);
-                 });
+            $collection = $this->getFilteredDelegateQuery()
+                               ->get();
+
+            Log::info(isset(($this->options)['unique_transaction']) and ($this->options)['unique_transaction']);
+
+            if (isset(($this->options)['unique_transaction']) and ($this->options)['unique_transaction']) {
+                $collection = $collection->unique('id');
+
+                Log::info('delegate counts ' . $collection->count());
+
+            }
+
+            $collection->pluck('id')->map(function($id){
+                Log::info("id: {$id}");
+            });
+
+
+            $collection->each(function (Delegate $delegate) {
+                $this->checkAndSendNotificationToDelegate($delegate);
+            });
         }
     }
 

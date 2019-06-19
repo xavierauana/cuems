@@ -95,6 +95,8 @@ class Event extends Model
     /**
      * Get joined query check_in, transactions and ticket,
      * filter by event_id
+     * @param bool $uniqueTransaction
+     * @return \App\Delegate|\Illuminate\Database\Query\Builder
      */
     public function getCheckinJoinQuery() {
 
@@ -107,11 +109,16 @@ class Event extends Model
                        ->join('tickets', 'tickets.id', '=',
                            'transactions.ticket_id')
                        ->joinSub(function ($query) {
-                           $part = config('database.default') === 'sqlite' ? "transaction_id || DATE(created_at)" : "CONCAT(transaction_id, DATE(created_at))";
-                           $sql = "{$part} transaction_id_date , MIN(id) first";
+
+                           $part = config('database.default') === 'sqlite' ?
+                               "transaction_id || DATE(created_at)" :
+                               "CONCAT(transaction_id, DATE(created_at))";
+
+                           $str = 'transaction_id_date';
+                           $sql = "{$part} {$str}, MIN(id) first";
                            $query->selectRaw($sql)
                                  ->from('check_in')
-                                 ->groupBy('transaction_id_date');
+                                 ->groupBy('' . $str . '');
                        }, 'temp', 'temp.first', '=', 'check_in.id');
 
     }
@@ -128,10 +135,11 @@ class Event extends Model
     }
 
     public function getCheckinControllerQuery(
-        string $keyword = null, string $filterDate = null
+        string $keyword = null, string $filterDate = null,
+        bool $uniqueTransaction = false
     ) {
 
-        $query = $this->getCheckinJoinQuery()
+        $query = $this->getCheckinJoinQuery($uniqueTransaction)
                       ->orderBy('check_in.created_at', 'desc');
 
         if ($filterDate and ($date = new Carbon($filterDate))) {
