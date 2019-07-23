@@ -22,11 +22,22 @@
 	                         all-url="{{route('users.index')}}"
 	                >
 		                <template name="action" slot-scope="{item, deleteItem}">
-			                <a :href="item.urls.edit"
-			                   class="btn btn-info btn-sm text-light">Edit</a>
+			                <form v-if="item.urls.restore"
+			                      class="d-inline"
+			                      :action="item.urls.restore" method="POST">
+				                @csrf
+				                <input type="hidden" name="_method"
+				                       value="PUT" />
+				                <button class="btn btn-primary btn-sm"
+				                        type="submit">Restore</button>
+			                </form>
+			                <div v-else>
+				                <a :href="item.urls.edit"
+				                   class="btn btn-info btn-sm text-light">Edit</a>
 			                <button :href="item.urls.delete"
 			                        @click.prevent="deleteItem(item)"
 			                        class="btn btn-danger btn-sm text-light">Delete</button>
+			                </div>
 		                </template>
 	                </p-table>
 	                

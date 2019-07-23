@@ -28,7 +28,7 @@ class EventsController extends Controller
      */
     public function index() {
 
-        $events = $this->repo->get();
+        $events = $this->repo->latest()->get();
 
         return view("admin.events.index", compact('events'));
     }

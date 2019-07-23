@@ -13,4 +13,6 @@ Route::get('users/ldap', UsersController::class . "@ldap")
 Route::post('users/ldap', UsersController::class . "@addLdapUser");
 Route::get('users/search', UsersController::class . "@search")
      ->name('users.search');
+Route::put('/users/restore/{user}', UsersController::class . "@restore")
+     ->name('users.restore');
 Route::resource('users', UsersController::class);

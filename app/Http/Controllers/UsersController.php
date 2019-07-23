@@ -34,13 +34,13 @@ class UsersController extends Controller
      */
     public function index(Request $request) {
 
+        $query = $this->repo->withTrashed();
+
         $users = ($keyword = $request->query("keywords")) ?
-            $this->repo
-                ->where('name', 'like', "%{$keyword}%")
-                ->orWhere('email', 'like', "%{$keyword}%")
-                ->paginate($this->paginateNumber) :
-            $this->repo
-                ->paginate($this->paginateNumber);
+            $query->where('name', 'like', "%{$keyword}%")
+                  ->orWhere('email', 'like', "%{$keyword}%")
+                  ->paginate($this->paginateNumber) :
+            $query->paginate($this->paginateNumber);
 
         if ($request->ajax()) {
             return response()->json($users);
@@ -62,7 +62,7 @@ class UsersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
@@ -86,7 +86,7 @@ class UsersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\User $user
+     * @param \App\User $user
      * @return void
      */
     public function show(User $user) {
@@ -96,7 +96,7 @@ class UsersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\User $user
+     * @param \App\User $user
      * @return void
      */
     public function edit(User $user) {
@@ -106,8 +106,8 @@ class UsersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \App\User                $user
+     * @param \Illuminate\Http\Request $request
+     * @param \App\User                $user
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, User $user) {
@@ -135,7 +135,7 @@ class UsersController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param  \App\User               $user
+     * @param \App\User                $user
      * @return \Illuminate\Http\Response
      * @throws \Exception
      * @throws \Exception
@@ -150,12 +150,25 @@ class UsersController extends Controller
                 ->withStatus('User deleted.');
     }
 
+    public function restore(Request $request, int $userId) {
+
+        if ($request->user()->is_ldap_user) {
+            abort(403);
+        }
+        if ($user = User::withTrashed()->find($userId)) {
+            $user->restore();
+        }
+
+        return redirect()->route("users.index")
+                         ->withStatus($user->name, " is restored!");
+    }
+
     public function search(Request $request) {
         if ($keyword = $request->query("keywords")) {
-            $users = $this->repo->where('name', 'like', "%{$keyword}%")
+            $users = $this->repo->withTrashed()->where('name', 'like', "%{$keyword}%")
                                 ->paginate($this->paginateNumber);
         } else {
-            $users = $this->repo->paginate($this->paginateNumber);
+            $users = $this->repo->withTrashed()->paginate($this->paginateNumber);
         }
 
         if ($request->ajax()) {
