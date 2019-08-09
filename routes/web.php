@@ -18,6 +18,7 @@ use App\Http\Controllers\DelegateRolesController;
 use App\Http\Controllers\InstitutionsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentRecordsController;
+use App\Http\Controllers\PositionGroupingController;
 use App\Http\Controllers\PositionsController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\SettingsControllers;
@@ -228,6 +229,18 @@ Route::group(['middleware' => 'auth'], function () {
          ->name('positions.search');
 
     Route::resource('positions', PositionsController::class);
+
+    Route::get('events/{event}/position-groupings',
+        PositionGroupingController::class . "@index")
+         ->name('events.position-groupings.index');
+    Route::get('events/{event}/position-groupings/export',
+        PositionGroupingController::class . "@export")
+         ->name('events.position-groupings.export');
+    Route::get('events/{event}/position-groupings/import',
+        PositionGroupingController::class . "@getImport")
+         ->name('events.position-groupings.import');
+    Route::post('events/{event}/position-groupings/import',
+        PositionGroupingController::class . "@import");
 
     // Templates
     Route::resource('events.templates', TemplatesController::class);

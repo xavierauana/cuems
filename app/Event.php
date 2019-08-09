@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Collective\Html\Eloquent\FormAccessible;
 use Illuminate\Database\Eloquent\Builder as BuilderAlias;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -40,6 +41,10 @@ class Event extends Model
     ];
 
     // Relation
+    public function positionGroupings(): HasMany {
+        return $this->hasMany(PositionGrouping::class);
+    }
+
     public function delegates(): Relation {
         return $this->hasMany(Delegate::class);
     }

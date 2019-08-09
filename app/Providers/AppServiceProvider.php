@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Contracts\DuplicateCheckerInterface;
 use App\Contracts\PaymentServiceInterface;
+use App\Delegate;
 use App\Notification;
+use App\Observers\DelegateObserver;
 use App\Observers\TransactionObserver;
 use App\Services\DelegateDuplicateChecker;
 use App\Ticket;
@@ -84,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
             DelegateDuplicateChecker::class);
 
         Transaction::observe(TransactionObserver::class);
+        Delegate::observe(DelegateObserver::class);
     }
 
     /**
