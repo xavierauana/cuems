@@ -79,6 +79,10 @@ class SessionsController extends Controller
                 $newSession->setModerators($validatedData['moderators']);
             }
 
+            $newSession->extra_attributes = $validatedData['extra_attributes'];
+
+            $newSession->save();
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -128,6 +132,7 @@ class SessionsController extends Controller
 
         $validatedData['order'] = $validatedData['order'] ?? (($max = Session::max('order')) ? ($max + 1) : 1);
 
+        $session->extra_attributes = $validatedData['extra_attributes'];
         $session->update($validatedData);
         $session->updateModerators($validatedData['moderators'] ?? null);
 
@@ -162,10 +167,24 @@ class SessionsController extends Controller
                               'talks' => function ($query) {
                                   return $query->orderBy('order');
                               },
-                              'moderators'
+                              'moderators',
                           ])
                           ->orderBy('order')
                           ->get();
+        $data = SessionResource::collection($sessions);
+
+        return $data;
+    }
+
+    public function apiSearchSessions(Request $request) {
+        $keyword = $request->get('keyword');
+        $sessions = Session::where('title', 'like', '%' . $keyword . '%')
+                           ->orWhere('subtitle', 'like', '%' . $keyword . '%')
+                           ->orWhere('sponsor', 'like', '%' . $keyword . '%')
+                           ->orWhere('venue', 'like', '%' . $keyword . '%')
+                           ->OrWithExtraAttributes(['description' => $keyword])
+                           ->get();
+
         $data = SessionResource::collection($sessions);
 
         return $data;

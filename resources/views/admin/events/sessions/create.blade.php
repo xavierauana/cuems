@@ -17,4 +17,7 @@
             </div>
         </div>
     </div>
+	@push('scripts')
+		@include("_partials.ckeditor_script")
+	@endpush
 @endcomponent

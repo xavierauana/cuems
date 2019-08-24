@@ -33,6 +33,7 @@ class SessionResource extends JsonResource
             "title"           => $this->title,
             "sponsor"         => $this->sponsor,
             "moderation_type" => $moderationType,
+            "extra"           => $this->extra_attributes,
             "talks"           => TalkResource::collection($this->talks)
         ];
     }

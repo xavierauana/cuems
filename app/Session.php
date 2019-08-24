@@ -2,13 +2,16 @@
 
 namespace App;
 
+use App\Helpers\ExtraAttribute;
 use App\Traits\FlatpickrConversion;
 use Carbon\Carbon;
 use Collective\Html\Eloquent\FormAccessible;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Spatie\SchemalessAttributes\SchemalessAttributes;
 
 class Session extends Model
 {
@@ -26,20 +29,22 @@ class Session extends Model
     ];
 
     protected $casts = [
-        'start_at' => 'datetime',
-        'end_at'   => 'datetime',
+        'start_at'         => 'datetime',
+        'end_at'           => 'datetime',
+        'extra_attributes' => 'array',
     ];
 
     const StoreRules    = [
-        'title'           => 'required',
-        'venue'           => 'nullable',
-        'subtitle'        => 'nullable',
-        'sponsor'         => 'nullable',
-        'moderation_type' => 'nullable|numeric',
-        'moderators'      => 'nullable',
-        'start_at'        => 'required|date',
-        'end_at'          => 'required|date|date_gt:start_at',
-        'order'           => 'nullable|numeric|min:0',
+        'title'            => 'required',
+        'venue'            => 'nullable',
+        'subtitle'         => 'nullable',
+        'sponsor'          => 'nullable',
+        'moderation_type'  => 'nullable|numeric',
+        'moderators'       => 'nullable',
+        'start_at'         => 'required|date',
+        'end_at'           => 'required|date|date_gt:start_at',
+        'order'            => 'nullable|numeric|min:0',
+        'extra_attributes' => 'nullable'
     ];
     const ErrorMessages = [
         'date_gt' => "End Date should later than stat date",
@@ -119,5 +124,17 @@ class Session extends Model
         return $this->moderators()->orderBy("pivot_order", 'desc')->get();
     }
 
+    // Extra attributes
+    public function getExtraAttributesAttribute(): SchemalessAttributes {
+        return SchemalessAttributes::createForModel($this, 'extra_attributes');
+    }
+
+    public function scopeWithExtraAttributes(): Builder {
+        return SchemalessAttributes::scopeWithSchemalessAttributes('extra_attributes');
+    }
+
+    public function scopeOrWithExtraAttributes(): Builder {
+        return ExtraAttribute::scopeOrWithSchemalessAttributes('extra_attributes');
+    }
 
 }
