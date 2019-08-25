@@ -15,6 +15,8 @@ class SessionResource extends JsonResource
      * @return array
      */
     public function toArray($request) {
+        $segments = $request->segments();
+
         $moderators = $this->moderators->map(function (Delegate $delegate) {
             return [
                 'name' => $delegate->name
@@ -26,15 +28,20 @@ class SessionResource extends JsonResource
         $moderationType = count($moderators) > 1 ?
             ($this->moderation_type === 1 ? "Chairpersons" : str_plural($moderationType)) :
             str_singular($moderationType);
-
-        return [
+        $data = [
             "id"              => $this->id,
             "moderators"      => $moderators,
             "title"           => $this->title,
             "sponsor"         => $this->sponsor,
             "moderation_type" => $moderationType,
             "extra"           => $this->extra_attributes,
-            "talks"           => TalkResource::collection($this->talks)
         ];
+
+        if (isset($segments[3]) and $segments[3] === 'sessions') {
+            $data['talks'] = TalkResource::collection($this->talks);
+        }
+
+
+        return $data;
     }
 }

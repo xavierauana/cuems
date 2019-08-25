@@ -2,23 +2,31 @@
 
 namespace App;
 
+use App\Helpers\ExtraAttribute;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Spatie\SchemalessAttributes\SchemalessAttributes;
 
 class Talk extends Model
 {
     protected $fillable = [
         'title',
-        'order'
+        'order',
+        'extra_attributes',
+    ];
+
+    protected $casts = [
+        'extra_attributes' => 'array',
     ];
 
     const StoreRules    = [
-        'title'    => 'required',
-        'speakers' => 'required',
-        'order'    => 'nullable|min:0|numeric',
+        'title'            => 'required',
+        'speakers'         => 'required',
+        'order'            => 'nullable|min:0|numeric',
+        'extra_attributes' => 'nullable'
     ];
     const ErrorMessages = [];
 
@@ -77,5 +85,18 @@ class Talk extends Model
                 'talk_id'     => $this->id,
             ]);
         });
+    }
+
+    // Extra attributes
+    public function getExtraAttributesAttribute(): SchemalessAttributes {
+        return SchemalessAttributes::createForModel($this, 'extra_attributes');
+    }
+
+    public function scopeWithExtraAttributes(): Builder {
+        return SchemalessAttributes::scopeWithSchemalessAttributes('extra_attributes');
+    }
+
+    public function scopeOrWithExtraAttributes(): Builder {
+        return ExtraAttribute::scopeOrWithSchemalessAttributes('talks.extra_attributes');
     }
 }

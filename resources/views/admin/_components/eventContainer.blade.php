@@ -68,4 +68,9 @@
 	    </div>
     </div>
 </div>
+	@if(isset($hasCkeditor) and $hasCkeditor === true)
+		@push('scripts')
+			@include("_partials.ckeditor_script")
+		@endpush
+	@endif
 @endsection

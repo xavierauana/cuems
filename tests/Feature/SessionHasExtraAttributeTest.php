@@ -94,4 +94,47 @@ class SessionHasExtraAttributeTest extends TestCase
             $session->extra_attributes->summary);
 
     }
+
+    /**
+     * @test
+     */
+    public function search_sessions() {
+
+        factory(Session::class)->create([
+            'event_id' => $this->event->id
+        ]);
+        factory(Session::class)->create([
+            'event_id'         => $this->event->id,
+            'extra_attributes' => [
+                'description' => "this is the first description"
+            ]
+        ]);
+        factory(Session::class)->create([
+            'event_id'         => $this->event->id,
+            'extra_attributes' => [
+                'description' => "this is the second description"
+            ]
+        ]);
+        factory(Session::class)->create([
+            'event_id'         => $this->event->id,
+            'extra_attributes' => [
+                'description' => "this is the third description"
+            ]
+        ]);
+
+        $keyword = "third";
+        $uri = url('api/events/' . $this->event->id . '/sessions/search?keyword=' . $keyword);
+
+        $response = $this->json('get', $uri);
+
+        $response->assertJsonCount(1, 'data');
+
+        $keyword = "this is";
+        $uri = url('api/events/' . $this->event->id . '/sessions/search?keyword=' . $keyword);
+
+        $response = $this->json('get', $uri);
+
+        $response->assertJsonCount(3, 'data');
+
+    }
 }

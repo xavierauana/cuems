@@ -28,6 +28,16 @@
 </div>
 
 <div class="form-group">
+    {!!  Form::label('extra_attributes[description]', 'Description'); !!}
+	{!!  Form::textarea('extra_attributes[description]' ,null,['class'=>'ckeditor form-control']); !!}
+	@if ($errors->has('extra_attributes[description]'))
+		<span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('extra_attributes[description]') }}</strong>
+        </span>
+	@endif
+</div>
+
+<div class="form-group">
     <input class="btn btn-success"
            type="submit"
            value="{{$buttonText}}" />

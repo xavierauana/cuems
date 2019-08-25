@@ -14,6 +14,7 @@ class TalkResource extends JsonResource
      * @return array
      */
     public function toArray($request) {
+        $segments = $request->segments();
 
         $speakers = $this->speakers->map(function (int $delegateId) {
             $speaker = Delegate::find($delegateId);
@@ -23,9 +24,15 @@ class TalkResource extends JsonResource
             ];
         });
 
-        return [
+        $data = [
             'topic'    => $this->title,
-            'speakers' => $speakers
+            'speakers' => $speakers,
+            'extra'    => $this->extra_attributes
         ];
+        if (isset($segments[3]) and $segments[3] === 'talks') {
+            $data['session'] = new SessionResource($this->session);
+        }
+
+        return $data;
     }
 }

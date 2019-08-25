@@ -28,7 +28,6 @@ class CreateTalksTable extends Migration
             $table->unsignedInteger('talk_id');
             $table->foreign('talk_id')->references('id')->on('talks')
                   ->onDelete('cascade');
-
             $table->unsignedInteger('delegate_id');
             $table->foreign('delegate_id')->references('id')->on('delegates')
                   ->onDelete('cascade');

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DelegatesController;
 use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\TalksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,8 @@ Route::group(['middleware' => 'cors'], function () {
         SessionsController::class . "@apiGetSessions");
     Route::get("events/{event}/sessions/search",
         SessionsController::class . "@apiSearchSessions");
+    Route::get("events/{event}/talks/search",
+        TalksController::class . "@apiSearchTalks");
     Route::get("events/{event}/delegates",
         DelegatesController::class . "@getDelegates")->name('api.delegates');
 });

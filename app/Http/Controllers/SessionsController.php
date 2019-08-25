@@ -185,9 +185,8 @@ class SessionsController extends Controller
                            ->OrWithExtraAttributes(['description' => $keyword])
                            ->get();
 
-        $data = SessionResource::collection($sessions);
+        return SessionResource::collection($sessions);
 
-        return $data;
     }
 
     /**
