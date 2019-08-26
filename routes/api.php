@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdvertisementsController;
 use App\Http\Controllers\Api\DelegatesController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\TalksController;
@@ -30,4 +31,7 @@ Route::group(['middleware' => 'cors'], function () {
         TalksController::class . "@apiSearchTalks");
     Route::get("events/{event}/delegates",
         DelegatesController::class . "@getDelegates")->name('api.delegates');
+    Route::get("events/{event}/advertisements",
+        AdvertisementsController::class . "@apiAdvertisements")
+         ->name('api.advertisements');
 });

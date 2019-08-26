@@ -44,6 +44,8 @@
                              href="{{route('expense_categories.index')}}">Expenses Categories</a>
                           <a class="dropdown-item"
                              href="{{route('vendors.index')}}">Expenses Vendors</a>
+                          <a class="dropdown-item"
+                             href="{{route('advertisement_types.index')}}">Advertisement Type</a>
                         </div>
 	            </li>
 	    </ul>
@@ -58,9 +60,9 @@
                            href="{{ route('login') }}">{{ __('Login') }}</a>
                     </li>
 			        {{--<li class="nav-item">--}}
-                        {{--<a class="nav-link"--}}
-                           {{--href="{{ route('register') }}">{{ __('Register') }}</a>--}}
-                    {{--</li>--}}
+			        {{--<a class="nav-link"--}}
+			        {{--href="{{ route('register') }}">{{ __('Register') }}</a>--}}
+			        {{--</li>--}}
 		        @else
 			        <li class="nav-item dropdown">
                         <a id="navbarDropdown"

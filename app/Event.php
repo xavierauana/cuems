@@ -89,6 +89,10 @@ class Event extends Model
         return $this->hasMany(PaymentRecord::class);
     }
 
+    public function advertisements(): HasMany {
+        return $this->hasMany(Advertisement::class);
+    }
+
     // Helpers
 
     public function getTotalExpense(): float {

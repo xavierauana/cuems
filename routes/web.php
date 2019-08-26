@@ -12,6 +12,8 @@
 */
 
 use App\Event;
+use App\Http\Controllers\AdvertisementsController;
+use App\Http\Controllers\AdvertisementTypeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DelegateRolesController;
@@ -278,6 +280,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('events/{event}/paymentRecords/{record}/convert',
         PaymentRecordsController::class . "@convert")
          ->name('events.payment_records.convert');
+
+    // Advertisement
+    Route::resource('events.advertisements',
+        AdvertisementsController::class);
+    Route::delete('events/{event}/advertisements/{advertisement}/images/{image_id}',
+        AdvertisementsController::class . '@deleteImage')
+         ->name('events.advertisement.delete.image');
+
+    Route::resource('advertisement_types', AdvertisementTypeController::class);
 
     // Check in
     @include('routes/checkin.php');
